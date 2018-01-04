@@ -1,0 +1,57 @@
+{
+    "author": "oopsguy.com",
+    "description": "Spring Boot 中文文档",
+    "language": "zh-hans",
+    "extension": null,
+    "generator": "site",
+    "links": {
+        "sharing": {
+            "all": true,
+            "facebook": true,
+            "google": true,
+            "twitter": true,
+            "weibo": true
+        }
+    },
+    "output": null,
+    "pdf": {
+        "fontSize": 16,
+        "margin": {
+            "bottom": 36,
+            "left": 62,
+            "right": 62,
+            "top": 36
+        },
+        "pageNumbers": true,
+        "paperSize": "a4"
+    },
+    "plugins": [
+        "github",
+        "splitter",
+        "tbfed-pagefooter",
+        "-lunr",
+        "-search",
+        "github-buttons",
+        "image-captions",
+        "-highlight",
+        "-livereload"
+    ],
+    "pluginsConfig": {
+        "github": {
+            "url": "https://github.com/DocsHome/springboot"
+        },
+        "github-buttons": {
+            "repo": "DocsHome/springboot",
+            "types": [
+                "star",
+                "watch"
+            ],
+            "size": "small"
+        },
+        "image-captions": {
+            "caption": "_CAPTION_"
+        }
+    },
+    "title": "Spring Boot 中文文档",
+    "variables": {}
+}
