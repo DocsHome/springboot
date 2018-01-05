@@ -1,6 +1,10 @@
 # Spring Boot 中文文档
 
-该项目为 Spring Boot 文档翻译项目，由本人个人发起，基于 [Spring Boot 1.5.9](https://docs.spring.io/spring-boot/docs/1.5.9.RELEASE/reference/htmlsingle/) 的官方文档进行翻译。
+![Spring Boot](https://spring.io/img/homepage/icon-spring-boot.svg)
+
+Spring Boot 是构建所有基于 Spring 应用的起点，旨在使开发者能以最小化配置快速启动和运行应用。
+
+该项目为 Spring Boot 文档翻译项目，由本人个人发起，基于 [Spring Boot 1.5.9](https://docs.spring.io/spring-boot/docs/1.5.9.RELEASE/reference/html/) 的官方文档进行翻译。
 
 ## 阅读方式
 
