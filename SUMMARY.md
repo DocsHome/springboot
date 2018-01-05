@@ -1,6 +1,6 @@
 # Summary
 
-- [版权信息](page/boot-documentation.md)
+- [版权信息](pages/boot-documentation.md)
 - [I、Spring Boot 文档](pages/boot-documentation.md#boot-documentation)
     - [1、关于本文档](pages/boot-documentation.md#boot-documentation-about)
     - [2、获取帮助](pages/boot-documentation.md#boot-documentation-getting-help)
