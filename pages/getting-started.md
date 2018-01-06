@@ -1,4 +1,4 @@
-<a id="boot-documentation"></a>
+<a id="getting-started"></a>
 # II、入门
 
 如果您是刚开始使用 Spring Boot，或者对 Spring 有点印象，那么这部分内容是为您准备的！在这里我们将给出基本的“是什么？”、“怎么做？”、“为什么？”这类问题的答案。这是一份友好的 Spring Boot 简介和安装说明。当我们在讨论一些核心原理之后，我们将构建第一个 Spring Boot 应用。
@@ -54,7 +54,7 @@ $ java -version
 
 **提示**
 
-虽然 Spring Boot 支持 Java 1.6，但是如果可以，您应该考虑使用最新的 Java 版本。
+> 虽然 Spring Boot 支持 Java 1.6，但是如果可以，您应该考虑使用最新的 Java 版本。
 
 <a id="getting-started-installation-instructions-for-java"></a>
 ### 10.1、针对 Java 开发人员的安装说明
@@ -70,7 +70,7 @@ Spring Boot 兼容 Apache Maven 3.2 或更高版本。如果您还没有安装 M
 
 **提示**
 
-在许多操作系统上，可以通过软件包管理器来安装 Maven。如果您是 OSX Homebrew 用户，请尝试使用 `brew install maven`。Ubuntu 用户可以运行 `sudo apt-get install maven`。
+> 在许多操作系统上，可以通过软件包管理器来安装 Maven。如果您是 OSX Homebrew 用户，请尝试使用 `brew install maven`。Ubuntu 用户可以运行 `sudo apt-get install maven`。
 
 Spring Boot 依赖使用到了 `org.springframework.boot` `groupId`。通常，您的 Maven POM 文件将从 `spring-boot-starter-parent` 项目继承，并声明一个或多个 [Starter](using-boot-starter.md) 依赖。Spring Boot 还提供了一个可选的 [Maven 插件](#build-tool-plugins-maven-plugin)来创建可执行 jar。
 
@@ -116,6 +116,6 @@ Spring Boot 依赖使用到了 `org.springframework.boot` `groupId`。通常，�
 
 **提示**
 
-`spring-boot-starter-parent` 是一个使用 Spring Boot 的好方式，但它并不是任何时候都适用。有时您可能需要继承不同的父 POM，或者您不喜欢我们的默认配置。请参见[第 13.2.2 节, “使用不带父 POM 的 Spring Boot”](#using-boot-maven-without-a-parent) 作为的替代方案，其使用了 `import` Scope。
+> `spring-boot-starter-parent` 是一个使用 Spring Boot 的好方式，但它并不是任何时候都适用。有时您可能需要继承不同的父 POM，或者您不喜欢我们的默认配置。请参见[第 13.2.2 节, “使用不带父 POM 的 Spring Boot”](#using-boot-maven-without-a-parent) 作为的替代方案，其使用了 `import` Scope。
 
 
