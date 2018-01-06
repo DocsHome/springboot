@@ -26,19 +26,19 @@ Copyright © 2012-2017
 在不收取副本的任何费用且每个副本都包含此版权声明的情况下，无论是印刷形式或是电子发行形式，您可以使用本文档的副本或分发给他人。
 
 <a id="boot-documentation"></a>
-## I、Sprng Boot 文档
+# I、Sprng Boot 文档
 
 本节将简要介绍 Spring Boot 参考文档，可以看作是本文档内容的概述。您可以以线性方式阅读此参考指南，如果您不感兴趣，可以跳过该部分。
 
 <a id="boot-documentation-about"></a>
-### 1、关于文档
+## 1、关于文档
 
 Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/reference/html)、[pdf](http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/reference/pdf/spring-boot-reference.pdf) 和 [epub](http://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/reference/epub/spring-boot-reference.epub) 格式的文档。最新的副本可在[docs.spring.io/spring-boot/docs/current/reference](http://docs.spring.io/spring-boot/docs/current/reference) 获取。
 
 在不收取副本的任何费用且每个副本都包含此版权声明的情况下，无论是印刷形式或是电子发行形式，您可以使用本文档的副本或分发给他人。
 
 <a id="boot-documentation-getting-help"></a>
-### 2、获取帮助
+## 2、获取帮助
 
 在使用 Spring Boot 时遇到了麻烦？没关系，我们可以为您提供帮助!
 
@@ -50,7 +50,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 > Spring Boot 是全部开源的，包括文档！如果您发现文档中存在错误了，或者您想改进它们，请[参与我们](https://github.com/spring-projects/spring-boot/tree/v1.5.9.RELEASE)。
 
 <a id="boot-documentation-first-steps"></a>
-### 3、起步
+## 3、起步
 
 如果您是刚开始使用 Spring Boot，或者对 Spring 大体有个印象, [您可以从这里开始](page/getting-started.md)!
 
@@ -59,7 +59,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 - **运行您的例子**： 第 1 部分 | 第 2 部分
 
 <a id="_working_with_spring_boot"></a>
-### 4、使用 Spring Boot
+## 4、使用 Spring Boot
 
 准备开始使用 Spring Boot 了么? [迫不及待](using-boot.md)。
 
@@ -70,7 +70,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 - **Spring Boot CLI**：使用 CLI
 
 <a id="_learning_about_spring_boot_features"></a>
-### 5、了解 Spring Boot 新特性
+## 5、了解 Spring Boot 新特性
 
 需要更多关于 Spring Boot 核心特性的详细内容？[这是为您准备的](boot-features.md)!
 
@@ -82,7 +82,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 - **延伸**：Auto-configuration | @Conditions
 
 <a id="_moving_to_production"></a>
-### 6、生产环境
+## 6、生产环境
 
 当您准备好将 Spring Boot 应用推送到生产环境时，我们有一些您可能会感兴趣的技巧！
 
@@ -91,7 +91,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 - **监控**：度量 | 审计 | 追踪 | 流程
 
 <a id="_advanced_topics"></a>
-### 7、高级内容
+## 7、高级内容
 
 最后，我们为高级用户提供了几个主题。
 

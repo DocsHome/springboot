@@ -9,14 +9,14 @@
     - [5、了解 Spring Boot 的新特性](pages/boot-documentation.md#_learning_about_spring_boot_features)
     - [6、生产环境](pages/boot-documentation.md#_moving_to_production)
     - [7、高级内容](pages/boot-documentation.md#_advanced_topics)
-- II、入门
-    - 8、Spring Boot 简介
-    - 9、系统要求
-        - 9.1、Servlet 容器
-    - 10、安装 Spring Boot
-        - 10.1、针对 Java 开发人员的安装说明
-            - 10.1.1、Maven 安装
-            - 10.1.2、Gradle 安装
+- [II、入门](pages/boot-documentation.md)
+    - [8、Spring Boot 简介](pages/boot-documentation.md#getting-started-introducing-spring-boot)
+    - [9、系统要求](pages/boot-documentation.md#getting-started-system-requirements)
+        - [9.1、Servlet 容器](pages/boot-documentation.md#_servlet_containers)
+    - [10、安装 Spring Boot](pages/boot-documentation.md#getting-started-installing-spring-boot)
+        - [10.1、针对 Java 开发人员的安装说明](pages/boot-documentation.md#getting-started-installation-instructions-for-java)
+            - [10.1.1、Maven 安装](pages/boot-documentation.md#getting-started-maven-installation)
+            - [10.1.2、Gradle 安装](pages/boot-documentation.md)
         - 10.2、安装 Spring Boot CLI
             - 10.2.1、手动安装
             - 10.2.2、使用 SDKMAN! 安装
