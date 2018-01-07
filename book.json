@@ -32,7 +32,6 @@
         "-lunr",
         "-search",
         "github-buttons",
-        "image-captions",
         "-highlight",
         "-livereload"
     ],

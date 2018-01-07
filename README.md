@@ -8,7 +8,7 @@ Spring Boot 是构建所有基于 Spring 应用的起点，旨在使开发者能
 
 ## 阅读方式
 
-[Github](https://github.com/DocsHome/springboot/blob/master/SUMMARY.md) | Gitbook | PDF | MOBI
+[Github](https://github.com/DocsHome/springboot/blob/master/SUMMARY.md) | [Gitbook](https://www.gitbook.com/book/docshome/springboot) | PDF | MOBI
 
 ## 项目状态
 
