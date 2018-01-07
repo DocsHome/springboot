@@ -17,10 +17,10 @@
         - [10.1、针对 Java 开发人员的安装说明](pages/getting-started.md#getting-started-installation-instructions-for-java)
             - [10.1.1、Maven 安装](pages/getting-started.md#getting-started-maven-installation)
             - [10.1.2、Gradle 安装](pages/getting-started.md)
-        - 10.2、安装 Spring Boot CLI
-            - 10.2.1、手动安装
-            - 10.2.2、使用 SDKMAN! 安装
-            - 10.2.3、使用 OSX Homebrew 安装
-            - 10.2.4、使用 MacPorts 安装
-            - 10.2.5、命令行完成
-            - 10.2.6、快速入门 Spring CLI 示例
+        - [10.2、安装 Spring Boot CLI](pages/getting-started.md#getting-started-installing-the-cli)
+            - [10.2.1、手动安装](pages/getting-started.md#getting-started-manual-cli-installation)
+            - [10.2.2、使用 SDKMAN! 安装](pages/getting-started.md#getting-started-sdkman-cli-installation)
+            - [10.2.3、使用 OSX Homebrew 安装](pages/getting-started.md#getting-started-homebrew-cli-installation)
+            - [10.2.4、使用 MacPorts 安装](pages/getting-started.md#getting-started-macports-cli-installation)
+            - [10.2.5、命令行完成](pages/getting-started.md#getting-started-cli-command-line-completion)
+            - [10.2.6、快速入门 Spring CLI 示例](pages/getting-started.md#getting-started-cli-example)

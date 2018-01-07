@@ -118,4 +118,165 @@ Spring Boot 依赖使用到了 `org.springframework.boot` `groupId`。通常，�
 
 > `spring-boot-starter-parent` 是一个使用 Spring Boot 的好方式，但它并不是任何时候都适用。有时您可能需要继承不同的父 POM，或者您不喜欢我们的默认配置。请参见[第 13.2.2 节, “使用不带父 POM 的 Spring Boot”](#using-boot-maven-without-a-parent) 作为的替代方案，其使用了 `import` Scope。
 
+<a id="getting-started-gradle-installation"></a>
+### 10.1.2、使用 Gradle 安装
 
+Spring Boot 兼容 Gradle 2 (2.9 或者更高版本)和 Gradle 3。如果您还没有安装 Gradle，您可以按照 [www.gradle.org/](http://www.gradle.org/) 上的说明进行操作。
+
+Spring Boot 依赖 `org.springframework.boot` `group`。通常，您的项目将声明一个或者多个 [Starter](using-boot-starter.md) 的依赖。Spring Boot 提供了一个有用的 [Gradle 插件](#build-tool-plugins-gradle-plugin)，可用于简化依赖声明和创建可执行 jar 文件。
+
+**Gradle Wrapper**
+
+> 当您许需要构建项目时，Gradle Wrapper 提供了一个用于获取 Gradle 的好方法。它是由小脚本和库组成，您在提交的同时，您的代码将引导构建流程。更多详细信息，请参阅 [docs.gradle.org/2.14.1/userguide/gradle_wrapper.html](https://docs.gradle.org/2.14.1/userguide/gradle_wrapper.html)。
+
+这是一个典型的 `build.gradle` 文件：
+
+```gradle
+plugins {
+    id 'org.springframework.boot' version '1.5.4.RELEASE'
+    id 'java'
+}
+
+
+jar {
+    baseName = 'myproject'
+    version =  '0.0.1-SNAPSHOT'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+```
+
+<a id="getting-started-installing-the-cli"></a>
+### 10.2、安装 Spring Boot CLI
+
+Spring Boot CLI 是一个命令行工具，如果您想使用 Spring 快速搭建原型，可以选择它。它允许您运行 [Groovy](http://groovy.codehaus.org/) 脚本，这意味着您有可以有类 Java 语法且没有太多样板的代码。
+
+您不需要使用 CLI 来配合 Spring Boot，但它确实是一个入门 Spring 应用的最快方式。
+
+<a id="getting-started-manual-cli-installation"></a>
+#### 10.2.1、手动安装
+
+您可以从 Spring 软件仓库中下载 Spring CLI 发行版：
+
+- [spring-boot-cli-1.5.9.RELEASE-bin.zip](https://repo.spring.io/release/org/springframework/boot/spring-boot-cli/1.5.9.RELEASE/spring-boot-cli-1.5.9.RELEASE-bin.zip)
+- [spring-boot-cli-1.5.9.RELEASE-bin.tar.gz](https://repo.spring.io/release/org/springframework/boot/spring-boot-cli/1.5.9.RELEASE/spring-boot-cli-1.5.9.RELEASE-bin.tar.gz)
+
+[最新的快照发行版](https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/)也是可用的。
+
+下载之后，请按照解压缩归档文件中的 [INSTALL.txt](https://raw.github.com/spring-projects/spring-boot/v1.5.9.RELEASE/spring-boot-cli/src/main/content/INSTALL.txt) 说明进行操作。总之：在 `.zip` 文件的 `bin/` 目录中有一个 spring 脚本（在 Windows 下为 `spring.bat`），或者也可以使用 `java -jar` 配合 `.jar` 文件（该脚本可以帮助您确保 classpath 设置正确）。
+
+<a id=""></a>
+#### 10.2.2、使用 SDKMAN! 安装
+
+SDKMAN!（软件开发包管理器）用于管理二进制 SDK 的多个版本，包括 Groovy 和 Spring Boot CLI。从 [sdkman.io](http://sdkman.io/) 获取 SDKMAN! 并安装 Spring Boot：
+
+```bash
+$ sdk install springboot
+$ spring --version
+Spring Boot v1.5.9.RELEASE
+```
+
+如果您正在为 CLI 开发功能，并希望够能轻松地访问刚创建的版本，请参照以下指令。
+
+```bash
+$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-1.5.9.RELEASE-bin/spring-1.5.9.RELEASE/
+$ sdk default springboot dev
+$ spring --version
+Spring CLI v1.5.9.RELEASE
+```
+
+以上操作将会安装一个名为 `dev` 的 `spring` 的本地实例。它指向您的目标构建位置，因此每次重新构建 Spring Boot 时，spring 都是最新的。
+
+您可以这样做来相关信息：
+
+```bash
+$ sdk ls springboot
+
+================================================================================
+Available Springboot Versions
+================================================================================
+> + dev
+* 1.5.9.RELEASE
+
+================================================================================
++ - local version
+* - installed
+> - currently in use
+================================================================================
+```
+
+<a id="getting-started-homebrew-cli-installation"></a>
+#### 10.2.3、使用 OSX Homebrew 安装
+
+如果您是在 Mac 上工作并且使用了 [Homebrew](http://brew.sh/)，您安装 Spring Boot CLI 需要做的:
+
+```bash
+$ brew tap pivotal/tap
+$ brew install springboot
+```
+
+Homebrew 将会把 spring 安装在 `/usr/local/bin`。
+
+**注意**
+> 如果您没有看到执行流程, 您安装的 brew 可能已经过期了。执行 `brew update` 并重新尝试。
+
+<a id="getting-started-macports-cli-installation"></a>
+#### 10.2.4、使用 MacPorts 安装
+
+如果您是在 Mac 上工作并且使用了 [MacPorts](https://www.macports.org/)，您安装 Spring Boot CLI 所需要做的:
+
+```bash
+$ sudo port install spring-boot-cli
+```
+
+<a id="getting-started-cli-command-line-completion"></a>
+#### 10.2.5、命令行完成
+
+Spring Boot CLI 为 [BASH](https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29) 和 [zsh](https://en.wikipedia.org/wiki/Zsh) 提供了命令完成脚本。您可以在任何 shell 中执行此脚本 (也称为 `spring`），或将其放在您个人或系统范围的 bash 中完成初始化。在 Debian 系统上，系统范围的脚本位于 `/shell-completion/bash` 中，当新的 shell 启动时，该目录中的所有脚本将被执行。要手动运行脚本, 例如：您已经使用 SDKMAN! 安装了
+
+```bash
+$ . ~/.sdkman/candidates/springboot/current/shell-completion/bash/spring
+$ spring <HIT TAB HERE>
+  grab  help  jar  run  test  version
+```
+
+**注意**
+> 如果您使用 Homebrew 或者 MacPorts 安装了 Spring Boot CLI，则命令行完成脚本将自动注册到您的 shell 中。
+
+<a id="getting-started-cli-example"></a>
+### 10.2.6、快速入门 Spring CLI 示例
+
+这是一个非常简单的 web 应用程序，可以用于测试您的安装情况。创建一个名为 `app.groovy` 的文件：
+
+```groovy
+@RestController
+class ThisWillActuallyRun {
+
+    @RequestMapping("/")
+    String home() {
+        "Hello World!"
+    }
+
+}
+```
+
+之后在 shell 中运行它：
+
+```bash
+$ spring run app.groovy
+```
+**注意**
+> 第一次运行应用的时候需要一些时间，因为需要下载依赖。后续运行将会更快。
+
+在您喜欢的浏览器中打开 localhost:8080，您应该会看到以下输出：
+
+```
+Hello World!
+```
