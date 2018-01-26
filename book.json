@@ -32,10 +32,16 @@
         "-lunr",
         "-search",
         "github-buttons",
+        "prism",
         "-highlight",
         "-livereload"
     ],
     "pluginsConfig": {
+        "prism": {
+            "css": [
+            "prismjs/themes/prism-solarizedlight.css"
+            ]
+        },
         "github": {
             "url": "https://github.com/DocsHome/springboot"
         },

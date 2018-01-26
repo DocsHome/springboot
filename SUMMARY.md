@@ -24,3 +24,6 @@
             - [10.2.4、使用 MacPorts 安装](pages/getting-started.md#getting-started-macports-cli-installation)
             - [10.2.5、命令行完成](pages/getting-started.md#getting-started-cli-command-line-completion)
             - [10.2.6、快速入门 Spring CLI 示例](pages/getting-started.md#getting-started-cli-example)
+            - [10.3、升级旧版 Spring Boot](pages/getting-started.md#getting-started-upgrading-from-an-earlier-version)
+        - [11、开发第一个 Spring Boot 应用](pages/getting-started.md#getting-started-first-application)
+            - [11.1 创建 POM](pages/getting-started.md#getting-started-first-application-pom)

@@ -172,7 +172,7 @@ Spring Boot CLI 是一个命令行工具，如果您想使用 Spring 快速搭�
 
 下载之后，请按照解压缩归档文件中的 [INSTALL.txt](https://raw.github.com/spring-projects/spring-boot/v1.5.9.RELEASE/spring-boot-cli/src/main/content/INSTALL.txt) 说明进行操作。总之：在 `.zip` 文件的 `bin/` 目录中有一个 spring 脚本（在 Windows 下为 `spring.bat`），或者也可以使用 `java -jar` 配合 `.jar` 文件（该脚本可以帮助您确保 classpath 设置正确）。
 
-<a id=""></a>
+<a id="getting-started-sdkman-cli-installation"></a>
 #### 10.2.2、使用 SDKMAN! 安装
 
 SDKMAN!（软件开发包管理器）用于管理二进制 SDK 的多个版本，包括 Groovy 和 Spring Boot CLI。从 [sdkman.io](http://sdkman.io/) 获取 SDKMAN! 并安装 Spring Boot：
@@ -280,3 +280,71 @@ $ spring run app.groovy
 ```
 Hello World!
 ```
+
+<a id="getting-started-upgrading-from-an-earlier-version"></a>
+## 10.3、升级旧版 Spring Boot
+
+如果您想从旧版的 Spring Boot 升级到此版本，请查看[项目 wiki](https://github.com/spring-projects/spring-boot/wiki) 上托管的 **release notes（发行说明）**。您将会找到升级说明以及每个版本的**新特性和注意事项**列表。
+
+要升级现有的 CLI，请使用相应的包管理器命令（例如 `brew upgrade`） 或者, 如果您手动安装了 CLI，请按照[标准说明](#getting-started-manual-cli-installation)，记得更新您的 `PATH` 环境变量以删除任何旧的引用。
+
+<a id="getting-started-first-application"></a>
+## 11、开发第一个 Spring Boot 应用
+
+让我们使用 Java 开发一个简单的 **Hello World!** web 应用程序，以便体现 Spring Boot 的一些关键特性。我们将使用 Maven 构建该项目，因为大多数 IDE 都支持它。
+
+**提示**
+
+> [spring.io](https://spring.io/) 网站上有许多使用 Spring Boot 的**入门指南**，如果您正在寻找具体问题的解决方案，可先从上面寻找。您可以到 [start.spring.io](https://start.spring.io/) 使用依赖搜索功能选择 `web` starter 来快速完成以下步骤。它将自动生成一个新的项目结构，以便您可以[立即开始编码](#getting-started-first-application-code)。[查看文档了解更多信息](https://github.com/spring-io/initializr)。
+
+在开始之前，打开终端检查您是否安装了符合要求的 Java 版本和 Maven 版本。
+
+```bash
+$ java -version
+java version "1.7.0_51"
+Java(TM) SE Runtime Environment (build 1.7.0_51-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 24.51-b03, mixed mode)
+```
+
+```bash
+$ mvn -v
+Apache Maven 3.2.3 (33f8c3e1027c3ddde99d3cdebad2656a31e8fdf4; 2014-08-11T13:58:10-07:00)
+Maven home: /Users/user/tools/apache-maven-3.1.1
+Java version: 1.7.0_51, vendor: Oracle Corporation
+```
+
+**提示**
+
+> 此示例需要在您自己的文件夹中创建，后续的步骤说明假设您已经创建了这个文件夹，它是您的**当前目录**。
+
+<a id="getting-started-first-application-pom"></a>
+### 11.1 创建 POM
+
+我们先要创建一个 Maven `pom.xml` 文件。`pom.xml` 是用于构建项目的**配方**。打开您最喜欢的编辑器并添加一下内容：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>myproject</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.9.RELEASE</version>
+    </parent>
+
+    <!-- Additional lines to be added here... -->
+
+</project>
+```
+
+这应该会给您生成一个工作版本，您可以通过运行 `mvn package` 来测试它（此时您可以忽略 **jar will be empty - no content was marked for inclusion!** 警告信息)。
+
+**注意**
+
+> 此时，您可以将项目导入 IDE（大部分的现代 Java IDE 都内置 Maven 支持）。为了简单起见，我们将继续在这个例子中使用纯文本编辑器。
