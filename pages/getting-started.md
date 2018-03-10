@@ -348,3 +348,118 @@ Java version: 1.7.0_51, vendor: Oracle Corporation
 **注意**
 
 > 此时，您可以将项目导入 IDE（大部分的现代 Java IDE 都内置 Maven 支持）。为了简单起见，我们将继续在这个例子中使用纯文本编辑器。
+
+<a id="getting-started-first-application-dependencies"></a>
+
+### 11.2、添加 Classpath 依赖
+
+Spring Boot 提供了多个 “Starter”，可以让您方便地将 jar 添加到 classpath 下。我们的示例应用已经在 POM 的 `parent` 部分使用了 `spring-boot-starter-parent`。`spring-boot-starter-parent` 是一个特殊 Starter，它提供了有用的 Maven 默认配置。此外它还提供了[依赖管理](#using-boot-dependency-management)功能，您可以忽略这些依赖的版本（`version`）标签。
+
+其他 Starter 只提供在开发特定应用时可能需要到的依赖。由于我们正在开发一个 web 应用，因此我们将添加一个 `spring-boot-starter-web` 依赖 ， 但在此之前，让我们来看看目前拥有的。
+
+```
+vn dependency:tree
+
+[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
+```
+
+`mvn dependency:tree` 命令以树的形式打印项目的依赖。您可以看到 `spring-boot-starter-parent` 本身不提供依赖。我们可以在 `parent` 下方立即编辑 `pom.xml` 并添加 `spring-boot-starter-web` 依赖：
+
+```xml
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+</dependencies>
+```
+
+如果您再次运行 `mvn dependency:tree`，将会看到现在有许多附加的依赖，包括了 Tomcat web 服务器和 Spring Boot 本身。
+
+<a id="getting-started-first-application-code"></a>
+
+### 11.3、编码
+
+要完成我们的应用，我们需要创建一个 Java 文件。默认情况下，Maven 将从 `src/main/java` 目录下编译源代码，因此您需要创建该文件夹结构，之后添加一个名为 `src/main/java/Example.java` 的文件：
+
+```java
+import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@EnableAutoConfiguration
+public class Example {
+
+	@RequestMapping("/")
+	String home() {
+		return "Hello World!";
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(Example.class, args);
+	}
+
+}
+```
+
+虽然没有多少代码，但它仍然做了很多事情。让我们看看里面重要的部分。
+
+<a id="getting-started-first-application-annotations"></a>
+
+#### 11.3.1、@RestController 与 @RequestMapping 注解
+
+`Example` 类中的第一个注解是 `@RestController`，该注解被称作 stereotype 注解。它能为代码阅读者提供一些提示，对于 Spring 而言，这个类具有特殊作用。在本示例中，我们的类是一个 web `@Controller`，因此 Spring 在处理传入的 web 请求时会考虑它。
+
+`@RequestMapping` 注解提供了 **routing**（路由）信息。它告诉 Spring，任何具有路径为 `/` 的 HTTP 请求都应映射到 `home` 方法。`@RestController` 注解告知 Spring 渲染结果字符串直接返回给调用者。
+
+**提示**
+
+> `@RestController` 和 `@RequestMapping` 是 Spring MVC 注解（它们不是 Spring Boot 特有的）。有关更多详细信息，请参阅 Spring 参考文档中的 [MVC 章节](https://docs.spring.io/spring/docs/5.0.4.RELEASE/spring-framework-reference/web.html#mvc)
+
+<a id="getting-started-first-application-auto-configuration"></a>
+
+#### 11.3.2、@EnableAutoConfiguration 注解
+
+第二个类级别注解是 `@EnableAutoConfiguration`。此注解告知 Spring Boot 根据您添加的 jar 依赖来“猜测”您想如何配置 Spring 并进行自动配置，由于 `spring-boot-starter-web` 添加了 Tomcat 和 Spring MVC，auto-configuration（自动配置）将假定您要开发 web 应用并相应设置了 Spring。
+
+> **Starter 与自动配置** <br/> Auto-configuration 被设计与 Starter 配合使用，但这两个概念并不是直接相关的。您可以自由选择 starter 之外的 jar 依赖，Spring Boot 仍然会自动配置您的应用程序。
+
+<a id="getting-started-first-application-main-method"></a>
+
+#### 11.3.3、main 方法
+
+应用的最后一部分是 `main` 方法。这只是一个标准方法，其遵循 Java 规范中定义的应用程序入口点。我们的 main 方法通过调用 `run` 来委托 Spring Boot 的 `SpringApplication` 类，`SpringApplication` 类将引导我们的应用，启动 Spring，然后启动自动配置的 Tomcat web 服务器。我们需要将 `Example.class`  作为一个参数传递给 `run` 方法来告知 `SpringApplication`，它是 Spring 主组件。同时还传递 `args` 数组以暴露所有命令行参数。
+
+<a id="getting-started-first-application-run"></a>
+
+### 11.4、运行示例
+
+此时，我们的应用应该是可以工作了。由于您使用了 `spring-boot-starter-parent` POM，因此您可以使用 `run` 来启动应用程序。在根目录下输入 `mvn spring-boot:run` 以启动应用：
+
+```
+$ mvn spring-boot:run
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v2.0.0.RELEASE)
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started Example in 2.222 seconds (JVM running for 6.514)
+```
+
+如果您用浏览器打开了 [`localhost:8080`](http://localhost:8080/)，您应该会看到以下输出：
+
+```
+Hello World!
+```
+
+要平滑退出程序，请按 `ctrl+c`。
+
+
+××待续……××
