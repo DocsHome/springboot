@@ -1,5 +1,5 @@
 <a id="getting-started"></a>
-# II、入门
+# 二、入门
 
 如果您是刚开始使用 Spring Boot，或者对 Spring 有点印象，那么这部分内容是为您准备的！在这里我们将给出基本的“是什么？”、“怎么做？”、“为什么？”这类问题的答案。这是一份友好的 Spring Boot 简介和安装说明。当我们在讨论一些核心原理之后，我们将构建第一个 Spring Boot 应用。
 
@@ -461,5 +461,95 @@ Hello World!
 
 要平滑退出程序，请按 `ctrl+c`。
 
+<a id="getting-started-first-application-executable-jar"></a>
 
-××待续……××
+### 11.5、创建可执行 jar
+
+我们通过创建一个完全自包含（self-contained）的可执行 jar 文件完成了示例。该 jar 文件可以在生产环境中运行。可执行 jar（有时又称为 `fat jars`）是包含了编译后的类以及代码运行时所需要相关的 jar 依赖的归档文件。
+
+---
+
+**可执行 jar 与 Java**
+
+Java 不提供任何标准方式来加载嵌套的 jar 文件（比如本身包含在 jar 中的 jar 文件）。如果您想分发自包含的应用，这可能是个问题。
+
+为了解决此问题，许多开发人员使用了 **uber** jar，uber jar 从所有应用的依赖中打包所有的类到一个归档中。这种方法的问题在于，您很难看出应用程序实际上使用到了哪些库。如果在多个 jar 中使用了相同的文件名（但内容不同），这也可能产生问题。
+
+Spring Boot 采用了[不同方方式](#executable-jar)，可以直接对 jar 进行嵌套。 
+
+---
+
+要创建可执行 jar，我们需要将 `spring-boot-maven-plugin` 添加到 `pom.xml` 文件中。在 `dependencies` 下方插入以下配置：
+
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
+```
+
+**注意**
+
+> `spring-boot-starter-parent` POM 包含了 `<executions>` 配置，用于绑定 `repackage` 。如果您没有使用父 POM，您需要自己声明此配置。有关详细的信息，请参阅[插件文档](https://docs.spring.io/spring-boot/docs/2.0.0.RELEASE/maven-plugin/usage.html)。
+
+保存 `pom.xml` 并在命令行中运行 `mvn package`：
+
+```
+$ mvn package
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building myproject 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] .... ..
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ myproject ---
+[INFO] Building jar: /Users/developer/example/spring-boot-example/target/myproject-0.0.1-SNAPSHOT.jar
+[INFO]
+[INFO] --- spring-boot-maven-plugin:2.0.0.RELEASE:repackage (default) @ myproject ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+```
+
+如果您浏览 `target` 目录，您应该会看到 `myproject-0.0.1-SNAPSHOT.jar`。该文件的大小大约为 10 MB。如果您想要查看里面的内容，可以使用 `jar tvf`：
+
+```bash
+$ jar tvf target/myproject-0.0.1-SNAPSHOT.jar
+```
+
+您应该还会在 `target` 目录中看到一个名为 `myproject-0.0.1-SNAPSHOT.jar.original` 的较小文件。这是在 Spring Boot 重新打包之前由 Maven 所创建的原始 jar 文件。
+
+使用 `java -jar` 命令运行该应用：
+
+```
+$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v2.0.0.RELEASE)
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started Example in 2.536 seconds (JVM running for 2.864)
+```
+
+跟之前一样, 要平滑退出应用，请按 `ctrl-c`。
+
+<a id="getting-started-whats-next"></a>
+
+## 12、下一步
+
+希望您在本章节学到了一些 Spring Boot 的基础知识，并且开始编写自己的应用。如果您是一名面向任务（task-oriented）的开发人员，您可能想跳过 [spring.io](https://spring.io/) 而直接阅读一些能解决**如何使用 Spring 来解决？** 这类问题的[入门指南](https://spring.io/guides/)，此外我们还有 Spring Boot 专门的 [How-to](#howto) 参考文档。
+
+[Spring Boot 仓库](https://github.com/spring-projects/spring-boot)还有很多您可以运行的[示例](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-samples)。示例与其余部分的代码是独立的（也就是说，您不需要构建其他的代码来运行或使用示例）。
+
+接下来阅读的是第三部：[使用 Spring Boot](#using-boot)。如果您真的感到厌倦了，可以跳过该部分直接阅读 [Spring Boot 特性](#boot-features)。
