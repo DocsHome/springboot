@@ -238,10 +238,10 @@ starter 包含了许多您需要用于使项目快速启动和运行，并且需
 
 Spring Boot 在 `org.springframework.boot` group 下提供了以下应用 starter：
 
-**表 13.1、Spring Boot 应用 Starter**
+**表 13.1、Spring Boot 应用类 Starter**
 
 | 名称 | 描述 | POM |
-|:---|:---|:---|
+|:---|:---|:---:|
 | `spring-boot-starter` | 核心 starter，包含自动配置支持、日志和 YAML | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter/pom.xml) |
 | `spring-boot-starter-activemq` | 提供 JMS 消息支持，使用 Apache ActiveMQ | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-activemq/pom.xml) |
 | `spring-boot-starter-amqp` | 提供 Spring AMQP 与 Rabbit MQ 支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-amqp/pom.xml) |
@@ -274,7 +274,7 @@ Spring Boot 在 `org.springframework.boot` group 下提供了以下应用 starte
 | `spring-boot-starter-json` | 提供了读写 json 的支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-json/pom.xml) |
 | `spring-boot-starter-jta-atomikos` | 提供 Atomikos JTA 事务支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-jta-atomikos/pom.xml) |
 | `spring-boot-starter-jta-bitronix` | 提供 Bitronix JTA 事务支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-jta-bitronix/pom.xml) |
-| `spring-boot-starter-jta-narayana` | 提供 Narayana JTA 支持 |　[Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-jta-narayana/pom.xml) |
+| `spring-boot-starter-jta-narayana` | 提供 Narayana JTA 支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-jta-narayana/pom.xml) |
 | `spring-boot-starter-mail` | 提供使用　Java Mail 与 Spring Framework 的邮件发送支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-mail/pom.xml) |
 | `spring-boot-starter-mustache` | 提供使用 Mustache 视图构建 web 应用的支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-mustache/pom.xml) |
 | `spring-boot-starter-quartz` | Quartz 支持 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-quartz/pom.xml) |
@@ -292,7 +292,7 @@ Spring Boot 在 `org.springframework.boot` group 下提供了以下应用 starte
 **表 13.2、Spring Boot 生产类 starter**
 
 | 名称 | 描述 | POM |
-|:---|:---|:---|
+|:---|:---|:---:|
 | `spring-boot-starter-actuator` | Spring Boot 的 Actuator 支持，其提供了生产就绪功能，帮助您监控和管理应用 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-actuator/pom.xml) | 
 
 最后，Spring Boot 还包含以下 starter，如果您想要排除或切换特定技术，可以使用以下 starter：
@@ -300,16 +300,83 @@ Spring Boot 在 `org.springframework.boot` group 下提供了以下应用 starte
 **表 13.3、Spring Boot 技术类 starter**
 
 | 名称 | 描述 | POM |
-|:---|:---|:---|
+|:---|:---|:---:|
 | `spring-boot-starter-jetty` | 使用 Jetty 作为嵌入式 servlet 容器。可代替 [`spring-boot-starter-tomcat`](https://docs.spring.io/spring-boot/docs/2.0.0.RELEASE/reference/htmlsingle/#spring-boot-starter-tomcat) | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-jetty/pom.xml) |
 | `spring-boot-starter-log4j2` | 使用 Log4j2 作为日志组件。可代替 [`spring-boot-starter-logging`](https://docs.spring.io/spring-boot/docs/2.0.0.RELEASE/reference/htmlsingle/#spring-boot-starter-logging) | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-log4j2/pom.xml) |
-| `spring-boot-starter-logging` | 使用 Logback 作为日志组件，为默认的日志 starter | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-logging/pom.xml) |
-| `spring-boot-starter-reactor-netty` | 使用 Reactor Netty 作为嵌入响应式 HTTP 服务器 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-reactor-netty/pom.xml) |
-| `spring-boot-starter-tomcat` | 使用 Tomcat 作为嵌入式 servlet 容器，为 [`spring-boot-starter-web`](https://docs.spring.io/spring-boot/docs/2.0.0.RELEASE/reference/htmlsingle/#spring-boot-starter-web) 默认 servlet 容器 starter | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-tomcat/pom.xml) |
+| `spring-boot-starter-logging` | 使用 Logback 作为日志组件，此 starter 为默认的日志 starter | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-logging/pom.xml) |
+| `spring-boot-starter-reactor-netty` | 使用 Reactor Netty 作为内嵌响应式 HTTP 服务器 | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-reactor-netty/pom.xml) |
+| `spring-boot-starter-tomcat` | 使用 Tomcat 作为嵌入式 servlet 容器，此为 [`spring-boot-starter-web`](https://docs.spring.io/spring-boot/docs/2.0.0.RELEASE/reference/htmlsingle/#spring-boot-starter-web) 默认的 servlet 容器 starter | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-tomcat/pom.xml) |
 | `spring-boot-starter-undertow` | 使用 Undertow 作为嵌入式 servlet 容器，可代替 [`spring-boot-starter-tomcat`](https://docs.spring.io/spring-boot/docs/2.0.0.RELEASE/reference/htmlsingle/#spring-boot-starter-tomcat) | [Pom](https://github.com/spring-projects/spring-boot/tree/v2.0.0.RELEASE/spring-boot-project/spring-boot-starters/spring-boot-starter-undertow/pom.xml) |
 
 **提示**
 
 > 有关其它社区贡献的 starter 列表，请参阅 GitHub 上的 `spring-boot-starters` 模块中的 [README 文件](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-starters/README.adoc)。
+
+<a id="using-boot-structuring-your-code"></a>
+
+## 14、组织代码
+
+Spring Boot 不需要任何特定的代码布局，但是有一些最佳实践是很有用的。
+
+<a id="using-boot-using-the-default-package"></a>
+
+### 14.1、使用 default 包
+
+当一个类没有 `package` 声明时，它就被认为是在 **default** 包中。通常不鼓励使用 **default 包**，应该避免使用。对于使用 `@ComponentScan`、`@EntityScan` 或者 `@SpringBootApplication` 注解的 Spring Boot 应用，这样可能会导致特殊问题发生，因为每一个 jar 中的每一个类将会被读取到。
+
+**提示**
+
+> 我们建议您使用 Java 推荐的包命名约定，并使用域名的反向形式命名（例如  `com.example.project`）。
+
+<a id="using-boot-locating-the-main-class"></a>
+
+### 14.2、定位主应用类
+
+我们通常建议您将主应用类放在其它类之上的根包中， `@EnableAutoConfiguration` 注解通常放在主类上，它隐式定义了某些项目的 **包搜索**的基准起点。例如，如果您在编写一个 JPA 应用程序，则被 `@EnableAutoConfiguration` 注解的类所属的包将被用于搜索标记有 `@Entity` 注解的类。
+
+使用根包还可以允许使用没有指定 `basePackage` 属性的 `@ComponentScan` 注解。如果您的主类在根包中，也可以使用 `@SpringBootApplication` 注解。
+
+以下是一个经典的包结构：
+
+```
+com
+ +- example
+     +- myapplication
+         +- Application.java
+         |
+         +- customer
+         |   +- Customer.java
+         |   +- CustomerController.java
+         |   +- CustomerService.java
+         |   +- CustomerRepository.java
+         |
+         +- order
+             +- Order.java
+             +- OrderController.java
+             +- OrderService.java
+             +- OrderRepository.java
+```
+
+`Application.java` 文件声明了 `main` 方法，附带了 `@Configuration` 注解。
+
+```java
+package com.example.myapplication;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
+}
+```
 
 **待续……**
