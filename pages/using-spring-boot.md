@@ -379,4 +379,229 @@ public class Application {
 }
 ```
 
+<a id="using-boot-configuration-classes"></a>
+
+## 15、配置类
+
+Spring Boot 支持基于 Java 的配置。虽然可以在 `SpringApplication` 中使用 XML 配置源，但我们通常建议主配置源为 `@Configuration` 类。通常，一个很好的选择是将定义了 `main` 方法的类作为 `@Configuration`。
+
+**提示**
+
+> 许多 Spring 的 XML 配置示例已经在 Internet 上发布了。如果可能的话，您无论如何都应该尝试着使用等效的基于 Java 的配置方式，搜索 `Enable*` 注解可以帮到您不少忙。
+
+<a id="using-boot-importing-configuration"></a>
+
+### 15.1、导入额外的配置类
+
+你不需要把所有的 `@Configuration` 放在一个类中。`@Import` 注解可用于导入其他配置类。或者，您可以使用 `@ComponentScan` 自动扫描所有 Spring 组件，包括 `@Configuration` 类。
+
+<a id="using-boot-importing-xml-configuration"></a>
+
+### 15.2、导入 XML 配置
+
+如果您一定要使用基于 XML 的配置，我们建议您仍然使用 `@Configuration` 类。您可以使用 `@ImportResource` 注解来加载 XML 配置文件。
+
+<a id="https://docs.spusing-boot-auto-configuration"></a>
+
+## 16、自动配置
+
+Spring Boot 自动配置尝试根据您添加的 jar 依赖自动配置 Spring 应用。例如，如果 classpath 下存在 HSQLDB，并且您没有手动配置任何数据库连接 bean，那么 Spring Boot 将自动配置一个内存数据库。
+
+您需要通过将 `@EnableAutoConfiguration` 或者 `@SpringBootApplication` 注解添加到其中一个 `@Configuration` 类之上以启用自动配置。
+
+**提示**
+
+您应该仅添加一个 `@EnableAutoConfiguration` 注解。我们通常建议您将其添加到主 `@Configuration` 类中。
+
+<a id="using-boot-replacing-auto-configuration"></a>
+
+### 16.1、平滑替换自动配置
+
+自动配置是非入侵的，您可以随时定义自己的配置来代替自动配置的特定部分。例如，如果您添加了自己的 `DataSource` bean，默认的嵌入式数据库支持将不会自动配置。
+
+如果您需要了解当前正在应用的自动配置，以及为什么使用，请使用 `--debug` 开关启动应用。这样做可以为核心 logger 启用调试日志，并记录到控制台。
+
+<a id="using-boot-disabling-specific-auto-configuration"></a>
+
+### 16.2、禁用指定的自动配置类
+
+如果您发现在正在使用不需要的自动配置类，可以通过使用 `@EnableAutoConfiguration` 的 `exclude` 属性来禁用它们。
+
+```java
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.boot.autoconfigure.jdbc.*;
+import org.springframework.context.annotation.*;
+
+@Configuration
+@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+public class MyConfiguration {
+}
+```
+
+如果类不在 classpath 下，您可以使用注解的 `excludeName` 属性并指定完全类名。最后，您还可以通过 `spring.autoconfigure.exclude` property 控制要排除的自动配置类列表。
+
+**提示**
+
+> 您可以同时使用注解和 property 定义排除项
+
+<a id="using-boot-spring-beans-and-dependency-injection"></a>
+
+## 17、Spring Bean 与依赖注入
+
+您可以自由使用任何标准的 Spring Framework 技术来定义您的 bean 以及它们注入的依赖。我们发现使用 `@ComponentScan` 来寻找 bean 和结合 `@Autowired` 构造器注入可以很好地工作。
+
+如果您按照上述的建议（将应用类放在根包中）来组织代码，则可以添加无参的 `@ComponentScan`。所有应用组件（`@Component`、`@Service`、`@Repository`、`@Controller` 等）将自动注册为 Spring Bean。
+
+以下是一个 `@Service` Bean，其使用构造注入方式获取一个必需的 `RiskAssessor` bean。
+
+```java
+package com.example.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class DatabaseAccountService implements AccountService {
+
+	private final RiskAssessor riskAssessor;
+
+	@Autowired
+	public DatabaseAccountService(RiskAssessor riskAssessor) {
+		this.riskAssessor = riskAssessor;
+	}
+
+	// ...
+
+}
+```
+
+如果 bean 中只有一个构造方法，您可以忽略掉 `@Autowired` 注解。
+
+```java
+@Service
+public class DatabaseAccountService implements AccountService {
+
+	private final RiskAssessor riskAssessor;
+
+	public DatabaseAccountService(RiskAssessor riskAssessor) {
+		this.riskAssessor = riskAssessor;
+	}
+
+	// ...
+
+}
+```
+
+
+**提示**
+
+> 请注意，构造注入允许 `riskAssessor` 字段被修饰为 `final`，这表示以后它不能被更改。
+
+<a id="using-boot-using-springbootapplication-annotation"></a>
+
+## 18、使用 @SpringBootApplication 注解
+
+很多 Spring Boot 开发者总是使用 `@Configuration`、`@EnableAutoConfiguration` 和 `@ComponentScan` 注解标记在主类上。由于 这些注解经常一起使用（特别是如果您遵循上述的[最佳实践](#using-boot-structuring-your-code)）。Spring Boot 提供了一个更方便的 `@SpringBootApplication` 注解可用来替代这个组合。
+
+`@SpringBootApplication` 注解相当于使用 `@Configuration`、`@EnableAutoConfiguration` 和 `@ComponentScan` 及他们的默认属性：
+
+```java
+package com.example.myapplication;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication // 相当于使用 @Configuration @EnableAutoConfiguration @ComponentScan
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+ 
+}
+```
+
+**注意**
+
+> `@SpringBootApplication` 还提供了别名来自定义 `@EnableAutoConfiguration` 和 `@ComponentScan` 的属性。
+
+<a id="using-boot-running-your-application"></a>
+
+## 19、运行您的应用
+
+将应用程序打包成 `jar` 可执行文件并使用嵌入式 HTTP 服务器的最大有点之一就是可以按照您想使用的其它方式来运行应用。调试 Spring Boot 也是很简单，您不需要任何特殊的 IDE 插件或者扩展。
+
+**注意**
+
+本章节仅涵盖基于　jar　的打包方式，如果您选择将应用打包为　war　文件，则应该参考您的服务器和　IDE　文档。
+
+<a id=""></a>
+
+### 19.1、使用 IDE 运行
+
+您可以使用 IDE 运行 Spring Boot应用，就像运行一个简单的 Java 应用程序一样，但是首先您需要导入项目，导入步骤取决于您的 IDE 和构建系统。大多数 IDE 可以直接导入 Maven 项目，例如 Eclipse 用户可以从 `File` 菜单中选择 `Import` ​ → `Existing Maven Projects`。
+
+如果您无法将项目直接导入到 IDE 中，则可以使用构建插件生成 IDE 元数据（metadata）。Maven 包含了 [Eclipse](https://maven.apache.org/plugins/maven-eclipse-plugin/) 和 [IDEA](https://maven.apache.org/plugins/maven-idea-plugin/) 的插件,Gradle 也为[各种 IDE](https://docs.gradle.org/4.2.1/userguide/userguide.html) 提供了插件。
+
+**提示**
+
+> 如果您不小心运行了两次 web 应用，您将看到一个 **Port already in use** （端口已经被使用）错误。STS 用户可以使用 `Relaunch` 按钮运行以确保现有的任何实例都已关闭，而不是使用 Run 按钮。
+
+<a id="using-boot-running-as-a-packaged-application"></a>
+
+### 19.2、作为打包应用运行
+
+如果您使用 Spring Boot Maven 或者 Gradle 插件创建可执行 jar，可以使用 `java -jar` 命令运行应用。例如：
+
+```bash
+$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
+```
+
+也可以在运行打包应用程序时开启远程调试支持。该功能允许您将调试器附加到打包的应用中。
+
+```bash
+$ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
+       -jar target/myapplication-0.0.1-SNAPSHOT.jar
+```
+
+<a id="using-boot-running-with-the-maven-plugin"></a>
+
+### 19.3、使用 Maven 插件
+
+Spring Boot Maven 插件包含一个可用于快速编译和运行应用程序的 `run` goal。应用程序以快速形式运行，就像在 IDE 中一样。以下示例展示了运行 Spring Boot 应用程序的典型 Maven 命令：
+
+```bash
+$ mvn spring-boot:run
+```
+
+您可能还想使用 `MAVEN_OPTS` 操作系统环境变量，如下例所示：
+
+```bash
+$ export MAVEN_OPTS=-Xmx1024m
+```
+
+<a id="using-boot-running-with-the-gradle-plugin"></a>
+
+### 19.4、使用 Gradle 插件
+
+Spring Boot Gradle 插件包含一个 `bootRun` 任务，可用于以快速形式运行应用程序。每当应用 `org.springframework.boot` 和 java 插件时都会添加 `bootRun` 任务：
+
+```bash
+$ gradle bootRun
+```
+
+您可能还想使用 `JAVA_OPTS` 操作系统环境变量：
+
+```bash
+$ export JAVA_OPTS=-Xmx1024m
+```
+
+<a id="using-boot-hot-swapping"></a>
+
+### 19.5、热交换
+
+由于 Spring Boot 应用程序只是普通的 Java 应用程序，因此 JVM 热插拔是可以开箱即用。JVM 热插拔在可替换字节码方面有所限制。想要更完整的解决方案，可以使用 [JRebel](https://zeroturnaround.com/software/jrebel/)。
+
+`spring-boot-devtools` 模块包含了对快速重新启动应用程序的支持。有关详细信息，请参阅本章后面的[第 20 章：开发人员工具](#using-boot-devtools)部分以及[热插拔的 How-to 部分](#howto-hotswapping)。
+
 **待续……**
