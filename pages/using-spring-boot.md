@@ -411,7 +411,7 @@ Spring Boot 自动配置尝试根据您添加的 jar 依赖自动配置 Spring �
 
 **提示**
 
-您应该仅添加一个 `@EnableAutoConfiguration` 注解。我们通常建议您将其添加到主 `@Configuration` 类中。
+> 您应该仅添加一个 `@EnableAutoConfiguration` 注解。我们通常建议您将其添加到主 `@Configuration` 类中。
 
 <a id="using-boot-replacing-auto-configuration"></a>
 
@@ -533,7 +533,7 @@ public class Application {
 
 **注意**
 
-本章节仅涵盖基于　jar　的打包方式，如果您选择将应用打包为　war　文件，则应该参考您的服务器和　IDE　文档。
+> 本章节仅涵盖基于　jar　的打包方式，如果您选择将应用打包为　war　文件，则应该参考您的服务器和　IDE　文档。
 
 <a id="using-boot-running-your-application"></a>
 
@@ -751,7 +751,7 @@ public static void main(String[] args) {
 
 **提示**
 
-您也许想将 `spring.devtools.restart.trigger-file` 设置成一个[全局配置](#using-boot-devtools-globalsettings)，以使得所有的项目都能应用此方式。
+> 您也许想将 `spring.devtools.restart.trigger-file` 设置成一个[全局配置](#using-boot-devtools-globalsettings)，以使得所有的项目都能应用此方式。
 
 <a id="using-boot-devtools-customizing-classload"></a>
 
@@ -766,7 +766,7 @@ public static void main(String[] args) {
 ```properties
 restart.exclude.companycommonlibs=/mycorp-common-[\\w-]+\.jar
 restart.include.projectcommon=/mycorp-myproj-[\\w-]+\.jar
-````
+```
 
 **注意**
 
