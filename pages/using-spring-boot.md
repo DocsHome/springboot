@@ -84,7 +84,7 @@ Maven 用户可以继承 `spring-boot-starter-parent` 项目以获取合适的�
 
 ```xml
 <dependencyManagement>
-		<dependencies>
+	<dependencies>
 		<dependency>
 			<!-- 从 Spring Boot 导入依赖管理 -->
 			<groupId>org.springframework.boot</groupId>
@@ -96,12 +96,12 @@ Maven 用户可以继承 `spring-boot-starter-parent` 项目以获取合适的�
 	</dependencies>
 </dependencyManagement>
 ```
-如上所述，上述示例设置不会让您使用属性来重写个别依赖。要达到相同的目的，需要在 `spring-boot-dependencies` 项**之前**在项目的 `dependencyManagement` 中添加一项。例如，要升级到另一个 Spring Data 发行版，您可以将以下元素添加到 `pom.xml`中：
+如上所述，上述示例设置不会让您使用属性来覆盖个别依赖。要达到相同的目的，需要在 `spring-boot-dependencies` 项**之前**在项目的 `dependencyManagement` 中添加一项。例如，要升级到另一个 Spring Data 发行版，您可以将以下元素添加到 `pom.xml`中：
 
 ```xml
 <dependencyManagement>
 	<dependencies>
-		<!-- 重写 Spring Boot 提供的 Spring Data -->
+		<!-- 覆盖 Spring Boot 提供的 Spring Data -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-releasetrain</artifactId>
@@ -228,7 +228,7 @@ starter 包含了许多您需要用于使项目快速启动和运行，并且需
 
 ---
 
-**名字的含义**
+**命名含义**
 
 官方的所有 starter 都遵循类似的命名规则：`spring-boot-starter-*`，其中 `*` 是特定类型的应用。这个命名结构旨在帮助您找到 starter。许多 IDE 中 Maven 集成允许您按名称搜索依赖。例如，安装了 Eclipse 或者 STS 插件后，您可以简单地在 POM 编辑器中按下 `ctrl-space` 并输入 **spring-boot-starter** 来获取完整的列表。
 
@@ -775,5 +775,127 @@ restart.include.projectcommon=/mycorp-myproj-[\\w-]+\.jar
 **提示**
 
 > classpath 下的所有 `META-INF/spring-devtools.properties` 文件将被加载，您可以将它们打包进工程或者类库中为项目所用。
+
+<a id="using-boot-devtools-known-restart-limitations"></a>
+
+#### 20.2.7、已知限制
+
+重新启动功能对使用标准 `ObjectInputStream` 反序列化的对象无效。您如果需要反序列化数据，可能需要使用 Spring 的 `ConfigurableObjectInputStream` 配合 `Thread.currentThread().getContextClassLoader()`。
+
+遗憾的是，一些第三方类库在没有考虑上下文类加载器的情况下使用了反序列化。您如果遇到此问题，需要向原作者提交修复请求。
+
+<a id="using-boot-devtools-livereload"></a>
+
+### 20.3、LiveReload
+
+`spring-boot-devtools` 模块包括了一个内嵌 LiveReload 服务器，它可在资源发生更改时触发浏览器刷新。您可以从 [livereload.com](http://livereload.com/extensions/) 上免费获取 Chrome、Firefox 和 Safari 平台下对应的 LiveReload 浏览器扩展程序。
+
+如果您不想在应用运行时启动 LiveReload 服务器，可以将 `spring.devtools.livereload.enabled` 属性设置为 `false`。
+
+**注意**
+
+> 您一次只能运行一个 LiveReload 服务器。在启动应用之前，请确保没有其他 LiveReload 服务器正在运行。如果在 IDE 中启动了多个应用，那么只有第一个应用的 LiveReload 生效。
+
+<a id="using-boot-devtools-globalsettings"></a>
+
+### 20.4、全局设置
+
+您可以通过在 `$HOME` 目录中添加名为 `.spring-boot-devtools.properties` 的文件来配置全局 devtools 设置（请注意，文件名以“.”开头）。在此文件中添加的任何属性将应用到您的计算机上**所有**使用了 devtools 的 Spring Boot 应用。例如，始终使用[触发文件](#using-boot-devtools-restart-triggerfile)来配置重启功能，您可以添加以下内容：
+
+**~/.spring-boot-devtools.properties.**
+
+```
+spring.devtools.reload.trigger-file=.reloadtrigger
+```
+
+**注意**
+
+> 在 `.spring-boot-devtools.properties` 中激活的 profile 将不会影响指定 profile 的配置文件的加载。
+
+<a id="using-boot-devtools-remote"></a>
+
+### 20.5、远程应用
+
+Spring Boot 开发者工具不局限于本地开发。在远程运行应用时也可以使用许多功能。远程支持功能是可选的，如果要启用，您需要确保在重新打包归档文件时包含 `devtools`：
+
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<excludeDevtools>false</excludeDevtools>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+```
+
+之后您需要设置一个 `spring.devtools.remote.secret` 属性，如下：
+
+```
+spring.devtools.remote.secret=mysecret
+```
+
+**警告**
+
+> 在远程应用上启用 `spring-boot-devtools` 是存在安全隐患的。您不应该在生产部署时启用它。
+
+远程 devtools 支持分为两部分：接受请求连接的服务器端端点和在 IDE 中运行的客户端应用。当设置了 `spring.devtools.remote.secret` 属性时，服务器组件将自动启用。客户端组件必须手启用。
+
+<a id="_running_the_remote_client_application"></a>
+
+#### 20.5.1、运行远程客户端应用
+
+假设远程客户端应用运行在 IDE 中。您需要在与要连接的远程项目相同的 classpath 下运行 `org.springframework.boot.devtools.RemoteSpringApplication`。把要连接的远程 URL 作为必须参数传入。
+
+例如，如果您使用的是 Eclipse 或 STS，并且有一个名为 `my-app` 的项目已部署到了 Cloud Foundry，则可以执行以下操作：
+
+- 在 `Run` 菜单中选择选择 `Run Configurations...`​。
+- 创建一个新的 `Java Application` launch configuration。
+- 浏览 `my-app` 项目。
+- 使用 `org.springframework.boot.devtools.RemoteSpringApplication` 作为主类。
+- 将 `https://myapp.cfapps.io` 作为 `程序参数` （或者任何远程 URL）传入。
+
+运行的远程客户端将如下所示：
+
+```
+  .   ____          _                                              __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _          ___               _      \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` |        | _ \___ _ __  ___| |_ ___ \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| []::::::[]   / -_) '  \/ _ \  _/ -_) ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, |        |_|_\___|_|_|_\___/\__\___|/ / / /
+ =========|_|==============|___/===================================/_/_/_/
+ :: Spring Boot Remote :: 2.1.1.RELEASE
+
+2015-06-10 18:25:06.632  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Starting RemoteSpringApplication on pwmbp with PID 14938 (/Users/pwebb/projects/spring-boot/code/spring-boot-devtools/target/classes started by pwebb in /Users/pwebb/projects/spring-boot/code/spring-boot-samples/spring-boot-sample-devtools)
+2015-06-10 18:25:06.671  INFO 14938 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@2a17b7b6: startup date [Wed Jun 10 18:25:06 PDT 2015]; root of context hierarchy
+2015-06-10 18:25:07.043  WARN 14938 --- [           main] o.s.b.d.r.c.RemoteClientConfiguration    : The connection to http://localhost:8080 is insecure. You should use a URL starting with 'https://'.
+2015-06-10 18:25:07.074  INFO 14938 --- [           main] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2015-06-10 18:25:07.130  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Started RemoteSpringApplication in 0.74 seconds (JVM running for 1.105)
+```
+
+**注意**
+
+由于远程客户端与实际应用使用的是同一个 classpath，因此可以直接读取应用的 properties。这也是 `spring.devtools.remote.secret` 属性为什么能被读取和传递给服务器进行身份验证的原因。
+
+**提示**
+
+建议使用 `https://` 作为连接协议，以便加密传输并防止密码被拦截。
+
+**提示**
+
+如果您需要通过代理来访问远程应用，请配置 `spring.devtools.remote.proxy.host` 和 `spring.devtools.remote.proxy.port` 属性。
+
+<a id="using-boot-devtools-remote-update"></a>
+
+#### 20.5.2、远程更新
+
+远程客户端使用了与[本地重启](#using-boot-devtools-restart)相同的方式来监控应用 classpath 下发生的更改。任何更新的资源将被推送到远程应用和触发重启（**如果要求**）。如果您正在迭代一个使用了本地没有的云服务的功能，这可能会非常有用。通常远程更新和重启比完全重新构建和部署的周期要快得多。
+
+**注意**
+
+文件只有在远程客户端运行时才被监控。如果您在启动远程客户端之前更改了文件，文件将不会被推送到远程服务器。
 
 **待续……**

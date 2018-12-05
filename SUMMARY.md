@@ -71,5 +71,10 @@
             - [20.2.4、禁用重启](pages/using-spring-boot.md#using-boot-devtools-restart-disable)
             - [20.2.5、使用触发文件](pages/using-spring-boot.md#using-boot-devtools-restart-triggerfile)
             - [20.2.6、自定义重启类加载器](pages/using-spring-boot.md#using-boot-devtools-customizing-classload)
-
+            - [20.2.7、已知限制](pages/using-spring-boot.md#using-boot-devtools-known-restart-limitations)
+        - [20.3、LiveReload](pages/using-spring-boot.md#using-boot-devtools-livereload)
+        - [20.4、全局设置](pages/using-spring-boot.md#using-boot-devtools-globalsettings)
+        - [20.5、远程应用](pages/using-spring-boot.md#using-boot-devtools-remote)
+            - [20.5.1、运行远程客户端应用](pages/using-spring-boot.md#_running_the_remote_client_application)
+            - [20.5.2、远程更新](pages/using-spring-boot.md#using-boot-devtools-remote-update)
 

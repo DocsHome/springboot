@@ -40,7 +40,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 <a id="boot-documentation-getting-help"></a>
 ## 2、获取帮助
 
-在使用 Spring Boot 时遇到了麻烦？没关系，我们可以为您提供帮助!
+如果您在使用 Spring Boot 时遇到了麻烦，可参考以下指南。
 
 - 尝试 [How-to](howto.md)  — 它们为最常见的问题提供了解决方案。
 - 学习 Spring 基础  —  Spring Boot 是建立在多个 Spring 项目之上, 请查看 [spring.io](https://spring.io/) 网站以获取更多的参考文档。如果您是刚刚开始使用 Spring, 请尝试其中一个[指南](https://spring.io/guides)。
@@ -52,7 +52,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 <a id="boot-documentation-first-steps"></a>
 ## 3、起步
 
-如果您是刚开始使用 Spring Boot，或者对 Spring 大体有个印象, [您可以从这里开始](page/getting-started.md)!
+如果您是刚开始使用 Spring Boot，或者对 Spring 大体有个印象, [您可以从这里开始学习](page/getting-started.md)!
 
 - **从零开始**： [概述](getting-started.md#getting-started-introducing-spring-boot) | [要求](getting-started.md#getting-started-system-requirements) | [安装](getting-started.md#getting-started-installing-spring-boot)
 - **教程**： 第 1 部分 | 第 2 部分
@@ -61,7 +61,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 <a id="_working_with_spring_boot"></a>
 ## 4、使用 Spring Boot
 
-准备开始使用 Spring Boot 了么? [迫不及待](using-boot.md)。
+准备开始使用 Spring Boot 了? [立即上手](using-boot.md)。
 
 - **构建系统**：Maven | Gradle | Ant | Starter
 - **最佳实践**：代码结构 | @Configuration | @EnableAutoConfiguration | Bean 与依赖注入
@@ -72,7 +72,7 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 <a id="_learning_about_spring_boot_features"></a>
 ## 5、了解 Spring Boot 新特性
 
-需要更多关于 Spring Boot 核心特性的详细内容？[这是为您准备的](boot-features.md)!
+需要更多关于 Spring Boot 核心特性？[Spring 特性](boot-features.md)!
 
 - **核心特性**：SpringApplication | 外部配置 | Profile | 日志
 - **Web 应用程序**：MVC | 嵌入式容器
@@ -84,13 +84,14 @@ Spring Boot 参考指南提供了 [html](http://docs.spring.io/spring-boot/docs/
 <a id="_moving_to_production"></a>
 ## 6、生产环境
 
-当您准备好将 Spring Boot 应用推送到生产环境时，我们有一些您可能会感兴趣的技巧！
+您如果准备将 Spring Boot 应用推送至生产环境，或许会对以下内容感兴趣。
 
 - **管理端点**：概述 | 自定义
 - **连接方式**：HTTP | JMX | SSH
 - **监控**：度量 | 审计 | 追踪 | 流程
 
 <a id="_advanced_topics"></a>
+
 ## 7、高级内容
 
 最后，我们为高级用户提供了几个主题。
