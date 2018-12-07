@@ -878,15 +878,15 @@ spring.devtools.remote.secret=mysecret
 
 **注意**
 
-由于远程客户端与实际应用使用的是同一个 classpath，因此可以直接读取应用的 properties。这也是 `spring.devtools.remote.secret` 属性为什么能被读取和传递给服务器进行身份验证的原因。
+> 由于远程客户端与实际应用使用的是同一个 classpath，因此可以直接读取应用的 properties。这也是 `spring.devtools.remote.secret` 属性为什么能被读取和传递给服务器进行身份验证的原因。
 
 **提示**
 
-建议使用 `https://` 作为连接协议，以便加密传输并防止密码被拦截。
+> 建议使用 `https://` 作为连接协议，以便加密传输并防止密码被拦截。
 
 **提示**
 
-如果您需要通过代理来访问远程应用，请配置 `spring.devtools.remote.proxy.host` 和 `spring.devtools.remote.proxy.port` 属性。
+> 如果您需要通过代理来访问远程应用，请配置 `spring.devtools.remote.proxy.host` 和 `spring.devtools.remote.proxy.port` 属性。
 
 <a id="using-boot-devtools-remote-update"></a>
 
@@ -896,6 +896,18 @@ spring.devtools.remote.secret=mysecret
 
 **注意**
 
-文件只有在远程客户端运行时才被监控。如果您在启动远程客户端之前更改了文件，文件将不会被推送到远程服务器。
+> 文件只有在远程客户端运行时才被监控。如果您在启动远程客户端之前更改了文件，文件将不会被推送到远程服务器。
 
-**待续……**
+<a id="using-boot-packaging-for-production"></a>
+
+## 21、打包生产应用
+
+可执行 jar 可用于生产部署，它们是独立（self-contained，独立、自包含）的，同样也适合云部署。
+
+针对其他**生产就绪**功能，比如健康、审计和 REST 或者 JMX 端点度量，可以添加 `spring-boot-actuator`。有关这方面的详细信息，请参见 [第五部分：“Spring Boot Actuator：生产就绪功能”](#production-ready)。
+
+<a id="using-boot-whats-next"></a>
+
+## 21、下一步
+
+您现在应该知道如何使用 Spring Boot 以及应该遵循哪些最佳实践。接下来您可以深入地了解 [Spring Boot 功能](#boot-features)，或者您也可以跳过下一部分直接阅读[“生产就绪功能”](h#production-ready)方面的内容。

@@ -77,4 +77,9 @@
         - [20.5、远程应用](pages/using-spring-boot.md#using-boot-devtools-remote)
             - [20.5.1、运行远程客户端应用](pages/using-spring-boot.md#_running_the_remote_client_application)
             - [20.5.2、远程更新](pages/using-spring-boot.md#using-boot-devtools-remote-update)
-
+    - [21、打包生产应用](pages/using-spring-boot.md#using-boot-packaging-for-production)
+    - [21、下一步](pages/using-spring-boot.md#using-boot-whats-next)
+- [四、Spring Boot 功能](pages/spring-boot-features.md#boot-features)
+    - [23、SpringApplication](pages/spring-boot-features.md#boot-features-spring-application)
+        - [23.1、启动失败](pages/spring-boot-features.md#boot-features-startup-failure)
+        - [23.2、自定义 banner](pages/spring-boot-features.md#boot-features-banner)

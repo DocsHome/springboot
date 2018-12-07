@@ -2,13 +2,13 @@
 
 ![Spring Boot](https://spring.io/img/homepage/icon-spring-boot.svg)
 
-Spring Boot 是构建所有基于 Spring 应用的起点，旨在使开发者能以最小化配置快速启动和运行应用。
+使用 Spring Boot，您只需极少的配置就能轻松构建出基于 Spring 的独立，生产级别应用程序。
 
-该项目为 Spring Boot 文档翻译项目，由本人个人发起，基于 [Spring Boot 2.0.0](https://docs.spring.io/spring-boot/docs/2.0.0.RELEASE/reference/htmlsingle/) 的官方文档进行翻译。
+该项目为 Spring Boot 文档翻译项目，由本人个人发起，基于 [Spring Boot 2.x](https://spring.io/projects/spring-boot) 的官方文档进行翻译。
 
 ## 阅读方式
 
-[Github](https://github.com/DocsHome/springboot/blob/master/SUMMARY.md) | [Gitbook](https://www.gitbook.com/book/docshome/springboot) | PDF | MOBI
+[Github](https://github.com/DocsHome/springboot/blob/master/SUMMARY.md) | [Gitbook](https://www.gitbook.com/book/docshome/springboot)
 
 ## 项目状态
 
