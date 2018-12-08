@@ -6,6 +6,8 @@
 
 该项目为 Spring Boot 文档翻译项目，由本人个人发起，基于 [Spring Boot 2.x](https://spring.io/projects/spring-boot) 的官方文档进行翻译。
 
+> 由于翻译工作启动时是参照 1.5.x 文档进行翻译，现在转向 2.x 文档，前期的内容可能比较旧，之后会慢慢更新内容。翻译顺序不会按照官网文档目录顺序，优先翻译常用的技术内容。
+
 ## 阅读方式
 
 [Github](https://github.com/DocsHome/springboot/blob/master/SUMMARY.md) | [Gitbook](https://www.gitbook.com/book/docshome/springboot)

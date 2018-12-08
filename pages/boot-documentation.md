@@ -10,16 +10,19 @@
 - Christian Dupuis
 - Sébastien Deleuze
 - Michael Simons
+- Vedran Pavić
+- Jay Bryant
+- Madhura Bhave
 
 **译者**
 
-- Oopsguy
+- [Oopsguy](https://github.com/oopsguy)
 
 ---
 
-**1.5.9.RELEASE**
+**2.1.1.RELEASE**（前半部分为 1.5.9.RELEASE 的内容，之后会更新）
 
-Copyright © 2012-2017
+Copyright © 2012-2018
 
 ---
 

@@ -92,5 +92,16 @@
         - [23.9、应用程序退出](pages/spring-boot-features.md#boot-features-application-exit)
         - [23.10、管理功能](pages/spring-boot-features.md#boot-features-application-admin)
     - [24、外部化配置](pages/spring-boot-features.md#boot-features-external-config)
+    - [28、开发 Web 应用程序](pages/spring-boot-features.md#boot-features-developing-web-applications)
+        - [28.1、Spring Web MVC 框架](pages/spring-boot-features.md#boot-features-spring-mvc)
+            - [28.1.1、Spring MVC 自动配置](pages/spring-boot-features.md#boot-features-spring-mvc-auto-configuration)
+            - [28.1.2、HttpMessageConverters](pages/spring-boot-features.md#boot-features-spring-mvc-message-converters)
+            - [28.1.3、自定义 JSON Serializer 和 Deserializer](pages/spring-boot-features.md#boot-features-spring-message-codes)
+            - [28.1.5、静态内容](pages/spring-boot-features.md#boot-features-spring-mvc-static-content)
+            - [28.1.6、欢迎页面](pages/spring-boot-features.md#boot-features-spring-mvc-welcome-page)
+            - [28.1.7、自定义 Favicon](pages/spring-boot-features.md#boot-features-spring-mvc-favicon)
+            - [28.1.8、路径匹配与内容协商](pages/spring-boot-features.md#boot-features-spring-mvc-pathmatch)
+            - [28.1.9、ConfigurableWebBindingInitializer](pages/spring-boot-features.md#boot-features-spring-mvc-web-binding-initializer)
+            - [28.1.10、模板引擎](pages/spring-boot-features.md#boot-features-spring-mvc-template-engines)
 
 
