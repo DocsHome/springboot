@@ -83,3 +83,14 @@
     - [23、SpringApplication](pages/spring-boot-features.md#boot-features-spring-application)
         - [23.1、启动失败](pages/spring-boot-features.md#boot-features-startup-failure)
         - [23.2、自定义 banner](pages/spring-boot-features.md#boot-features-banner)
+        - [23.3、自定义 SpringApplication](pages/spring-boot-features.md#boot-features-customizing-spring-application)
+        - [23.4、Fluent Builder API](pages/spring-boot-features.md#boot-features-customizing-spring-application)
+        - [23.5、应用程序事件与监听器](pages/spring-boot-features.md#boot-features-application-events-and-listeners)
+        - [23.6、Web 环境](pages/spring-boot-features.md#boot-features-web-environment)
+        - [23.7、访问应用程序参数](pages/spring-boot-features.md#boot-features-application-arguments)
+        - [23.8、使用 ApplicationRunner 或 ApplicationRunner](pages/spring-boot-features.md#boot-features-command-line-runner)
+        - [23.9、应用程序退出](pages/spring-boot-features.md#boot-features-application-exit)
+        - [23.10、管理功能](pages/spring-boot-features.md#boot-features-application-admin)
+    - [24、外部化配置](pages/spring-boot-features.md#boot-features-external-config)
+
+
