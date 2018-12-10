@@ -110,11 +110,17 @@
             - [28.1.13、CORS 支持](pages/spring-boot-features.md#boot-features-cors)
         - [28.2、Spring WebFlux 框架](pages/spring-boot-features.md#boot-features-webflux)
             - [28.2.1、Spring WebFlux 自动配置](pages/spring-boot-features.md#boot-features-webflux-auto-configuration)
-            - [28.2.2、使用 HttpMessageReaders 和 HttpMessageWriters 作为 HTTP 编解码器](pages/spring-boot-features.md#boot-features-webflux-httpcodecs)
+            - [28.2.2、使用 HttpMessageReader 和 HttpMessageWriter 作为 HTTP 编解码器](pages/spring-boot-features.md#boot-features-webflux-httpcodecs)
             - [28.2.3、静态内容](pages/spring-boot-features.md#boot-features-webflux-static-content)
             - [28.2.4、模板引擎](pages/spring-boot-features.md#boot-features-webflux-template-engines)
             - [28.2.5、错误处理](pages/spring-boot-features.md#boot-features-webflux-error-handling)
                 - [28.2.5.1、自定义错误页面](pages/spring-boot-features.md#boot-features-webflux-error-handling-custom-error-pages)
             - [28.2.6、Web 过滤器](pages/spring-boot-features.md#boot-features-webflux-web-filters)
+        - [28.3、JAX-RS 与 Jersey](pages/spring-boot-features.md#boot-features-jersey)
+        - [28.4、内嵌 Servlet 容器支持](pages/spring-boot-features.md#boot-features-embedded-container)
+            - [28.4.1、Servlet、Filter 与 Listener](pages/spring-boot-features.md#boot-features-embedded-container-servlets-filters-listeners)
+            - [28.4.2、Servlet 上下文初始化](pages/spring-boot-features.md#boot-features-embedded-container-context-initializer)
+                - [28.4.2.1、扫描 Servlet、Filter 和 Listener](pages/spring-boot-features.md#boot-features-embedded-container-servlets-filters-listeners-scanning)
+            - [28.4.3、ServletWebServerApplicationContext](pages/spring-boot-features.md#boot-features-embedded-container-application-context)
 
 

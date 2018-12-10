@@ -875,7 +875,7 @@ Spring Boot 为 Spring WebFlux 提供自动配置，适用于大多数应用程�
 
 <a id="boot-features-webflux-httpcodecs"></a>
 
-#### 28.2.2、使用 HttpMessageReaders 和 HttpMessageWriters 作为 HTTP 编解码器
+#### 28.2.2、使用 HttpMessageReader 和 HttpMessageWriter 作为 HTTP 编解码器
 
 Spring WebFlux 使用 `HttpMessageReader` 和 `HttpMessageWriter` 接口来转换 HTTP 的请求和响应。它们通过检测 classpath 中可用的类库，配置了 `CodecConfigurer` 生成合适的默认值。
 
@@ -1010,5 +1010,118 @@ Spring WebFlux 提供了一个 `WebFilter` 接口，可以通过实现该接口�
 | `MetricsWebFilter` | `Ordered.HIGHEST_PRECEDENCE + 1` |
 | `WebFilterChainProxy`（Spring Security）| `-100` |
 | `HttpTraceWebFilter` | `Ordered.LOWEST_PRECEDENCE - 10` |
+
+<a id="boot-features-jersey"></a>
+
+### 28.3、JAX-RS 与 Jersey
+
+如果您喜欢 JAX-RS 编程模型的 REST 端点，则可以使用一个实现来替代 Spring MVC。[Jersey](https://jersey.github.io/) 和 [Apache CXF](https://cxf.apache.org/) 都能开箱即用。CXF 要求在应用程序上下文中以 `@Bean` 的方式将它注册为一个 `Servlet` 或者 `Filter`。Jersey 有部分原生 Spring 支持，所以我们也在 starter 中提供了与 Spring Boot 整合的自动配置支持。
+
+要使用 Jersey，只需要将 `spring-boot-starter-jersey` 作为依赖引入，然后您需要一个 `ResourceConfig` 类型的 `@Bean`，您可以在其中注册所有端点：
+
+```java
+@Component
+public class JerseyConfig extends ResourceConfig {
+
+	public JerseyConfig() {
+		register(Endpoint.class);
+	}
+
+}
+```
+
+**警告**
+
+> Jersey 对于扫描可执行归档文件的支持是相当有限的。例如，它无法扫描一个[完整的可执行 jar 文件](#deployment-install)中的端点，同样，当运行一个可执行的 war 文件时，它也无法扫包中 `WEB-INF/classes` 下的端点。为了避免该限制，您不应该使用 `packages` 方法，应该使用上述的 `register` 方法来单独注册每一个端点。
+
+您可以注册任意数量实现了 `ResourceConfigCustomizer` 的 bean，以实现更高级的定制化。
+
+所有注册的端点都应注解了 `@Components` 并具有 HTTP 资源注解（ `@GET` 等），例如：
+
+```java
+@Component
+@Path("/hello")
+public class Endpoint {
+
+	@GET
+	public String message() {
+		return "Hello";
+	}
+
+}
+```
+
+由于 `Endpoint` 是一个 Spring `@Component`，它的生命周期由 Spring 管理，您可以使用 `@Autowired` 注入依赖并使用 `@Value` 注入外部配置。默认情况下，Jersey servlet 将被注册并映射到 `/*`。您可以通过将 `@ApplicationPath` 添加到 `ResourceConfig` 来改变此行为。
+
+默认情况下，Jersey 在 `ServletRegistrationBean` 类型的 `@Bean` 中被设置为一个名为 `jerseyServletRegistration` 的 Servlet。默认情况下，该 servlet 将被延迟初始化，您可以使用 `spring.jersey.servlet.load-on-startup` 自定义。您可以禁用或通过创建一个自己的同名 bean 来覆盖该 bean。您还可以通过设置 `spring.jersey.type=filter` 使用过滤器替代 servlet（该情况下， 替代或覆盖 `@Bean` 的为`jerseyFilterRegistration`）。该过滤器有一个 `@Order`，您可以使用 `spring.jersey.filter.order` 设置。可以使用 `spring.jersey.init.*` 指定一个 map 类型的 property 以给定 servlet 和过滤器的初始化参数。
+
+这里有一个 [Jersey 示例](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-samples/spring-boot-sample-jersey)，您可以解如何设置。
+
+<a id="boot-features-embedded-container"></a>
+
+### 28.4、内嵌 Servlet 容器支持
+
+Spring Boot 包含了对内嵌 [Tomcat](https://tomcat.apache.org/)、[Jetty](https://www.eclipse.org/jetty/) 和 [Undertow](http://undertow.io/) 服务器的支持。大部分开发人员只需简单地使用对应的 Starter 来获取完整的配置实例。默认情况下，内嵌服务器将监听 `8080` 上的 HTTP 请求。
+
+**警告**
+
+> 如果您选择在 [CentOS](https://www.centos.org/) 使用 Tomcat，请注意，默认情况下，临时目录用于储存编译后的 JSP、上传的文件等。当您的应用程序运行时发生了故障，该目录可能会被 `tmpwatch` 删除。为了避免出现该情况，您可能需要自定义 `tmpwatch` 配置，使 `tomcat.* `目录不被删除，或者配置 `server.tomcat.basedir` 让 Tomcat 使用其他位置。
+
+<a id="boot-features-embedded-container-servlets-filters-listeners"></a>
+
+#### 28.4.1、Servlet、Filter 与 Listener
+
+使用内嵌 servlet 容器时，您可以使用 Spring bean 或者扫描方式来注册 Servlet 规范中的 Servlet、Filter 和所有监听器（比如 `HttpSessionListener`）。
+
+<a id="boot-features-embedded-container-servlets-filters-listeners-beans"></a>
+
+##### 28.4.1.1、将 Servlet、Filter 和 Listener 注册为 Spring Bean
+
+任何 `Servlet`、`Filter` 或 `*Listener` 的 Spring bean 实例都将被注册到内嵌容器中。如果您想引用 `application.properties` 中的某个值，这可能会特别方便。
+
+默认情况下，如果上下文只包含单个 Servlet，它将映射到 `/`。在多个 Servlet bean 的情况下，bean 的名称将用作路径的前缀。Filter 将映射到 `/*`。
+
+如果基于约定配置的映射不够灵活，您可以使用 `ServletRegistrationBean`、`FilterRegistrationBean` 和 `ServletListenerRegistrationBean` 类来完全控制。
+
+Spring Boot 附带了许多可以定义 Filter bean 的自动配置。以下是部分过滤器及其执行顺序的（顺序值越低，优先级越高）：
+
+| Servlet Filter | 顺序 |
+| ---- | ----|
+| `OrderedCharacterEncodingFilter` | `Ordered.HIGHEST_PRECEDENCE` |
+| `WebMvcMetricsFilter` | `Ordered.HIGHEST_PRECEDENCE + 1` |
+| `ErrorPageFilter` | `Ordered.HIGHEST_PRECEDENCE + 1` |
+| `HttpTraceFilter` | `Ordered.LOWEST_PRECEDENCE - 10` |
+
+通常 Filter bean 无序放置也是安全的。
+
+如果需要指定顺序，则应避免在 `Ordered.HIGHEST_PRECEDENCE` 顺序点配置读取请求体的过滤器，因为它的字符编码可能与应用程序的字符编码配置不一致。如果一个 Servlet 过滤器包装了请求，则应使用小于或等于 `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER `的顺序点对其进行配置。
+
+<a id="boot-features-embedded-container-context-initializer"></a>
+
+#### 28.4.2、Servlet 上下文初始化
+
+内嵌 servlet 容器不会直接执行 Servlet 3.0+ 的 `javax.servlet.ServletContainerInitializer` 接口或 Spring 的 `org.springframework.web.WebApplicationInitializer` 接口。这是一个有意的设计决策，旨在降低在 war 内运行时第三方类库产生的风险，防止破坏 Sring Boot 应用程序。
+
+如果您需要在 Spring Boot 应用程序中执行 servlet 上下文初始化，则应注册一个实现了 `org.springframework.boot.context.embedded.ServletContextInitializer` 接口的 bean。`onStartup` 方法提供了针对 `ServletContext` 的访问入口，如果需要，它可以容易作为现有 `WebApplicationInitializer` 的适配器。
+
+<a id="boot-features-embedded-container-servlets-filters-listeners-scanning"></a>
+
+##### 28.4.2.1、扫描 Servlet、Filter 和 Listener
+
+使用内嵌容器时，可以使用 `@ServletComponentScan` 启用带 `@WebServlet`、`@WebFilter` 和 `@WebListener` 注解的类自动注册。
+
+**提示**
+
+`@ServletComponentScan` 在独立（standalone）容器中不起作用，因容器将使用内置发现机制来代替。
+
+<a id="boot-features-embedded-container-application-context"></a>
+
+##### 28.4.3、ServletWebServerApplicationContext
+
+Spring Boot 底层使用了一个不同的 `ApplicationContext` 类型来支持内嵌 servlet。`ServletWebServerApplicationContext` 是一个特殊 `WebApplicationContext` 类型，它通过搜索单个 `ServletWebServerFactory` bean 来引导自身。通常，`TomcatServletWebServerFactory`、 `JettyServletWebServerFactory` 或者 `UndertowServletWebServerFactory` 中的一个将被自动配置。
+
+**注意**
+
+> 通常，你不需要知道这些实现类。大部分应用程序会自动配置，并为您创建合适的 `ApplicationContext` 和 `ServletWebServerFactory`。
 
 **待续……**
