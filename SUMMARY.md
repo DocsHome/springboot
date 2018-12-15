@@ -122,5 +122,11 @@
             - [28.4.2、Servlet 上下文初始化](pages/spring-boot-features.md#boot-features-embedded-container-context-initializer)
                 - [28.4.2.1、扫描 Servlet、Filter 和 Listener](pages/spring-boot-features.md#boot-features-embedded-container-servlets-filters-listeners-scanning)
             - [28.4.3、ServletWebServerApplicationContext](pages/spring-boot-features.md#boot-features-embedded-container-application-context)
+            - [28.4.4、自定义内嵌 Servlet 容器](pages/spring-boot-features.md#boot-features-customizing-embedded-containers)
+                - [28.4.4.1、以编程方式自定义](pages/spring-boot-features.md#boot-features-programmatic-embedded-container-customization)
+                - [28.4.4.2、直接自定义 ConfigurableServletWebServerFactory](pages/spring-boot-features.md#boot-features-customizing-configurableservletwebserverfactory-directly)
+            - [28.4.5、JSP 局限](pages/spring-boot-features.md#boot-features-jsp-limitations)
+        - [28.5、内嵌响应式服务器支持](pages/spring-boot-features.md#boot-features-reactive-server)
+        - [28.6、响应式服务器资源配置](pages/spring-boot-features.md#boot-features-reactive-server-resources)
 
 
