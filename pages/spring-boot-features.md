@@ -1223,4 +1223,288 @@ Spring Boot 包括对以下内嵌响应式 Web 服务器的支持：Reactor Nett
 
 您可以在 [WebClient Runtime](#boot-features-webclient-runtime) 章节中了解有关客户端资源配置的更多内容。
 
+<a id="boot-features-sql"></a>
+
+## 30、使用 SQL 数据库
+
+[Spring Framework](https://projects.spring.io/spring-framework/) 为 SQL 数据库提供了广泛的支持。从直接使用 `JdbcTemplate` 进行 JDBC 访问到完全的**对象关系映射**（object relational mapping）技术，比如 Hibernate。[Spring Data](https://projects.spring.io/spring-data/) 提供了更多级别的功能，直接从接口创建的 `Repository` 实现，并使用了约定从方法名生成查询。
+
+<a id="boot-features-configure-datasource"></a>
+
+### 30.1、配置数据源
+
+Java 的 `javax.sql.DataSource` 接口提供了一个使用数据库连接的标准方法。通常，数据源使用 `URL` 和一些凭据信息来建立数据库连接。
+
+**提示**
+
+> 查看 [How-to](#howto-configure-a-datasource) 部分获取更多高级示例，通常您可以完全控制数据库的配置。
+
+<a id="boot-features-embedded-database-support"></a>
+
+#### 30.1.1、内嵌数据库支持
+
+使用内嵌内存数据库来开发应用程序非常方便的。显然，内存数据库不提供持久存储。在应用启动时，您需要填充数据库，并在应用程序结束时丢弃数据。
+
+**提示**
+
+> **How-to** 部分包含了[如何初始化数据库](#howto-database-initialization)部分
+
+Spring Boot 可以自动配置内嵌 [H2](http://www.h2database.com/)、[HSQL](http://hsqldb.org/) 和 [Derby](https://db.apache.org/derby/) 数据库。您不需要提供任何连接 URL，只需为您想要使用的内嵌数据库引入特定的构建依赖。
+
+**注意**
+
+> 如果您在测试中使用此功能，您可能会注意到，无论使用了多少应用程序上下文，整个测试套件都会重复使用相同的数据库。如果您想确保每个上下文都有一个单独的内嵌数据库，则应该将 `spring.datasource.generate-unique-name` 设置为 `true`。
+
+以下是 POM 依赖示例：
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.hsqldb</groupId>
+	<artifactId>hsqldb</artifactId>
+	<scope>runtime</scope>
+</dependency>
+```
+
+**注意**
+
+> 要自动配置内嵌数据库，您需要一个 `spring-jdbc` 依赖。在这个例子中，它是通过 `spring-boot-starter-data-jpa` 引入。
+
+**提示**
+
+> 如果出于某些原因，您需要配置内嵌数据库的连接 URL，则应注意确保禁用数据库的自动关闭功能。如果您使用 H2，则应该使用 `DB_CLOSE_ON_EXIT=FALSE` 来设置。如果您使用 `HSQLDB`，则确保不使用 `shutdown=true`。禁用数据库的自动关闭功能允许 Spring Boot 控制数据库何时关闭，从而确保一旦不再需要访问数据库时就触发。
+
+<a id="boot-features-connect-to-production-database"></a>
+
+#### 30.1.2、连接生产数据库
+
+生产数据库连接也可以使用使用 `DataSource` 自动配置。Spring Boot 使用以下算法来选择一个特定的实现：
+
+- 出于性能和并发性的考虑，我们更喜欢 [HikariCP](https://github.com/brettwooldridge/HikariCP) 连接池。如果 HikariCP 可用，我们总是选择它。
+- 否则，如果 Tomcat 池 `DataSource` 可用，我们将使用它。
+- 如果 HikariCP 和 Tomcat 池数据源不可用，但 [Commons DBCP](https://commons.apache.org/proper/commons-dbcp/) 可用，我们将使用它。
+
+如果您使用了 `spring-boot-starter-jdbc` 或者 `spring-boot-starter-data-jpa` starter，您将自动得到 `HikariCP` 依赖。
+
+**注意**
+
+> 您完全可以绕过该算法，并通过 `spring.datasource.type` 属性指定要使用的连接池。如果您在 Tomcat 容器中运行应用程序，默认提供 `tomcat-jdbc`，这点尤其重要。
+
+**提示**
+
+> 可以手动配置其他连接池。如果您定义了自己的 `DataSource` bean，则自动配置将不会触发。
+
+数据源配置由 `spring.datasource.*` 中的外部属性所控制。例如，您可以在 `application.properties` 中声明以下部分：
+
+```ini
+spring.datasource.url=jdbc:mysql://localhost/test
+spring.datasource.username=dbuser
+spring.datasource.password=dbpass
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+```
+
+**注意**
+
+> 您至少应该使用 `spring.datasource.url` 属性来指定 URL，否则 Spring Boot 将尝试自动配置内嵌数据库。
+
+**提示**
+
+> 通常您不需要指定 `driver-class-name`，因为 Spring boot 可以从 `url` 推导出大多数数据库。
+
+**注意**
+
+对于要创建的池 `DataSource`，我们需要能够验证有效的 `Driver` 类是否可用，因此我们在使用之前进行检查。例如，如果您设置了 `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`，那么该类必须可加载。
+
+有关更多支持选项，请参阅 [DataSourceProperties](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceProperties.java)。这些都是标准选项，与实际的实现无关。还可以使用各自的前缀（`spring.datasource.hikari.*`、`spring.datasource.tomcat.*` 和 `spring.datasource.dbcp2.*`）微调实现特定的设置。请参考您现在使用的连接池实现的文档来获取更多信息。
+
+例如，如果你使用 [Tomcat 连接池](https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes)，则可以自定义许多其他设置，如下：
+
+```ini
+# Number of ms to wait before throwing an exception if no connection is available.
+spring.datasource.tomcat.max-wait=10000
+
+# Maximum number of active connections that can be allocated from this pool at the same time.
+spring.datasource.tomcat.max-active=50
+
+# Validate the connection before borrowing it from the pool.
+spring.datasource.tomcat.test-on-borrow=true
+```
+
+<a id="boot-features-connecting-to-a-jndi-datasource"></a>
+
+#### 30.1.3、连接 JNDI 数据源
+
+如果要将 Spring Boot 应用程序部署到应用服务器（Application Server）上，您可能想使用应用服务器的内置功能和 JNDI 访问方式来配置和管理数据源。
+
+`spring.datasource.jndi-name` 属性可作为 `spring.datasource.url`、`spring.datasource.username` 和 `spring.datasource.password` 属性的替代方法，用于从特定的 JNDI 位置访问 `DataSource`。例如，`application.properties` 中的以下部分展示了如何访问 JBoss AS 定义的 `DataSource`：
+
+```ini
+spring.datasource.jndi-name=java:jboss/datasources/customers
+```
+
+<a id="boot-features-using-jdbc-template"></a>
+
+### 30.2、使用 JdbcTemplate
+
+Spring 的 `JdbcTemplate` 和 `NamedParameterJdbcTemplate` 类是自动配置的，您可以使用 `@Autowire` 将它们直接注入您的 bean 中：
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyBean {
+
+	private final JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	public MyBean(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	// ...
+
+}
+```
+
+您可以使用 `spring.jdbc.template.*` 属性来自定义一些 template 的属性，如下：
+
+```ini
+spring.jdbc.template.max-rows=500
+```
+
+**注意**
+
+> `NamedParameterJdbcTemplate` 在底层重用了相同的 `JdbcTemplate` 实例。如果定义了多个 `JdbcTemplate` 且没有声明 primary 主候选，则不会自动配置 `NamedParameterJdbcTemplate`。
+
+<a id="boot-features-jpa-and-spring-data"></a>
+
+### 30.3、JPA 与 Spring Data JPA
+
+Java Persistence API（Java 持久化 API）是一项标准技术，可让您将对象**映射**到关系数据库。`spring-boot-starter-data-jpa` POM 提供了一个快速起步的方法。它提供了以下关键依赖：
+
+- **Hibernate**  ——  最受欢迎的 JPA 实现之一。
+- **Spring Data JPA ** ——  可以轻松地实现基于 JPA 的资源库。
+- **Spring ORM**  ——  Spring Framework 的核心 ORM 支持
+
+**提示**
+
+我们不会在这里介绍太多关于 JPA 或者 [Spring Data](https://projects.spring.io/spring-data/) 的相关内容。您可以在 [spring.io](https://spring.io/) 上查看[使用 JPA 访问数据](https://spring.io/guides/gs/accessing-data-jpa/)，获取阅读 [Spring Data JPA](https://projects.spring.io/spring-data-jpa/) 和 [Hibernate](https://hibernate.org/orm/documentation/) 的参考文档。
+
+<a id="boot-features-jpa-and-spring-data"></a>
+
+#### 30.3.1、实体类
+
+通常，JPA **Entity**（实体）类是在 `persistence.xml` 文件中指定的。使用了 Spring Boot，该文件将不是必需的，可以使用 **Entity Scanning**（实体扫描）来代替。默认情况下，将搜索主配置类（使用了 `@EnableAutoConfiguration` 或 `@SpringBootApplication` 注解）下面的所有包。
+
+任何用了 `@Entity`、`@Embeddable` 或者 `@MappedSuperclass` 注解的类将被考虑。一个典型的实体类如下：
+
+```java
+package com.example.myapp.domain;
+
+import java.io.Serializable;
+import javax.persistence.*;
+
+@Entity
+public class City implements Serializable {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	@Column(nullable = false)
+	private String name;
+
+	@Column(nullable = false)
+	private String state;
+
+	// ... additional members, often include @OneToMany mappings
+
+	protected City() {
+		// no-args constructor required by JPA spec
+		// this one is protected since it shouldn't be used directly
+	}
+
+	public City(String name, String state) {
+		this.name = name;
+		this.state = state;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getState() {
+		return this.state;
+	}
+
+	// ... etc
+
+}
+```
+
+**提示**
+
+> 您可以使用 `@EntityScan` 注解自定义实体类的扫描位置。请参见[84.4、从 Spring configuration 配置中分离 @Entity 定义](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/#howto-separate-entity-definitions-from-spring-configuration)章节。
+
+<a id="boot-features-spring-data-jpa-repositories"></a>
+
+#### 30.3.2、Spring Data JPA 资源库
+
+[Spring Data JPA](https://projects.spring.io/spring-data-jpa/) 资源库（repository）是接口，您可以定义用于访问数据。JAP 查询是根据您的方法名自动创建。例如，`CityRepository` 接口可以声明 `findAllByState(String state)` 方法来查找指定状态下的所有城市。
+
+对于更加复杂的查询，您可以使用 Spring Data 的 [`Query`](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/Query.html) 注解
+
+Spring Data 资源库通常继承自 [Repository](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/Repository.html) 或者 [CrudRepository](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/CrudRepository.html) 接口。如果您使用了自动配置，则将从包含主配置类（使用了 `@EnableAutoConfiguration` 或 `@SpringBootApplication` 注解）的包中搜索资源库：
+
+以下是一个典型的 Spring Data 资源库接口定义：
+
+```java
+package com.example.myapp.domain;
+
+import org.springframework.data.domain.*;
+import org.springframework.data.repository.*;
+
+public interface CityRepository extends Repository<City, Long> {
+
+	Page<City> findAll(Pageable pageable);
+
+	City findByNameAndStateAllIgnoringCase(String name, String state);
+
+}
+```
+
+Spring Data JPA 资源库支持三种不同的引导模式：default、deferred 和 lazy。要启用延迟或懒惰引导，请将 `spring.data.jpa.repositories.bootstrap-mode` 分别设置为 `deferred` 或 `lazy`。使用延迟或延迟引导时，自动配置的 `EntityManagerFactoryBuilder` 将使用上下文的异步任务执行器（如果有）作为引导程序执行器。
+
+**提示**
+
+> 我们几乎没有接触到 Spring Data JPA 的表面内容。有关详细信息，请查阅 [Spring Data JPA 参考文档](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)。
+
+
+<a id="boot-features-creating-and-dropping-jpa-databases"></a>
+
+#### 30.3.3、创建和删除 JPA 数据库
+
+默认情况下，**仅**当您使用了内嵌数据库（H2、HSQL 或 Derby）时才会自动创建 JPA 数据库。您可以使用 `spring.jpa.*` 属性显式配置 JPA 设置。例如，要创建和删除表，您可以将以下内容添加到 `application.properties` 中：
+
+```ini
+spring.jpa.hibernate.ddl-auto=create-drop
+```
+
+**注意**
+
+> 关于上述功能，Hibernate 自己的内部属性名称（如果您记住更好）为 `hibernate.hbm2ddl.auto`。您可以使用 `spring.jpa.properties.*`（在添加到实体管理器之前，该前缀将被删除）来将 Hibernate 原生属性一同设置：
+
+```ini
+spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+```
+
+上面示例中将 `true` 值设置给 `hibernate.globally_quoted_identifiers` 属性，该属性将传给 Hibernate 实体管理器。
+
+默认情况下，DDL 执行（或验证）将延迟到 `ApplicationContext` 启动后。还有一个 `spring.jpa.generate-ddl` 标志，如果 Hibernate 自动配置是激活的，那么它将不会被使用，因为 `ddl-auto` 设置更细粒度。
+
 **待续……**

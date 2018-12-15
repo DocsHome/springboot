@@ -128,5 +128,15 @@
             - [28.4.5、JSP 局限](pages/spring-boot-features.md#boot-features-jsp-limitations)
         - [28.5、内嵌响应式服务器支持](pages/spring-boot-features.md#boot-features-reactive-server)
         - [28.6、响应式服务器资源配置](pages/spring-boot-features.md#boot-features-reactive-server-resources)
+    - [30、使用 SQL 数据库](pages/spring-boot-features.md#boot-features-sql)
+        - [30.1、配置数据源](pages/spring-boot-features.md#boot-features-configure-datasource)
+            - [30.1.1、内嵌数据库支持](pages/spring-boot-features.md#boot-features-embedded-database-support)
+            - [30.1.2、连接生产数据库](pages/spring-boot-features.md#boot-features-connect-to-production-database)
+            - [30.1.3、连接 JNDI 数据源](pages/spring-boot-features.md#boot-features-connecting-to-a-jndi-datasource)
+        - [30.2、使用 JdbcTemplate](pages/spring-boot-features.md#boot-features-using-jdbc-template)
+        - [30.3、JPA 与 Spring Data JPA](pages/spring-boot-features.md#boot-features-jpa-and-spring-data)
+            - [30.3.1、实体类](pages/spring-boot-features.md#boot-features-jpa-and-spring-data)
+            - [30.3.2、Spring Data JPA 资源库](pages/spring-boot-features.md#boot-features-spring-data-jpa-repositories)
+            - [30.3.3、创建和删除 JPA 数据库](pages/spring-boot-features.md#boot-features-creating-and-dropping-jpa-databases)
 
 
