@@ -1,6 +1,6 @@
 <a id="boot-features"></a>
 
-# 四、Spring Boot 功能
+# 四、Spring Boot 特性
 
 本部分将介绍 Spring Boot 相关的细节内容。在这里，您可以学习到可能需要使用和自定义的主要功能。您如果还没有做好充分准备，可能需要阅读[第二部分：入门](#getting-started)和[第三部分：使用 Spring Boot](#using-boot)，以便打下前期基础。
 
@@ -1316,7 +1316,7 @@ spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 
 **注意**
 
-对于要创建的池 `DataSource`，我们需要能够验证有效的 `Driver` 类是否可用，因此我们在使用之前进行检查。例如，如果您设置了 `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`，那么该类必须可加载。
+> 对于要创建的池 `DataSource`，我们需要能够验证有效的 `Driver` 类是否可用，因此我们在使用之前进行检查。例如，如果您设置了 `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`，那么该类必须可加载。
 
 有关更多支持选项，请参阅 [DataSourceProperties](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceProperties.java)。这些都是标准选项，与实际的实现无关。还可以使用各自的前缀（`spring.datasource.hikari.*`、`spring.datasource.tomcat.*` 和 `spring.datasource.dbcp2.*`）微调实现特定的设置。请参考您现在使用的连接池实现的文档来获取更多信息。
 
@@ -1388,12 +1388,12 @@ spring.jdbc.template.max-rows=500
 Java Persistence API（Java 持久化 API）是一项标准技术，可让您将对象**映射**到关系数据库。`spring-boot-starter-data-jpa` POM 提供了一个快速起步的方法。它提供了以下关键依赖：
 
 - **Hibernate**  ——  最受欢迎的 JPA 实现之一。
-- **Spring Data JPA ** ——  可以轻松地实现基于 JPA 的资源库。
+- **Spring Data JPA** ——  可以轻松地实现基于 JPA 的资源库。
 - **Spring ORM**  ——  Spring Framework 的核心 ORM 支持
 
 **提示**
 
-我们不会在这里介绍太多关于 JPA 或者 [Spring Data](https://projects.spring.io/spring-data/) 的相关内容。您可以在 [spring.io](https://spring.io/) 上查看[使用 JPA 访问数据](https://spring.io/guides/gs/accessing-data-jpa/)，获取阅读 [Spring Data JPA](https://projects.spring.io/spring-data-jpa/) 和 [Hibernate](https://hibernate.org/orm/documentation/) 的参考文档。
+> 我们不会在这里介绍太多关于 JPA 或者 [Spring Data](https://projects.spring.io/spring-data/) 的相关内容。您可以在 [spring.io](https://spring.io/) 上查看[使用 JPA 访问数据](https://spring.io/guides/gs/accessing-data-jpa/)，获取阅读 [Spring Data JPA](https://projects.spring.io/spring-data-jpa/) 和 [Hibernate](https://hibernate.org/orm/documentation/) 的参考文档。
 
 <a id="boot-features-jpa-and-spring-data"></a>
 
@@ -1506,5 +1506,194 @@ spring.jpa.properties.hibernate.globally_quoted_identifiers=true
 上面示例中将 `true` 值设置给 `hibernate.globally_quoted_identifiers` 属性，该属性将传给 Hibernate 实体管理器。
 
 默认情况下，DDL 执行（或验证）将延迟到 `ApplicationContext` 启动后。还有一个 `spring.jpa.generate-ddl` 标志，如果 Hibernate 自动配置是激活的，那么它将不会被使用，因为 `ddl-auto` 设置更细粒度。
+
+<a id="boot-features-jpa-in-web-environment"></a>
+
+#### 30.3.4、在视图中打开 EntityManager
+
+如果您正在运行 web 应用程序，Spring Boot 将默认注册 [`OpenEntityManagerInViewInterceptor`](https://docs.spring.io/spring/docs/5.1.3.RELEASE/javadoc-api/org/springframework/orm/jpa/support/OpenEntityManagerInViewInterceptor.html) 用于**在视图中打开 EntityManager** 模式，即运允许在 web 视图中延迟加载。如果您不想开启这个行为，则应在 `application.properties` 中将 `spring.jpa.open-in-view` 设置为 `false`。
+
+<a id="boot-features-data-jdbc"></a>
+
+### 30.4、Spring Data JDBC
+
+Spring Data 包含了对 JDBC 资源库的支持，并将自动为 `CrudRepository` 上的方法生成 SQL。对于更高级的查询，它提供了 `@Query` 注解。
+
+当 classpath 下存在必要的依赖时，Spring Boot 将自动配置 Spring Data 的 JDBC 资源库。可以通过添加单个 `spring-boot-starter-data-jdbc` 依赖引入到项目中。如有必要，可通过在应用程序中添加 `@EnableJdbcRepositories` 注解或 `JdbcConfiguration` 子类来控制 Spring Data JDBC 的配置。
+
+**提示**
+
+> 有关 Spring Data JDBC 的完整详细信息，请参阅[参考文档](https://projects.spring.io/spring-data-jdbc/)。
+
+<a id="boot-features-sql-h2-console"></a>
+
+### 30.5、使用 H2 的 Web 控制台
+
+[H2 数据库](http://www.h2database.com/)提供了一个[基于浏览器的控制台](http://www.h2database.com/html/quickstart.html#h2_console)，Spring Boot 可以为您自动配置。当满足以下条件时，控制台将自动配置：
+
+- 您开发的是一个基于 servlet 的 web 应用程序
+- `com.h2database:h2` 在 classpath 上
+- 您使用了 [Spring Boot 的开发者工具](#using-boot-devtools)
+
+**提示**
+
+> 如果您不使用 Spring Boot 的开发者工具，但仍希望使用 H2 的控制台，则可以通过将 `spring.h2.console.enabled` 属性设置为 `true` 来实现。
+
+**注意**
+
+> H2 控制台仅用于开发期间，因此应注意确保 `spring.h2.console.enabled` 在生产环境中**没有**设置为 `true`。
+
+<a id="boot-features-sql-h2-console-custom-path"></a>
+
+#### 30.5.1、更改 H2 控制台的路径
+
+默认情况下，控制台的路径为 `/h2-console`。你可以使用 `spring.h2.console.path` 属性来自定义控制台的路径。
+
+<a id="boot-features-jooq"></a>
+
+### 30.6、使用 jOOQ
+
+Java 面向对象查询（[Java Object Oriented Querying，jOOQ](http://www.jooq.org/)）是一款广受欢迎的产品，出自 [Data Geekery](http://www.datageekery.com/)，它可以通过数据库生成 Java 代码，并允许您使用流畅 API 来构建类型安全的 SQL 查询。商业版和开源版都可以与 Spring Boot 一起使用。
+
+<a id="_code_generation"></a>
+
+#### 30.6.1、代码生成
+
+要使用 jOOQ 的类型安全查询，您需要从数据库模式生成 Java 类。您可以按照 [jOOQ 用户手册](https://www.jooq.org/doc/3.11.7/manual-single-page/#jooq-in-7-steps-step3)中的说明进行操作。如果您使用了 `jooq-codegen-maven` 插件，并且还使用了 `spring-boot-starter-parent` 父 POM，则可以安全地省略掉插件的 `<version>` 标签。您还可以使用 Spring Boot 定义的版本变量（例如 `h2.version`）来声明插件的数据库依赖。以下是一个示例：
+
+```xml
+<plugin>
+	<groupId>org.jooq</groupId>
+	<artifactId>jooq-codegen-maven</artifactId>
+	<executions>
+		...
+	</executions>
+	<dependencies>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+		</dependency>
+	</dependencies>
+	<configuration>
+		<jdbc>
+			<driver>org.h2.Driver</driver>
+			<url>jdbc:h2:~/yourdatabase</url>
+		</jdbc>
+		<generator>
+			...
+		</generator>
+	</configuration>
+</plugin>
+```
+
+<a id="_using_dslcontext"></a>
+
+#### 30.6.2、使用 DSLContext
+
+jOOQ 提供的流畅 API 是通过 `org.jooq.DSLContext` 接口初始化的。Spring Boot 将自动配置一个 `DSLContext` 作为 Spring Bean，并且将其连接到应用程序的 `DataSource`。`要使用 DSLContext`，您只需要 `@Autowire` 它：
+
+```java
+@Component
+public class JooqExample implements CommandLineRunner {
+
+	private final DSLContext create;
+
+	@Autowired
+	public JooqExample(DSLContext dslContext) {
+		this.create = dslContext;
+	}
+
+}
+```
+
+**提示**
+
+> jOOQ 手册建议使用名为 `create` 的变量来保存 `DSLContext`。
+
+您可以使用 `DSLContext` 构建查询：
+
+```java
+public List<GregorianCalendar> authorsBornAfter1980() {
+	return this.create.selectFrom(AUTHOR)
+		.where(AUTHOR.DATE_OF_BIRTH.greaterThan(new GregorianCalendar(1980, 0, 1)))
+		.fetch(AUTHOR.DATE_OF_BIRTH);
+}
+```
+
+<a id="_jooq_sql_dialect"></a>
+
+#### 30.6.3、jOOQ SQL 方言
+
+除非配置了 `spring.jooq.sql-dialect` 属性，否则 Spring Boot 会自动判定用于数据源的 SQL 方言。如果 Spring Boot 无法检测到方言，则使用 `DEFAULT`。
+
+**注意**
+
+> Spring Boot 只能自动配置 jOOQ 开源版本支持的方言。
+
+<a id="_customizing_jooq"></a>
+
+#### 30.6.4、自定义 jOOQ
+
+可通过定义自己的 `@Bean` 来实现更高级的功能，这些自定义将在创建 jOOQ `Configuration` 时使用。您可以为以下 jOOQ 类型定义 bean：
+
+- `ConnectionProvider`
+- `ExecutorProvider`
+- `TransactionProvider`
+- `RecordMapperProvider`
+- `RecordUnmapperProvider`
+- `RecordListenerProvider`
+- `ExecuteListenerProvider`
+- `VisitListenerProvider`
+- `TransactionListenerProvider`
+
+如果要完全控制 jOOQ 配置，您可以创建自己的 `org.jooq.Configuration` `@Bean`。
+
+<a id="boot-features-nosql"></a>
+
+## 31、使用 NoSQL 技术
+
+Spring Data 提供了其他项目，可以帮助您访问各种 NoSQL 技术，包括 [MongoDB](https://projects.spring.io/spring-data-mongodb/)、[Neo4J](https://projects.spring.io/spring-data-neo4j/)、[Elasticsearch](https://github.com/spring-projects/spring-data-elasticsearch/)、[Solr](https://projects.spring.io/spring-data-solr/)、[Redis](https://projects.spring.io/spring-data-redis/)、[Gemfire](https://projects.spring.io/spring-data-gemfire/)、[Cassandra](https://projects.spring.io/spring-data-cassandra/)、[Couchbase](https://projects.spring.io/spring-data-couchbase/) 和 [LDAP](https://projects.spring.io/spring-data-ldap/)。Spring Boot 为 Redis、MongoDB、Neo4j、Elasticsearch、Solr、Cassandra、Couchbase 和 LDAP 提供了自动配置。您也可以使用其他项目，但您需要自行配置他们。请参阅 [projects.spring.io/spring-data](https://projects.spring.io/spring-data) 中相应的参考文档。
+
+<a id="boot-features-redis"></a>
+
+## 31.1、Redis
+
+[Redis](http://redis.io/) 是一个集缓存、消息代理和键值存储等丰富功能的数据库。Spring Boot 为 [Lettuce](https://github.com/lettuce-io/lettuce-core/) 和 [Jedis 客户端类库](https://github.com/xetorthio/jedis/)提供了基本自动配置，[Spring Data Redis](https://github.com/spring-projects/spring-data-redis) 为他们提供了上层抽象。
+
+使用 `spring-boot-starter-data-redis` starter 可方便地引入相关依赖。默认情况下，它使用 [Lettuce](https://github.com/lettuce-io/lettuce-core/)。该 starter 可处理传统应用程序和响应式应用程序。
+
+**提示**
+
+> 我们还提供了一个 `spring-boot-starter-data-redis-reactive` starter，以便与其他带有响应式支持的存储保持一致。
+
+<a id="boot-features-connecting-to-redis"></a>
+
+## 31.1.1、连接 Redis
+
+您可以像所有 Spring Bean 一样注入自动配置的 `RedisConnectionFactory`、`StringRedisTemplate` 或普通的 `RedisTemplate` 实例。默认情况下，实例将尝试在 `localhost:6379` 上连接 Redis 服务器，以下是 bean 示例：
+
+```java
+@Component
+public class MyBean {
+
+	private StringRedisTemplate template;
+
+	@Autowired
+	public MyBean(StringRedisTemplate template) {
+		this.template = template;
+	}
+
+	// ...
+
+}
+```
+
+**提示**
+
+> 您还可以注册任意数量个实现了 `LettuceClientConfigurationBuilderCustomizer` 的 bean，以进行更高级的自定义。如果你使用 Jedis，则可以使用 `JedisClientConfigurationBuilderCustomizer`。
+
+如果您添加了自己的任何一个自动配置类型的 `@Bean`，它将替换默认设置（除了 `RedisTemplate`，由于排除是基于 bean 名称，而 `redisTemplate` 不是它的类型）。默认情况下，如果 `commons-pool2` 在 classpath 上，您将获得一个连接池工厂。
+
 
 **待续……**
