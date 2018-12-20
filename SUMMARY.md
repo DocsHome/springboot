@@ -150,5 +150,9 @@
     - [31、使用 NoSQL 技术](pages/spring-boot-features.md#boot-features-nosql)
         - [31.1、Redis](pages/spring-boot-features.md#boot-features-redis)
             - [31.1.1、连接 Redis](pages/spring-boot-features.md#boot-features-connecting-to-redis)
-
+        - [## 31.2、MongoDB](pages/spring-boot-features.md#boot-features-mongodb)
+            - [### 31.2.1、连接 MongoDB 数据库](pages/spring-boot-features.md#boot-features-connecting-to-mongodb)
+            - [31.2.2、MongoTemplate](pages/spring-boot-features.md#boot-features-mongo-template)
+            - [31.2.3、Spring Data MongoDB 资源库](pages/spring-boot-features.md#boot-features-spring-data-mongo-repositories)
+        - [31.2.4、内嵌 Mongo](pages/spring-boot-features.md#boot-features-mongo-embedded)
 
