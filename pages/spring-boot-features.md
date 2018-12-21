@@ -1657,7 +1657,7 @@ Spring Data 提供了其他项目，可以帮助您访问各种 NoSQL 技术，�
 
 <a id="boot-features-redis"></a>
 
-## 31.1、Redis
+### 31.1、Redis
 
 [Redis](http://redis.io/) 是一个集缓存、消息代理和键值存储等丰富功能的数据库。Spring Boot 为 [Lettuce](https://github.com/lettuce-io/lettuce-core/) 和 [Jedis 客户端类库](https://github.com/xetorthio/jedis/)提供了基本自动配置，[Spring Data Redis](https://github.com/spring-projects/spring-data-redis) 为他们提供了上层抽象。
 
@@ -1669,7 +1669,7 @@ Spring Data 提供了其他项目，可以帮助您访问各种 NoSQL 技术，�
 
 <a id="boot-features-connecting-to-redis"></a>
 
-## 31.1.1、连接 Redis
+#### 31.1.1、连接 Redis
 
 您可以像所有 Spring Bean 一样注入自动配置的 `RedisConnectionFactory`、`StringRedisTemplate` 或普通的 `RedisTemplate` 实例。默认情况下，实例将尝试在 `localhost:6379` 上连接 Redis 服务器，以下是 bean 示例：
 
@@ -1697,13 +1697,13 @@ public class MyBean {
 
 <a id="boot-features-mongodb"></a>
 
-## 31.2、MongoDB
+### 31.2、MongoDB
 
 [MongoDB](https://www.mongodb.com/) 是一个开源的 NoSQL 文档数据库，其使用了类似 JSON 的模式（schema）来替代传统基于表的关系数据。Spring Boot 为 MongoDB 提供了几种便利的使用方式，包括 `spring-boot-starter-data-mongodb` 和 `spring-boot-starter-data-mongodb-reactive` starter。
 
 <a id="boot-features-connecting-to-mongodb"></a>
 
-### 31.2.1、连接 MongoDB 数据库
+#### 31.2.1、连接 MongoDB 数据库
 
 您可以注入一个自动配置的 `org.springframework.data.mongodb.MongoDbFactory` 来访问 Mongo 数据库。默认情况下，该实例将尝试在 `mongodb://localhost/test` 上连接 MongoDB 服务器，以下示例展示了如何连接到 MongoDB 数据库：
 
@@ -1764,7 +1764,7 @@ spring.data.mongodb.port=27017
 
 <a id="boot-features-mongo-template"></a>
 
-### 31.2.2、MongoTemplate
+#### 31.2.2、MongoTemplate
 
 [Spring Data Mongo](https://projects.spring.io/spring-data-mongodb/) 提供了一个 [`MongoTemplate`](https://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb/core/MongoTemplate.html) 类，它的设计与 Spring 的 `JdbcTemplate` 非常相似。与 `JdbcTemplate` 一样，Spring Boot 会自动配置一个 bean，以便您能注入模板：
 
@@ -1792,7 +1792,7 @@ public class MyBean {
 
 <a id="boot-features-spring-data-mongo-repositories"></a>
 
-### 31.2.3、Spring Data MongoDB 资源库
+#### 31.2.3、Spring Data MongoDB 资源库
 
 Spring Data 包含了对 MongoDB 资源库（repository）的支持。与之前讨论的 JPA 资源库一样，基本原理是根据方法名称自动构建查询。
 
@@ -1824,7 +1824,7 @@ public interface CityRepository extends Repository<City, Long> {
 
 <a id="boot-features-mongo-embedded"></a>
 
-### 31.2.4、内嵌 Mongo
+#### 31.2.4、内嵌 Mongo
 
 Spring Boot 提供了[内嵌 Mongo](https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo) 的自动配置。要在 Spring Boot 应用程序中使用它，请添加依赖 `de.flapdoodle.embed:de.flapdoodle.embed.mongo`。
 
@@ -1837,5 +1837,477 @@ Spring Boot 提供了[内嵌 Mongo](https://github.com/flapdoodle-oss/de.flapdoo
 如果您的 classpath 上有 SLF4J，Mongo 产生的输出将自动路由到名为 `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo` 的 logger。
 
 您可以声明自己的 `IMongodConfig` 和 `IRuntimeConfig` bean 来控制 Mongo 实例的配置和日志路由。
+
+<a id="boot-features-neo4j"></a>
+
+### 31.3、Neo4j
+
+[Neo4j](http://neo4j.com/) 是一个开源的 NoSQL 图数据库，它使用了一个节点由关系连接的富数据模型，比传统 RDBMS 的方式更适合连接大数据。Spring Boot 为 Neo4j 提供了便捷引入方式，包括 `spring-boot-starter-data-neo4j` starter。
+
+<a id="boot-features-connecting-to-neo4j"></a>
+
+#### 31.3.1、连接 Neo4j 数据库
+
+您可以像任何 Spring Bean 一样注入一个自动配置的 `org.neo4j.ogm.session.Session`。默认情况下， 该实例将尝试使用在 `localhost:7687` 上使用 Bolt 协议连接到 Neo4j 服务器，以下示例展示了如何注入 一个 Neo4j `Session`：
+
+```java
+@Component
+public class MyBean {
+
+	private final Session session;
+
+	@Autowired
+	public MyBean(Session session) {
+		this.session = session;
+	}
+
+	// ...
+
+}
+```
+
+您可以通过配置 `spring.data.neo4j.*` 属性来设置 uri 和凭据：
+
+```ini
+spring.data.neo4j.uri=bolt://my-server:7687
+spring.data.neo4j.username=neo4j
+spring.data.neo4j.password=secret
+```
+
+您可以通过添加自己的 `org.neo4j.ogm.config.Configuration` @Bean 来完全控制 session 创建。此外，添加 `SessionFactory` 类型的 @Bean 会禁用自动配置，因此您可以掌控所有。
+
+<a id="boot-features-connecting-to-neo4j-embedded"></a>
+
+#### 31.3.2、使用内嵌模式
+
+如果您将 `org.neo4j:neo4j-ogm-embedded-driver` 添加到应用程序的依赖中，Spring Boot 将自动配置一个进程内内嵌的 Neo4j 实例，当您的应用程序关闭时，该实例将不会保留任何数据。
+
+**注意**
+
+> 内嵌 Neo4j OGM 驱动本身不提供 Neo4j 您必须自己声明 `org.neo4j:neo4j` 依赖，请参考 [Neo4j OGM 文档](https://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started) 获取兼容版本列表。
+
+当 classpath 上有多个驱动时，内嵌驱动优先于其他驱动。您可以通过设置 `spring.data.neo4j.embedded.enabled=false` 来显式禁用内嵌模式。
+
+如果内嵌驱动和 Neo4j 内核如上所述位于 classpath 上，则 [Data Neo4j 测试](#boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test) 会自动使用内嵌 Neo4j 实例。
+
+**注意**
+
+> 您可以通过在配置中提供数据库文件路径来为内嵌模式启用持久化，例如：`spring.data.neo4j.uri=file://var/tmp/graph.db`。
+
+<a id="boot-features-neo4j-ogm-session"></a>
+
+#### 31.3.3、Neo4jSession
+
+默认情况下，如果您正在运行 Web 应用程序，会话（session）将被绑定到当前请求的整个处理线程（即 **Open Session in View** 模式）。如果不希望此行为，您可以在 `application.properties` 中添加以下内容：
+
+```ini
+spring.data.neo4j.open-in-view=false
+```
+
+<a id="boot-features-spring-data-neo4j-repositories"></a>
+
+#### 31.3.4、Spring Data Neo4j 资源库
+
+Spring Data 包括了对 Neo4j 资源库的支持。
+
+Spring Data Neo4j 与 Spring Data JPA 共享相同的通用底层代码，因此您可以直接把之前的 JPA 示例作为基础，假设 `City` 现在是一个 Neo4j OGM `@NodeEntity`，而不是一个 JPA `@Entity`，并且资源库抽象以相同的方式工作：
+
+```java
+package com.example.myapp.domain;
+
+import java.util.Optional;
+
+import org.springframework.data.neo4j.repository.*;
+
+public interface CityRepository extends Neo4jRepository<City, Long> {
+
+	Optional<City> findOneByNameAndState(String name, String state);
+
+}
+```
+
+`spring-boot-starter-data-neo4j` starter 支持资源库和事务管理。您可以在 `@Configuration` bean 上分别使用 `@EnableNeo4jRepositories` 和 `@EntityScan` 来自定义位置以查找资源库和实体。
+
+**提示**
+
+有关 Spring Data Neo4j 的完整详细信息，包括其对象映射技术，请参阅[参考文档](https://projects.spring.io/spring-data-neo4j/)。
+
+<a id="boot-features-gemfire"></a>
+
+### 31.4、Gemfire
+
+[Spring Data Gemfire](https://github.com/spring-projects/spring-data-gemfire) 提供了便捷的 Spring 整合工具，用于访问 [Pivotal Gemfire](https://pivotal.io/big-data/pivotal-gemfire#details) 数据管理平台。		`spring-boot-starter-data-gemfire` starter 包含了相关依赖。目前没有针对 Gemfire 的自动配置支持，但您可以使用一个[单独的注解（@EnableGemfireRepositories）](https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java)来启用 Spring Data 资源库。
+
+<a id="boot-features-solr"></a>
+
+### 31.5、Solr
+
+[Apache Solr](https://lucene.apache.org/solr/) 是一个搜素引擎。Spring Boot 为 Solr 5 客户端类库提供了基本的自动配置，并且 [Spring Data Solr](https://github.com/spring-projects/spring-data-solr) 为其提供给了顶层抽象。相关的依赖包含在了 `spring-boot-starter-data-solr` starter 中。
+
+<a id="boot-features-solr"></a>
+
+#### 31.5.1、连接 Solr
+
+您可以像其他 Spring Bean 一样注入一个自动配置的 `SolrClient` 实例。默认情况下，该实例将尝试通过 [`localhost:8983/solr`](http://localhost:8983/solr) 连接到服务器，以下示例展示了如何注入一个 Solr bean：
+
+```java
+@Component
+public class MyBean {
+
+	private SolrClient solr;
+
+	@Autowired
+	public MyBean(SolrClient solr) {
+		this.solr = solr;
+	}
+
+	// ...
+
+}
+```
+
+如果您添加了自己的 `SolrClient` 类型的 `@Bean`，它将替换掉默认配置。
+
+<a id="boot-features-spring-data-solr-repositories"></a>
+
+#### 31.5.2、Spring Data Solr 资源库
+
+Spring Data 包含了对 Apache Solr 资源库的支持。与之前讨论的 JPA 资源库一样，基本原理是根据方法名称自动构造查询。
+
+事实上，Spring Data JPA 和 Spring Data Solr 共享了相同的通用底层代码，因此您可以使用之前的 JPA 示例作为基础，假设 `City` 现在是一个 `@SolrDocument` 类，而不是一个 JPA `@Entity`，它的工作方式相同。
+
+**提示**
+
+> 有关 Spring Data Solr 的完整详细内容，请参考其[参考文档](https://projects.spring.io/spring-data-solr/)。
+
+<a id="boot-features-elasticsearch"></a>
+
+### 31.6、Elasticsearch
+
+[Elasticsearch](https://www.elastic.co/products/elasticsearch) 是一个开源、分布式、RESTful 的实时搜索分析引擎。Spring Boot 为 Elasticsearch 提供了基本的自动配置。
+
+Spring Boot 支持以下 HTTP 客户端：
+
+- 官方 Java **Low Level（低级）** 和 **High Level（高级）** REST 客户端
+- [Jest](https://github.com/searchbox-io/Jest)
+
+[Spring Data Elasticsearch](https://github.com/spring-projects/spring-data-elasticsearch) 依旧使用传输客户端，您可以使用 `spring-boot-starter-data-elasticsearch` starter 引入使用它。
+
+<a id="boot-features-connecting-to-elasticsearch-rest"></a>
+
+#### 31.6.1、使用 REST 客户端连接 Elasticsearch
+
+Elasticsearch 提供了两个可用于查询集群的 [REST 客户端](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html)：**Low Level（低级）** 和 **High Level（高级）**。
+
+如果您的 classpath 上存在 `org.elasticsearch.client:elasticsearch-rest-client` 依赖，则 Spring Boot 将自动配置并注册默认目标为 [`localhost:9200`](http://localhost:9200/) 的 `RestClient` bean。您可以进一步调整 `RestClient` 的配置，如下所示：
+
+```ini
+spring.elasticsearch.rest.uris=http://search.example.com:9200
+spring.elasticsearch.rest.username=user
+spring.elasticsearch.rest.password=secret
+```
+
+您还可以注册实现任意数量的 `RestClientBuilderCustomizer` bean，以进行更高级的自定义。要完全控制注册流程，请定义 `RestClient` bean。
+
+如果你 classpath 上有 `org.elasticsearch.client:elasticsearch-rest-high-level-client` 依赖，Spring Boot 将自动配置一个 `RestHighLevelClient`，它包装了所有现有的 `RestClient` bean，重用其 HTTP 配置。
+
+<a id="boot-features-connecting-to-elasticsearch-jest"></a>
+
+#### 31.6.2、使用 Jest 连接 Elasticsearch
+
+如果您的 classpath 上存在 `Jest`，则可以注入一个默认目标为 [`localhost:9200`](http://localhost:9200/) 的自动配置 `JestClient`。您还可以进一步调整客户端配置：
+
+```ini
+spring.elasticsearch.jest.uris=http://search.example.com:9200
+spring.elasticsearch.jest.read-timeout=10000
+spring.elasticsearch.jest.username=user
+spring.elasticsearch.jest.password=secret
+```
+
+您还可以注册任何数量实现了 `HttpClientConfigBuilderCustomizer` 的 bean，以进行更加高级的自定义。以下示例调整了其他 HTTP 设置：
+
+```java
+static class HttpSettingsCustomizer implements HttpClientConfigBuilderCustomizer {
+
+    @Override
+    public void customize(HttpClientConfig.Builder builder) {
+        builder.maxTotalConnection(100).defaultMaxTotalConnectionPerRoute(5);
+    }
+
+}
+```
+要完全控制注册流程，请定义一个 `JestClient` bean。
+
+<a id="boot-features-connecting-to-elasticsearch-spring-data"></a>
+
+#### 31.6.3、使用 Spring Data 连接 Elasticsearch
+
+要连接 Elasticsearch，您必须提供一个或多个群集节点的地址。可以通过将 `spring.data.elasticsearch.cluster-nodes` 属性设置为以逗号分隔的 `host:port` 列表来指定地址。使用此配置，可以像其他 Spring bean 一样注入 `ElasticsearchTemplate` 或 `TransportClient`，如下所示：
+
+```java
+@Component
+public class MyBean {
+
+	private final ElasticsearchTemplate template;
+
+	public MyBean(ElasticsearchTemplate template) {
+		this.template = template;
+	}
+
+	// ...
+
+}
+```
+
+如果您添加了自己的 `ElasticsearchTemplate` 或者 `TransportClient` `@Bean`，则其将替代默认配置。
+
+<a id="boot-features-spring-data-elasticsearch-repositories"></a>
+
+#### 31.6.4、Spring Data Elasticsearch 资源库
+
+Spring Data 包含了对 Elasticsearch 资源库的支持，与之前讨论的 JPA 资源库一样，其原理是根据方法名称自动构造查询。
+
+事实上，Spring Data JPA 与 Spring Data Elasticsearch 共享了相同的通用底层代码，因此您可以使用之前的 JPA 示例作为基础，假设 `City` 此时是一个 Elasticsearch `@Document` 类，而不是一个 JPA `@Entity`，它以相同的方式工作。
+
+**提示**
+
+> 有关 Spring Data Elasticsearch 的完整详细内容，请参阅其[参考文档](https://docs.spring.io/spring-data/elasticsearch/docs/)。
+
+<a id="boot-features-cassandra"></a>
+
+### 31.7、Cassandra
+
+[Cassandra](https://cassandra.apache.org/) 是一个开源的分布式数据库管理系统，旨在处理商用服务器上的大量数据。Spring Boot 为 Cassandra 提供了自动配置，且 [Spring Data Cassandra](https://github.com/spring-projects/spring-data-cassandra) 为其提供了顶层抽象。相关依赖包含在 `spring-boot-starter-data-cassandra` starter 中。
+
+<a id="boot-features-connecting-to-cassandra"></a>
+
+#### 31.7.1、连接 Cassandra
+
+您可以像其他 Spring Bean 一样注入一个自动配置的 `CassandraTemplate` 或 Cassandra `Session` 实例。`spring.data.cassandra.*` 属性可用于自定义连接。通常，您会提供 `keyspace-name` 和 `contact-points `属性：
+
+```ini
+spring.data.cassandra.keyspace-name=mykeyspace
+spring.data.cassandra.contact-points=cassandrahost1,cassandrahost2
+```
+
+您还可以注册任意数量实现了 ClusterBuilderCustomizer 的 bean，以进行更高级的自定义。
+
+以下代码展示了如何注入一个 Cassandra bean：
+
+```java
+@Component
+public class MyBean {
+
+	private CassandraTemplate template;
+
+	@Autowired
+	public MyBean(CassandraTemplate template) {
+		this.template = template;
+	}
+
+	// ...
+
+}
+```
+如果您添加了自己的类的为 `@CassandraTemplate` 的 `@Bean`，则其将替代默认值。
+
+<a id="boot-features-spring-data-cassandra-repositories"></a>
+
+#### 31.7.2、Spring Data Cassandra 资源库
+
+Spring Data 包含了基本的 Cassandra 资源库支持。目前，其限制要比之前讨论的 JPA 资源库要多，并且需要在 finder 方法上使用 `@Query` 注解。
+
+**提示**
+
+> 有关 Spring Data Cassandra 的完整详细内容，请参阅其[参考文档](https://docs.spring.io/spring-data/cassandra/docs/)。
+
+<a id="boot-features-couchbase"></a>
+
+### 31.8、Couchbase
+
+[Couchbase](https://www.couchbase.com/) 是一个开源、分布式多模型的 NoSQL 面向文档数据库，其针对交互式应用程序做了优化。Spring Boot 为 Couchbase 提供了自动配置，且 [Spring Data Couchbase](https://github.com/spring-projects/spring-data-couchbase) 为其提供了顶层抽象。相关的依赖包含在了 `spring-boot-starter-data-couchbase` starter 中。
+
+<a id="boot-features-connecting-to-couchbase"></a>
+
+#### 31.8.1、连接 Couchbase
+
+您可以通过添加 Couchbase SDK 和一些配置来轻松获取 `Bucket` 和 `Cluster`。`spring.couchbase.*` 属性可用于自定义连接。通常您会配置 bootstrap host、bucket name 和 password：
+
+```ini
+spring.couchbase.bootstrap-hosts=my-host-1,192.168.1.123
+spring.couchbase.bucket.name=my-bucket
+spring.couchbase.bucket.password=secret
+```
+
+> 您**至少**需要提供 bootstrap host，这种情况下，bucket name 为 `default` 且 password 为空字符串。或者，您可以定义自己的 `org.springframework.data.couchbase.config.CouchbaseConfigurer` @Bean 来控制整个配置。
+
+也可以自定义一些 `CouchbaseEnvironment` 设置。例如，以下配置修改了打开一个新 `Bucket` 的超时时间和开启了 SSL 支持：
+
+```ini
+spring.couchbase.env.timeouts.connect=3000
+spring.couchbase.env.ssl.key-store=/location/of/keystore.jks
+spring.couchbase.env.ssl.key-store-password=secret
+```
+查看 `spring.couchbase.env.*` 获取更多详细内容。
+
+<a id="boot-features-spring-data-couchbase-repositories"></a>
+
+#### 31.8.2、Spring Data Couchbase 资源库
+
+Spring Data 包含了 Couchbase 资源库支持。有关 Spring Data Couchbase 的完整详细信息，请参阅其[参考文档](https://docs.spring.io/spring-data/couchbase/docs/current/reference/html/)。
+
+您可以像使用其他 Spring Bean 一样注入自动配置的 `CouchbaseTemplate` 实例，前提是有一个默认的`CouchbaseConfigurer`（当您启用 Couchbase 支持时会发生这种情况，如之前所述）。
+
+以下示例展示了如何注入一个 Couchbase bean：
+
+```java
+@Component
+public class MyBean {
+
+	private final CouchbaseTemplate template;
+
+	@Autowired
+	public MyBean(CouchbaseTemplate template) {
+		this.template = template;
+	}
+
+	// ...
+
+}
+```
+
+您可以在自己的配置中定义以下几个 bean，以覆盖自动配置提供的配置：
+
+- 一个名为 `couchbaseTemplate` 的 `CouchbaseTemplate` @Bean
+- 一个名为 `couchbaseIndexManager` 的 `IndexManager` @Bean
+- 一个名为 `couchbaseCustomConversions` 的 `CustomConversions` @Bean
+
+为了避免在自己的配置中硬编码这些名称，您可以重用 Spring Data Couchbase 提供的 `BeanNames`，例如，您可以自定义转换器，如下：
+
+```java
+@Configuration
+public class SomeConfiguration {
+
+	@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	public CustomConversions myCustomConversions() {
+		return new CustomConversions(...);
+	}
+
+	// ...
+
+}
+```
+
+**提示**
+
+如果您想要安全绕开 Spring Data Couchbase 的自动配置，请提供自己的 `org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration` 实现。
+
+<a id="boot-features-ldap"></a>
+
+### 31.9、LDAP
+
+[LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol)（Lightweight Directory Access Protocol，轻量级目录访问协议）是一个开放、厂商中立的行业标准应用协议，其通过 IP 网络访问和维护分布式目录信息服务。Spring Boot 为兼容 LDAP 服务器提供了自动配置，以及支持从 [UnboundID](https://www.ldap.com/unboundid-ldap-sdk-for-java) 内嵌内存式 LDAP 服务器。
+
+[Spring Data LDAP](https://github.com/spring-projects/spring-data-ldap) 提供了 LDAP 抽象。相关依赖包含在了 `spring-boot-starter-data-ldap` starter 中。
+
+<a id="boot-features-ldap-connecting"></a>
+
+#### 31.9.1、连接 LDAP 服务器
+
+要连接 LDAP 服务器，请确保您已经声明了 `spring-boot-starter-data-ldap` starter 或者 `spring-ldap-core` 依赖，然后在 `application.properties` 声明服务器的 URL：
+
+```ini
+spring.ldap.urls=ldap://myserver:1235
+spring.ldap.username=admin
+spring.ldap.password=secret
+```
+
+如果需要自定义连接设置，您可以使用 `spring.ldap.base` 和 `spring.ldap.base-environment` 属性。
+
+`LdapContextSource` 将根据这些设置自动配置。如果您需要自定义它，例如使用一个 `PooledContextSource`，则仍然可以注入自动配置的 `LdapContextSource`。确保将自定义的 `ContextSource` 标记为 `@Primary`，以便自动配置的 `LdapTemplate` 能使用它。
+
+<a id="boot-features-ldap-spring-data-repositories"></a>
+
+#### 31.9.2、Spring Data LDAP 资源库
+
+Spring Data 包含了 LDAP 资源库支持。有关 Spring Data LDAP 的完整详细信息，请参阅其[参考文档](https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/)。
+
+您还可以像其他 Spring Bean 一样注入一个自动配置的 `LdapTemplate` 实例：
+
+```java
+@Component
+public class MyBean {
+
+	private final LdapTemplate template;
+
+	@Autowired
+	public MyBean(LdapTemplate template) {
+		this.template = template;
+	}
+
+	// ...
+
+}
+```
+
+<a id="boot-features-ldap-embedded"></a>
+
+#### 31.9.3、内嵌内存式 LDAP 服务器
+
+为了测试目的，Spring Boot 支持从 [UnboundID](https://www.ldap.com/unboundid-ldap-sdk-for-java) 自动配置一个内存式 LDAP 服务器。要配置服务器，请添加 `com.unboundid:unboundid-ldapsdk` 依赖并声明一个 `base-dn` 属性：
+
+```ini
+spring.ldap.embedded.base-dn=dc=spring,dc=io
+```
+
+**注意**
+
+<blockquote>
+
+可以定义多个 `base-dn` 值，但是，由于名称包含逗号，存在歧义，因此必须使用正确的符号来定义它们。
+
+在 yaml 文件中，您可以使用 yaml 列表表示法：
+
+```yaml
+spring.ldap.embedded.base-dn:
+  - dc=spring,dc=io
+  - dc=pivotal,dc=io
+```
+
+在属性文件中，必须使用索引方式：
+
+```ini
+spring.ldap.embedded.base-dn[0]=dc=spring,dc=io
+spring.ldap.embedded.base-dn[1]=dc=pivotal,dc=io
+```
+
+</blockquote>
+
+默认情况下，服务器将在一个随机端口上启动，并触发常规的 LDAP 支持（不需要指定 `spring.ldap.urls` 属性）。
+
+如果您的 classpath 上存在一个 `schema.ldif` 文件，其将用于初始化服务器。如果您想从不同的资源中加载脚本，可以使用 `spring.ldap.embedded.ldif` 属性。
+
+默认情况下，将使用一个标准模式（schema）来校验 `LDIF` 文件。您可以使用 `spring.ldap.embedded.validation.enabled` 属性来关闭所有校验。如果您有自定义的属性，则可以使用 `spring.ldap.embedded.validation.schema` 来定义自定义属性类型或者对象类。
+
+<a id="boot-features-influxdb"></a>
+
+### 31.10、InfluxDB
+
+[InfluxDB](https://www.influxdata.com/) 是一个开源时间序列数据库，其针对运营监控、应用程序指标、物联网传感器数据和实时分析等领域中的时间序列数据在速度、高可用存储和检索方面进行了优化。
+
+<a id="boot-features-connecting-to-influxdb"></a>
+
+#### 31.10.1、连接 InfluxDB
+
+Spring Boot 自动配置 `InfluxDB` 实例，前提是 `Influxdb-java` 客户端在 classpath 上并且设置了数据库的 URL，如下所示：
+
+```ini
+spring.influx.url=HTTP://172.0.0.1:8086
+```
+
+如果与 InfluxDB 的连接需要用户和密码，则可以相应地设置 `spring.influx.user` 和 `spring.influx.password` 属性。
+
+InfluxDB 依赖于 OkHttp。如果你需要调整 `InfluxDB` 在底层使用的 http 客户端，则可以注册一个 `InfluxDbOkHttpClientBuilderProvider` bean。
+
 
 **待续……**
