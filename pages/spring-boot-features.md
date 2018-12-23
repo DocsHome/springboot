@@ -356,6 +356,447 @@ $ java -jar myapp.jar --spring.application.json='{"name":"test"}'
 
 </blockquote>
 
+<a id="boot-features-external-config-random-values"></a>
+
+### 24.1、配置随机值
+
+`RandomValuePropertySource` 对于随机值注入非常有用（比如在保密场景或者测试用例中)。它可以产生 integer、long、uuid 和 string。如下示例：
+
+```ini
+my.secret=${random.value}
+my.number=${random.int}
+my.bignumber=${random.long}
+my.uuid=${random.uuid}
+my.number.less.than.ten=${random.int(10)}
+my.number.in.range=${random.int[1024,65536]}
+```
+
+`random.int*` 语法为 `OPEN value (,max) CLOSE`，`OPEN,CLOSE` 可为任意字符，`value,max` 为整数。如果使用了 `max`，`value` 则为最小值，`max` 为最大值。
+
+<a id="boot-features-external-config-command-line-args"></a>
+
+### 24.2、访问命令行属性
+
+默认情况下，`SpringApplication` 将所有命令行选项参数（即以 `--` 开头的参数，比如 `--server.port=9000`）转换为属性，并将它们添加到 Spring `Environment` 中。如之前所述，命令行属性始终优先于其他属性源。
+
+如果您不希望将命令行属性添加到 `Environment`，可以使用 `SpringApplication.setAddCommandLineProperties(false)` 来禁用它们。
+
+<a id="boot-features-external-config-application-property-files"></a>
+
+### 24.3、应用程序属性文件
+
+`SpringApplication` 从以下位置的 `application.properties` 文件中加载属性（properties），并将它们添加到 Spring `Environment` 中：
+
+1. 当前目录的 `/config` 子目录
+2. 当前目录
+3. classpath 上的 `/config` 包
+4. classpath 根路径
+
+列表按序号优先级排序，序号越小，优先级越高。
+
+**注意**
+
+> 您还可以使用 [YAML（.yml）](#boot-features-external-config-yaml)文件来替代 **.properties**。
+
+如果您不喜欢 `application.properties` 作为配置文件名，则可以通过指定 `spring.config.name` 环境属性来切换到另一个文件名。您还可以使用 `spring.config.location` 环境属性来引用一个显式位置（以逗号分隔的目录位置或文件路径列表）。以下示例展示了如何指定其他文件名：
+
+```
+$ java -jar myproject.jar --spring.config.name=myproject
+```
+
+以下示例展示了如何指定两个位置：
+
+```
+$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
+```
+**警告**
+
+> `spring.config.name` 和 `spring.config.location` 在程序启动早期就用来确定哪些文件必须加载，因此必须将它们定义为环境属性（通常是 OS 环境变量、系统属性或命令行参数）。
+
+如果 `spring.config.location` 包含目录（而不是文件），则它们应该以 `/` 结尾（并且在运行期间，在加载之前追加从 `spring.config.name` 生成的名称，包括指定 profile 的文件名）。 `spring.config.location` 中指定的文件按原样使用，不支持指定 profile 形式，并且可被任何指定 profile 的文件的属性所覆盖。
+
+配置位置以相反的顺序搜索。默认情况下，配置的位置为 `classpath:/,classpath:/config/,file:./,file:./config/`。生成的搜索顺序如下：
+
+1. `file:./config/`
+2. `file:./`
+3. `classpath:/config/`
+4. `classpath:/`
+
+使用了 `spring.config.location` 配置自定义配置位置时，默认位置配置将被替代。例如，如果 `spring.config.location` 配置为 `classpath:/custom-config/,file:./custom-config/`，搜索顺序将变为以下：
+
+1. `file:./custom-config/`
+2. `classpath:custom-config/`
+
+或者，当使用 `spring.config.additional-location` 配置自定义配置位置时，除了使用默认位置外，还会使用它们。这些其他（additional）位置将在默认位置之前搜索。例如，如果将其他位置配置为 `classpath:/custom-config/,file:./custom-config/`，则搜索顺序将变为以下内容：
+
+1. `file:./custom-config/`
+2. `classpath:custom-config/`
+3. `file:./config/`
+4. `file:./`
+5. `classpath:/config/`
+6. `classpath:/`
+
+该搜索顺序允许您在一个配置文件中指定默认值，然后有选择地覆盖另一个配置文件中的值。您可以在 `application.properties`（或您使用 `spring.config.name` 指定的其他文件）中的某个默认位置为应用程序提供默认值。之后，在运行时，这些默认值将被自定义位置中的某个文件所覆盖。
+
+**注意**
+
+> 如果您使用的是环境变量而不是系统属性，大部分操作系统都不允许使用 `.` 分隔的键名，但您可以使用下划线来代替（例如，使用 `SPRING_CONFIG_NAME` 而不是 `spring.config.name`）。
+
+**注意**
+
+> 如果应用程序在容器中运行，则可以使用 JNDI 属性（`java:comp/env`）或 servlet 上下文初始化参数来代替环境变量或系统属性。
+
+<a id="boot-features-external-config-profile-specific-properties"></a>
+
+### 24.4、特定 profile 的属性文件
+
+除 `application.properties` 文件外，还可以使用以下命名约定定义特定 profile 的属性文件：`application-{profile}.properties`。`Environment` 有一组默认配置文件（默认情况下为 `default`），如果未设置激活的（active）profile，则使用这些配置文件。换句话说，如果没有显式激活 profile，则会加载 `application-default.properties` 中的属性。
+
+特定 profile 的属性文件从与标准 `application.properties` 相同的位置加载，特定 profile 的属性文件无论是否在打包的 jar 内部，都始终覆盖非特定文件。
+
+如果指定了多个配置文件，则应用 last-wins 策略（优先采取最后一个）。例如，`spring.profiles.active` 属性指定的配置文件是在使用 `SpringApplication` API 配置的配置文件之后添加的，因此优先应用。
+
+**注意**
+
+> 如果在 `spring.config.location` 中指定了文件，则不考虑这些文件的特定 profile 形式。如果您还想使用特定 profile 的属性文件，请在 `spring.config.location` 中使用目录形式。
+
+<a id="boot-features-external-config-placeholders-in-properties"></a>
+
+### 24.5、属性中的占位符
+
+`application.properties` 中的值在使用时通过现有的 `Environment` 进行过滤，因此您可以返回之前定义的值（例如，从系统属性）。
+
+```ini
+app.name=MyApp
+app.description=${app.name} is a Spring Boot application
+```
+
+**提示**
+
+> 您还可以使用此技术创建现有 Spring Boot 属性的**简短**形式。有关详细信息，请参见[第 77.4 章节：使用**简短**命令行参数](hwo-to.md#howto-use-short-command-line-arguments)。
+
+<a id="boot-features-encrypting-properties"></a>
+
+### 24.6、加密属性
+
+Spring Boot 没有为加密属性值提供任何内置支持，然而，它提供了修改 Spring `Environment` 包含的值所必需的钩子。`EnvironmentPostProcessor` 接口允许您在应用程序启动之前操作 `Environment`。有关详细信息，请参见[第 76.3 章节：在启动前自定义 Environment 或 ApplicationContext](how-to.md#howto-customize-the-environment-or-application-context)。
+
+如果您正在寻找一种可用于存储凭据和密码的安全方法，[Spring Cloud Vault](https://cloud.spring.io/spring-cloud-vault/) 项目支持在 [HashiCorp Vault](https://www.vaultproject.io/) 中存储外部化配置。
+
+
+<a id="boot-features-external-config-yaml"></a>
+
+### 24.7、使用 YAML 代替属性文件
+
+[YAML](http://yaml.org/) 是 JSON 的超集，是一个可用于指定层级配置数据的便捷格式。只要在 classpath 上有 [SnakeYAML](http://www.snakeyaml.org/) 库，`SpringApplication` 类就会自动支持 YAML 作为属性文件（properties）的替代。
+
+**注意**
+
+> 如果使用 **starter**，则 `spring-boot-starter` 会自动提供 SnakeYAML。
+
+<a id="boot-features-external-config-loading-yaml"></a>
+
+#### 24.7.1、加载 YAML
+
+Spring Framework 提供了两个便捷类，可用于加载 YAML 文档。`YamlPropertiesFactoryBean` 将 YAML 加载为 `Properties`，`YamlMapFactoryBean` 将 YAML 加载为 `Map`。
+
+例如以下 YAML 文档：
+
+```yaml
+environments:
+	dev:
+		url: http://dev.example.com
+		name: Developer Setup
+	prod:
+		url: http://another.example.com
+		name: My Cool App
+```
+
+前面的示例将转换为以下属性（properties）：
+
+```ini
+environments.dev.url=http://dev.example.com
+environments.dev.name=Developer Setup
+environments.prod.url=http://another.example.com
+environments.prod.name=My Cool App
+```
+
+YAML 列表表示带有 `[index]` 下标引用的属性键。例如以下 YAML：
+
+```yaml
+my:
+servers:
+	- dev.example.com
+	- another.example.com
+```
+
+以上示例将转成以下属性：
+
+```ini
+my.servers[0]=dev.example.com
+my.servers[1]=another.example.com
+```
+
+要使用 Spring Boot 的 `Binder` 工具来绑定这样配置到属性（这是 `@ConfigurationProperties` 所做的），你需要在目标 bean 中有一个 `java.util.List`（或 `Set`）类型的属性，你需要为其提供一个 setter 或者使用可变值初始化它。 例如，以下示例展示将上述的配置与属性绑定：
+
+```java
+@ConfigurationProperties(prefix="my")
+public class Config {
+
+	private List<String> servers = new ArrayList<String>();
+
+	public List<String> getServers() {
+		return this.servers;
+	}
+}
+```
+
+<a id="boot-features-external-config-exposing-yaml-to-spring"></a>
+
+#### 24.7.2、在 Spring Environment 中将 YAML 暴露为属性
+
+`YamlPropertySourceLoader` 类可用于在 Spring `Environment` 中将 YAML 暴露为 `PropertySource`。这样做可以让您使用带占位符语法的 `@Value` 注解来访问 YAML 属性。
+
+<a id="boot-features-external-config-multi-profile-yaml"></a>
+
+#### 24.7.3、多 profile YAML 文档
+
+您可以使用 `spring.profiles` key 在单个文件中指定多个特定 profile 的 YAML 文档，以指示文档何时应用，如下所示：
+
+```yaml
+server:
+	address: 192.168.1.100
+---
+spring:
+	profiles: development
+server:
+	address: 127.0.0.1
+---
+spring:
+	profiles: production & eu-central
+server:
+	address: 192.168.1.120
+```
+
+在前面示例中，如果 `development` profile 处于激活状态，则 `server.address` 属性得值为 `127.0.0.1`。 同样，如果 `production` 和 `eu-central` profile 处于激活状态，则 `server.address` 属性的值为 `192.168.1.120`。如果未激活 `development`、`production` 或 `eu-central` profile，则该属性的值为 `192.168.1.100`。
+
+**注意**
+
+> 因此，`spring.profiles` 可以包含一个简单的 profile 名称（例如 `production`）或一个 profile 表达式。profile 表达式允许表达更复杂的 profile 逻辑，例如 `production & (eu-central | eu-west)`。有关详细信息，请查阅[参考指南](https://docs.spring.io/spring/docs/5.1.3.RELEASE/spring-framework-reference/core.html#beans-definition-profiles-java)。
+
+如果在应用程序上下文启动时没有显式激活，则激活默认 profile。因此，在以下 YAML 中，我们为 `spring.security.user.password` 设置了一个值，该值**仅**在 `default` profile 中可用：
+
+```yaml
+server:
+  port: 8000
+---
+spring:
+  profiles: default
+  security:
+    user:
+      password: weak
+```
+
+然而，在以下示例中，始终设置密码，因为它未附加到任何 profile，如果需要更改，必须在所有其他 profile 中显式重置：
+
+```yaml
+server:
+  port: 8000
+spring:
+  security:
+    user:
+      password: weak
+```
+
+使用 `spring.profiles` 元素来指定 Spring profile 可以选择通过使用 `!` 字符来取反（否定）。如果为单个文档指定了否定和非否定的 profile，则至少一个非否定的 profile 必须匹配，没有否定的 profile 可以匹配。
+
+<a id="boot-features-external-config-yaml-shortcomings"></a>
+
+#### 24.7.4、YAML 的缺点
+
+无法使用 `@PropertySource` 注解加载 YAML 文件。因此，如果您需要以这种方式加载值，请使用属性文件（properties）。
+
+<a id="boot-features-external-config-typesafe-configuration-properties"></a>
+
+#### 24.8、类型安全的配置属性
+
+使用 `@Value("${property}")` 注解来注入配置属性有时会很麻烦，特别是如果您使用了多个属性或者您的数据本质上是分层结构。Spring Boot 提供了另一种使用属性的方法，该方法使用强类型的 bean 来管理和验证应用程序的配置，如下所示：
+
+```java
+package com.example;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties("acme")
+public class AcmeProperties {
+
+	private boolean enabled;
+
+	private InetAddress remoteAddress;
+
+	private final Security security = new Security();
+
+	public boolean isEnabled() { ... }
+
+	public void setEnabled(boolean enabled) { ... }
+
+	public InetAddress getRemoteAddress() { ... }
+
+	public void setRemoteAddress(InetAddress remoteAddress) { ... }
+
+	public Security getSecurity() { ... }
+
+	public static class Security {
+
+		private String username;
+
+		private String password;
+
+		private List<String> roles = new ArrayList<>(Collections.singleton("USER"));
+
+		public String getUsername() { ... }
+
+		public void setUsername(String username) { ... }
+
+		public String getPassword() { ... }
+
+		public void setPassword(String password) { ... }
+
+		public List<String> getRoles() { ... }
+
+		public void setRoles(List<String> roles) { ... }
+
+	}
+}
+```
+
+前面的 POJO 定义了以下属性：
+
+- `acme.enabled`，默认值为 `false`。
+- `acme.remote-address`，可以从 String 强制转换的类型。
+- `acme.security.username`，内嵌一个 **security** 对象，其名称由属性名称决定。特别是，返回类型根本没有使用，可能是 `SecurityProperties`。
+- `acme.security.password`。
+- `acme.security.roles`，String 集合。
+
+**注意**
+
+<blockquote>
+
+getter 和 setter 通常是必需的，因为绑定是通过标准的 Java Bean 属性描述符来完成，就像在 Spring MVC 中一样。以下情况可以省略 setter：
+
+- Map，只要它们要初始化，就需要一个 getter 但不一定需要setter，因为它们可以被 binder 修改。
+- 集合和数组可以通过一个索引（通常使用 YAML）或使用单个逗号分隔值（属性）进行访问。最后一种情况必须使用 setter。我们建议始终为此类型添加 setter。如果初始化集合，请确保它是可变的（如上例所示）。
+- 如果初始化嵌套的 POJO 属性（如前面示例中的 `Security` 字段），则不需要 setter。如果您希望 binder 使用其默认构造函数动态创建实例，则需要一个 setter。
+
+有些人可能会使用 Project Lombok 来自动生成 getter 和 setter。请确保 Lombok 不为此类型生成任何特定构造函数，因为容器会自动使用它来实例化对象。
+
+最后，考虑到标准 Java Bean 属性，不支持对静态属性的绑定。
+
+</blockquote>
+
+**提示**
+
+> 另请参阅 [@Value 和 @ConfigurationProperties 之间的差异](#boot-features-external-config-vs-value)。
+
+您还需要列出要在 `@EnableConfigurationProperties` 注解中注册的属性类，如下所示：
+
+```java
+@Configuration
+@EnableConfigurationProperties(AcmeProperties.class)
+public class MyConfiguration {
+}
+```
+
+**注意**
+
+<blockquote>
+
+当以这种方式注册 `@ConfigurationProperties` bean 时，bean 具有一个固定格式的名称：`<prefix>-<fqn>`，其中 `<prefix>` 是 `@ConfigurationProperties` 注解中指定的环境 key 前缀，`<fqn>` 是 bean 的完全限定类名。如果注解未提供任何前缀，则仅使用 bean 的完全限定类名。
+
+上面示例中的 bean 名称为 `acme-com.example.AcmeProperties`。
+
+</blockquote>
+
+即使前面的配置为 `AcmeProperties` 创建了一个 bean，我们也建议 `@ConfigurationProperties` 只处理环境（environment），特别是不要从上下文中注入其他 bean。话虽如此，`@EnableConfigurationProperties` 注解也会自动应用到您的项目，以便从 `Environment` 配置使用了 `@ConfigurationProperties` 注解的所有**现有**的 bean。您可以通过确保 `AcmeProperties` 已经是一个 bean 来快捷生成 `MyConfiguration`，如下所示：
+
+```java
+@Component
+@ConfigurationProperties(prefix="acme")
+public class AcmeProperties {
+
+	// ... see the preceding example
+
+}
+```
+
+这种配置风格特别适用于 `SpringApplication` 外部 YAML 配置，如下所示：
+
+```yaml
+# application.yml
+
+acme:
+	remote-address: 192.168.1.1
+	security:
+		username: admin
+		roles:
+		  - USER
+		  - ADMIN
+
+# additional configuration as required
+```
+
+要使用 `@ConfigurationProperties` bean，您可以使用与其他 bean 相同的方式注入它们，如下所示：
+
+```java
+@Service
+public class MyService {
+
+	private final AcmeProperties properties;
+
+	@Autowired
+	public MyService(AcmeProperties properties) {
+	    this.properties = properties;
+	}
+
+ 	//...
+
+	@PostConstruct
+	public void openConnection() {
+		Server server = new Server(this.properties.getRemoteAddress());
+		// ...
+	}
+
+}
+```
+
+**提示**
+
+> 使用 `@ConfigurationProperties` 还可以生成元数据文件，IDE 可以通过这些文件来为您自己的 key 提供自动完成功能。有关详细信息，请参阅[附录 B：配置元数据](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/#configuration-metadata)。
+
+
+**待续……**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <a id="boot-features-developing-web-applications"></a>
 
 ## 28、开发 Web 应用程序
@@ -1842,7 +2283,7 @@ Spring Boot 提供了[内嵌 Mongo](https://github.com/flapdoodle-oss/de.flapdoo
 
 ### 31.3、Neo4j
 
-[Neo4j](http://neo4j.com/) 是一个开源的 NoSQL 图数据库，它使用了一个节点由关系连接的富数据模型，比传统 RDBMS 的方式更适合连接大数据。Spring Boot 为 Neo4j 提供了便捷引入方式，包括 `spring-boot-starter-data-neo4j` starter。
+[Neo4j](http://neo4j.com/) 是一个开源的 NoSQL 图形数据库，它使用了一个节点由关系连接的富数据模型，比传统 RDBMS 的方式更适合连接大数据。Spring Boot 为 Neo4j 提供了便捷引入方式，包括 `spring-boot-starter-data-neo4j` starter。
 
 <a id="boot-features-connecting-to-neo4j"></a>
 
@@ -2293,7 +2734,7 @@ spring.ldap.embedded.base-dn[1]=dc=pivotal,dc=io
 
 ### 31.10、InfluxDB
 
-[InfluxDB](https://www.influxdata.com/) 是一个开源时间序列数据库，其针对运营监控、应用程序指标、物联网传感器数据和实时分析等领域中的时间序列数据在速度、高可用存储和检索方面进行了优化。
+[InfluxDB](https://www.influxdata.com/) 是一个开源时列数据库，其针对运营监控、应用程序指标、物联网传感器数据和实时分析等领域中的时间序列数据在速度、高可用存储和检索方面进行了优化。
 
 <a id="boot-features-connecting-to-influxdb"></a>
 
