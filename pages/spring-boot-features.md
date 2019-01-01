@@ -618,7 +618,7 @@ spring:
 
 <a id="boot-features-external-config-typesafe-configuration-properties"></a>
 
-#### 24.8、类型安全的配置属性
+### 24.8、类型安全的配置属性
 
 使用 `@Value("${property}")` 注解来注入配置属性有时会很麻烦，特别是如果您使用了多个属性或者您的数据本质上是分层结构。Spring Boot 提供了另一种使用属性的方法，该方法使用强类型的 bean 来管理和验证应用程序的配置，如下所示：
 
@@ -777,6 +777,198 @@ public class MyService {
 **提示**
 
 > 使用 `@ConfigurationProperties` 还可以生成元数据文件，IDE 可以通过这些文件来为您自己的 key 提供自动完成功能。有关详细信息，请参阅[附录 B：配置元数据](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/#configuration-metadata)。
+
+<a id="boot-features-external-config-3rd-party-configuration"></a>
+
+#### 24.8.1、第三方配置
+
+`@ConfigurationProperties` 除了可以使用来注解类之外，您还可以在公共的 @Bean 方法上使用。当您想要将属性绑定到您掌控之外的第三方组件时，这样做特别有用。
+
+要使用 `Environment` 属性配置 bean，请将 `@ConfigurationProperties` 添加到 bean 注册上，如下所示：
+
+```java
+@ConfigurationProperties(prefix = "another")
+@Bean
+public AnotherComponent anotherComponent() {
+	...
+}
+```
+
+使用 `another` 前缀定义的所有属性都使用与前面的 `AcmeProperties` 示例类似的方式映射到 `AnotherComponent` bean。
+
+<a id="boot-features-external-config-relaxed-binding"></a>
+
+#### 24.8.2、宽松绑定
+
+Spring Boot 使用一些宽松的规则将 `Environment` 属性绑定到 `@ConfigurationProperties` bean，因此 `Environment` 属性名不需要和 bean 属性名精确匹配。常见的示例包括使用了 `-` 符号分割的环境属性（例如，`context-path` 绑定到 `contextPath`）和大写环境属性（例如，`PORT` 绑定到 `port`）。
+
+如下 `@ConfigurationProperties` 类：
+
+```java
+@ConfigurationProperties(prefix="acme.my-project.person")
+public class OwnerProperties {
+
+	private String firstName;
+
+	public String getFirstName() {
+		return this.firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+}
+```
+
+在上述示例中，同样可以使用以下属性名称：
+
+**表 24.1、宽松绑定**
+
+| 属性 | 描述 |
+| --- | --- |
+| `acme.my-project.person.first-name` | Kebab 风格（短横线命名），建议在 `.properties` 和 `.yml` 文件中使用。 |
+| `acme.myProject.person.firstName` | 标准驼峰式风格。 |
+| `acme.my_project.person.first_name` | 下划线表示法，`.properties` 和 `.yaml` 文件中的另外一种格式。 |
+| `ACME_MYPROJECT_PERSON_FIRSTNAME` | 大写风格，当使用系统环境变量时推荐使用该风格。 |
+
+**注意**
+
+> 注解的 `prefix` 值必须是 kebab (短横线命名)风格（小写并用 `-` 分隔，例如 `acme.my-project.person`）。
+
+**表 24.2、每种属性源（property source）的宽松绑定规则**
+
+| 属性源 | 简单类型 | 列表集合类型 |
+| --- | --- | --- |
+| properties 文件 | 驼峰式、短横线式或下划线式 | 标准列表语法使用 `[]` 或逗号分隔值 |
+| YAML 文件 | 驼峰式、短横线式或者下划线式 | 标准 YAML 列表语法或者逗号分隔值 |
+| 环境变量 | 大写并且以下划线作为定界符，`_` 不能放在属性名之间使用 | 数字值两边使用下划线连接，例如 `MY_ACME_1_OTHER = my.acme[1].other` |
+| 系统属性 | 驼峰式、短横线式或者下划线式 | 标准列表语法使用 `[]` 或逗号分隔值 |
+
+**提示**
+
+> 我们建议，属性尽可能以小写的短横线格式存储，比如 `my.property-name=acme`。
+
+当绑定到 `Map` 属性时，如果 key 包含除小写字母数字字符或 `-` 以外的任何内容，则需要使用括号表示法来保留原始值。如果 key 没有使用 `[]` 包裹，则里面的任何非字母数字字符或 `-` 的字符都将被删除。例如，将以下属性绑定到一个 `Map`：
+
+```yaml
+acme:
+  map:
+    "[/key1]": value1
+    "[/key2]": value2
+    /key3: value3
+```
+
+上面的属性将绑定到一个 `Map` 上，其中 `/key1`，`/key2` 和 `key3` 作为 map 的 key。
+
+<a id="boot-features-external-config-complex-type-merge"></a>
+
+#### 24.8.3、合并复杂类型
+
+当列表集合（list）在多个地方配置时，整个列表集合将被替换。
+
+例如，假设带有 `name` 和 `description` 属性的 `MyPojo` 对象默认为 `null`。以下示例中，`AcmeProperties` 暴露了一个 `MyPojo` 对象列表集合：
+
+```java
+@ConfigurationProperties("acme")
+public class AcmeProperties {
+
+	private final List<MyPojo> list = new ArrayList<>();
+
+	public List<MyPojo> getList() {
+		return this.list;
+	}
+
+}
+```
+
+配置可以如下：
+
+```yaml
+acme:
+  list:
+    - name: my name
+      description: my description
+---
+spring:
+  profiles: dev
+acme:
+  list:
+    - name: my another name
+```
+
+如果 `dev` 配置文件未激活，则 `AcmeProperties.list` 只包含一条 `MyPojo` 条目，如之前所述。但是，如果激活了 `dev` 配置文件，列表集合仍然只包含一个条目（`name` 属性值为 `my another name`，`description` 为 `null`）。此配置不会向列表集合中添加第二个 `MyPojo` 实例，也不会合并条目。
+
+在多个配置文件中指定一个 `List` 时，最高优先级（并且只有一个）的列表集合将被使用。可做如下配置：
+
+```yaml
+acme:
+  list:
+    - name: my name
+      description: my description
+    - name: another name
+      description: another description
+---
+spring:
+  profiles: dev
+acme:
+  list:
+    - name: my another name
+```
+
+在前面示例中，如果 `dev` 配置文件处于活动状态，则 `AcmeProperties.list` 包含一个 `MyPojo` 条目（`name` 为 `my another name`，`description` 为 `null`）。对于 YAML 而言，逗号分隔的列表和YAML 列表同样会完全覆盖列表集合的内容。
+
+对于 `Map` 属性，您可以绑定来自多个源中提取的属性值。但是，对于多个源中的相同属性，则使用高优先级最高的属性。以下示例从 `AcmeProperties` 暴露了一个 `Map<String, MyPojo>`：
+
+```java
+@ConfigurationProperties("acme")
+public class AcmeProperties {
+
+	private final Map<String, MyPojo> map = new HashMap<>();
+
+	public Map<String, MyPojo> getMap() {
+		return this.map;
+	}
+
+}
+```
+
+可以考虑以下配置：
+
+```yaml
+acme:
+  map:
+    key1:
+      name: my name 1
+      description: my description 1
+---
+spring:
+  profiles: dev
+acme:
+  map:
+    key1:
+      name: dev name 1
+    key2:
+      name: dev name 2
+      description: dev description 2
+```
+
+如果 `dev` 配置文件未激活，则 `AcmeProperties.map` 只包含一个带 `key1` key 的条目（`name` 为 `my name 1`，`description` 为 `my description 1`）。但是，如果激活了 dev 配置文件，则 `map` 将包含两个条目， key 分别为 `key1`（`name` 为 `dev name 1` 和 `description` 为 `my description 1`）和 `key2`（`name` 为 `dev name 2` 和 `description` 为 `dev description 2`）。
+
+**注意**
+
+> 前面的合并规则适用于所有不同属性源的属性，而不仅仅是 YAML 文件。
+
+<a id="boot-features-external-config-conversion"></a>
+
+#### 24.8.4、属性转换
+
+当外部应用程序属性（application properties） 绑定到 `@ConfigurationProperties` bean 时，Spring Boot 会尝试将其属性强制转换为正确的类型。如果需要自定义类型转换，可以提供 `ConversionService` bean（名为 `conversionService` 的 bean）或自定义属性编辑器（通过 `CustomEditorConfigurer` bean）或自定义转换器（带有注解为 `@ConfigurationPropertiesBinding` 的 bean 定义）。
+
+**注意**
+
+由于该 bean 在应用程序生命周期早期就被请求 ，因此请限制 `ConversionService` 使用的依赖。您在创建时可能无法完全初始化所需的依赖。如果配置 key 为非强制需要，您可能希望重命名自定义的 `ConversionService`，并仅依赖于使用 `@ConfigurationPropertiesBinding` 限定的自定义转换器。
+
 
 
 **待续……**
