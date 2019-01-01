@@ -1,6 +1,6 @@
 <a id="boot-features"></a>
 
-# 四、Spring Boot 特性
+# 四、Spring Boot 功能
 
 本部分将介绍 Spring Boot 相关的细节内容。在这里，您可以学习到可能需要使用和自定义的主要功能。您如果还没有做好充分准备，可能需要阅读[第二部分：入门](#getting-started)和[第三部分：使用 Spring Boot](#using-boot)，以便打下前期基础。
 
@@ -448,7 +448,7 @@ $ java -jar myproject.jar --spring.config.location=classpath:/default.properties
 
 <a id="boot-features-external-config-profile-specific-properties"></a>
 
-### 24.4、特定 profile 的属性文件
+### 24.4、特定 Profile 的属性文件
 
 除 `application.properties` 文件外，还可以使用以下命名约定定义特定 profile 的属性文件：`application-{profile}.properties`。`Environment` 有一组默认配置文件（默认情况下为 `default`），如果未设置激活的（active）profile，则使用这些配置文件。换句话说，如果没有显式激活 profile，则会加载 `application-default.properties` 中的属性。
 
@@ -969,7 +969,250 @@ acme:
 
 由于该 bean 在应用程序生命周期早期就被请求 ，因此请限制 `ConversionService` 使用的依赖。您在创建时可能无法完全初始化所需的依赖。如果配置 key 为非强制需要，您可能希望重命名自定义的 `ConversionService`，并仅依赖于使用 `@ConfigurationPropertiesBinding` 限定的自定义转换器。
 
+<a id="boot-features-external-config-conversion-duration"></a>
 
+##### 转换 duration
+
+Spring Boot 支持持续时间（duration）表达。如果您暴露一个 `java.time.Duration` 属性，则可以在应用程序属性中使用以下格式：
+
+- 常规 `long` 表示（除非指定 `@DurationUnit`，否则使用毫秒作为默认单位）
+- [`java.util.Duration`](https://docs.oracle.com/javase/8/docs/api//java/time/Duration.html#parse-java.lang.CharSequence-) 使用的标准 ISO-8601 格式
+- 一种更易读的格式，值和单位在一起（例如 `10s` 表示 10 秒）
+
+思考以下示例：
+
+```java
+@ConfigurationProperties("app.system")
+public class AppSystemProperties {
+
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration sessionTimeout = Duration.ofSeconds(30);
+
+	private Duration readTimeout = Duration.ofMillis(1000);
+
+	public Duration getSessionTimeout() {
+		return this.sessionTimeout;
+	}
+
+	public void setSessionTimeout(Duration sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
+	}
+
+	public Duration getReadTimeout() {
+		return this.readTimeout;
+	}
+
+	public void setReadTimeout(Duration readTimeout) {
+		this.readTimeout = readTimeout;
+	}
+
+}
+```
+
+指定一个会话超时时间为 30 秒，使用 `30`、`PT30S` 和 `30s` 等形式都是可以的。读取超时时间设置为 500ms，可以采用以下任何一种形式：`500`、`PT0.5S` 和 `500ms`。
+
+您也可以使用任何支持的单位来标识：
+
+- `ns` 为纳秒
+- `us` 为微秒
+- `ms` 为毫秒
+- `s` 为秒
+- `m` 为分钟
+- `h` 为小时
+- `d` 为天
+
+默认单位是毫秒，可以使用 `@DurationUnit` 配合上面的单位示例重写。
+
+**提示**
+
+> 要从先前仅使用 `Long` 来表示持续时间的版本进行升级，如果切换到 `Duration` 时不是毫秒，请定义单位（使用 `@DurationUnit`）。这样做可以提供透明的升级路径，同时支持更丰富的格式。
+
+<a id="boot-features-external-config-conversion-datasize"></a>
+
+##### 转换 Data Size
+
+Spring Framework 有一个 `DataSize` 值类型，允许以字节表示大小。如果暴露一个 `DataSize` 属性，则可以在应用程序属性中使用以下格式：
+
+- 常规的 `Long` 表示（使用字节作为默认单位，除非指定了 `@DataSizeUnit`）
+- 更具有可读性的格式，值和单位在一起（例如 `10MB` 表示 `10` 兆字节）
+
+请思考以下示例：
+
+```java
+@ConfigurationProperties("app.io")
+public class AppIoProperties {
+
+	@DataSizeUnit(DataUnit.MEGABYTES)
+	private DataSize bufferSize = DataSize.ofMegabytes(2);
+
+	private DataSize sizeThreshold = DataSize.ofBytes(512);
+
+	public DataSize getBufferSize() {
+		return this.bufferSize;
+	}
+
+	public void setBufferSize(DataSize bufferSize) {
+		this.bufferSize = bufferSize;
+	}
+
+	public DataSize getSizeThreshold() {
+		return this.sizeThreshold;
+	}
+
+	public void setSizeThreshold(DataSize sizeThreshold) {
+		this.sizeThreshold = sizeThreshold;
+	}
+
+}
+```
+
+要指定 10 兆字节的缓冲大小，使用 `10` 和 `10MB` 是等效的。256 字节的大小可以指定为 `256` 或 `256B`。
+
+您也可以使用任何支持的单位：
+
+- `B` 表示字节
+- `KB` 为千字节
+- `MB` 为兆字节
+- `GB` 为千兆字节
+- `TB` 为兆兆字节
+
+默认单位是字节，可以使用 `@DataSizeUnit` 配合上面的示例单位重写。
+
+**提示**
+
+> 要从先前仅使用 `Long` 来表示大小的版本进行升级，请确保在切换到 `DataSize` 不是字节的情况下定义单位（使用 `@DataSizeUnit`）。这样做可以提供透明的升级路径，同时支持更丰富的格式。
+
+<a id="boot-features-external-config-validation"></a>
+
+#### 24.8.5、@ConfigurationProperties 验证
+
+只要使用了 Spring 的 `@Validated` 注解，Spring Boot 就会尝试验证 `@ConfigurationProperties` 类。您可以直接在配置类上使用 JSR-303 `javax.validation` 约束注解。为此，请确保 JSR-303 实现在 classpath 上，然后将约束注解添加到字段上，如下所示：
+
+```java
+@ConfigurationProperties(prefix="acme")
+@Validated
+public class AcmeProperties {
+
+	@NotNull
+	private InetAddress remoteAddress;
+
+	// ... getters and setters
+
+}
+```
+
+**提示**
+
+> 您还可以通过使用 `@Validated` 注解创建配置属性的 `@Bean` 方法来触发验证。
+
+虽然绑定时也会验证嵌套属性，但最好的做法还是将关联字段注解上 `@Valid`。这可确保即使未找到嵌套属性也会触发验证。以下示例基于前面的 `AcmeProperties` 示例：
+
+```java
+@ConfigurationProperties(prefix="acme")
+@Validated
+public class AcmeProperties {
+
+	@NotNull
+	private InetAddress remoteAddress;
+
+	@Valid
+	private final Security security = new Security();
+
+	// ... getters and setters
+
+	public static class Security {
+
+		@NotEmpty
+		public String username;
+
+		// ... getters and setters
+
+	}
+
+}
+```
+
+您还可以通过创建一个名为 `configurationPropertiesValidator` 的 bean 定义来添加自定义 Spring `Validator`。应该将 `@Bean` 方法声明为 `static`。配置属性验证器在应用程序生命周期的早期创建，将 `@Bean` 方法声明为 `static` 可以无需实例化 `@Configuration` 类来创建 bean。这样做可以避免早期实例化可能导致的意外问题。这里有一个[属性验证示例](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-samples/spring-boot-sample-property-validation)，讲解了如何设置。
+
+**提示**
+
+> `spring-boot-actuator` 模块包括一个暴露所有 `@ConfigurationProperties` bean 的端点。可将 Web 浏览器指向 `/actuator/configprops` 或使用等效的 JMX 端点。有关详细信息，请参阅[生产就绪功能](#production-ready-endpoints)部分。
+
+<a id="boot-features-external-config-vs-value"></a>
+
+#### 24.8.6、@ConfigurationProperties 与 @Value 对比
+
+`@Value` 注解是核心容器功能，它不提供与类型安全配置属性相同的功能。下表总结了 `@ConfigurationProperties` 和 `@Value` 支持的功能：
+
+| 功能 | `@ConfigurationProperties` | `@Value` |
+| --- | --- | --- |
+| [宽松绑定](#boot-features-external-config-relaxed-binding) | 是 | 否 |
+| [元数据支持](#configuration-metadata) | 是 | 否 |
+| `SpEL` 表达式 | 否 | 是 |
+
+如果您要为自己的组件定义一组配置 key，我们建议您将它们分组到使用 `@ConfigurationProperties` 注解的 POJO 中。您应该知道，由于 `@Value` 不支持宽松绑定，因此如果您需要通过环境变量来提供值，它并不是一个好的选择。
+
+最后，虽然您可以在 `@Value` 中编写 `SpEL` 表达式，但来自应用程序属性文件的此类表达式并不会被处理。
+
+<a id="boot-features-profiles"></a>
+
+## 25、Profile
+
+Spring Profile 提供了一种应用程序配置部分隔离并使其仅在特定环境中可用的方法。可以使用 `@Profile` 来注解任何 `@Component` 或 `@Configuration` 以指定何时加载它，如下所示：
+
+```java
+@Configuration
+@Profile("production")
+public class ProductionConfiguration {
+
+	// ...
+
+}
+```
+
+您可以使用 `spring.profiles.active` `Environment` 属性指定哪些配置文件处于激活状态。您可以使用本章前面介绍的任何方法指定属性。例如，您可以将其包含在 `application.properties` 中，如下所示：
+
+```ini
+spring.profiles.active=dev,hsqldb
+```
+
+您还可以在命令行上使用以下开关指定它：`--spring.profiles.active=dev,hsqldb`。
+
+<a id="boot-features-adding-active-profiles"></a>
+
+### 25.1、添加激活 Profile
+
+`spring.profiles.active` 属性遵循与其他属性相同的排序规则：应用优先级最高的 `PropertySource`。这意味着您可以在 `application.properties` 中指定激活配置文件，然后使用命令行开关**替换**它们。
+
+有时，将特定 profile 的属性**添加**到激活配置文件而不是替换它们，这种方式也是很有用的。`spring.profiles.include` 属性可无条件地添加激活配置文件。`SpringApplication` 入口还有一个 Java API，用于设置其他 profile（即，在 `spring.profiles.active` 属性激活的 profile 之上）。请参阅SpringApplication 中的 `setAdditionalProfiles()` 方法。
+
+例如，当使用开关 `--spring.profiles.active=prod` 运行有以下属性的应用程序时，`proddb` 和 `prodmq` 配置文件也会被激活：
+
+```yaml
+---
+my.property: fromyamlfile
+---
+spring.profiles: prod
+spring.profiles.include:
+  - proddb
+  - prodmq
+```
+
+**注意**
+
+> 请记住，可以在 YAML 文档中定义 `spring.profiles` 属性，以确定此特定文档何时包含在配置中。有关更多详细信息，请参见第 77.7 章节：[根据环境更改配置](howto.md#howto-change-configuration-depending-on-the-environment)。
+
+<a id="boot-features-programmatically-setting-profiles"></a>
+
+### 25.2、以编程方式设置 Profile
+
+您可以在应用程序运行之前以编程方式通过调用 `SpringApplication.setAdditionalProfiles(...)` 设置激活 profile。也可以使用 Spring 的 `ConfigurableEnvironment` 接口激活 profile。
+
+<a id="boot-features-profile-specific-configuration"></a>
+
+### 25.3、特定 Profile 的配置文件
+
+特定 profile 的 `application.properties`（或 `application.yml`）和通过 `@ConfigurationProperties` 引用的文件被当做文件并加载。有关详细信息，请参见[第 24.4 章节：特定 Profile 的属性文件](#boot-features-external-config-profile-specific-properties)。
 
 **待续……**
 
