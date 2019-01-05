@@ -129,7 +129,7 @@ public static void main(String[] args) {
 
 ### 23.4、Fluent Builder API
 
-如果您需要构建一个有层级关系的 `ApplicationContext`（具有父/子关系的多上下文），或者偏向使用 **fluent**（流畅）构建器 API，可以使用 `SpringApplicationBuilder`。
+如果您需要构建一个有层级关系的 `ApplicationContext`（具有父/子关系的多上下文），或者偏向使用 **fluent**（流式）构建器 API，可以使用 `SpringApplicationBuilder`。
 
 `SpringApplicationBuilder` 允许您链式调用多个方法，包括能创建出具有层次结构的 `parent` 和 `child` 方法。
 
@@ -2400,6 +2400,201 @@ Spring Boot 包括对以下内嵌响应式 Web 服务器的支持：Reactor Nett
 
 您可以在 [WebClient Runtime](#boot-features-webclient-runtime) 章节中了解有关客户端资源配置的更多内容。
 
+<a id="boot-features-security"></a>
+
+## 29、安全
+
+默认情况下，如果 [Spring Security](https://projects.spring.io/spring-security/) 在 classpath 上，则 Web 应用程序是受保护的。Spring Boot 依赖 Spring Security 的内容协商策略来确定是使用 `httpBasic` 还是 `formLogin`。要给 Web 应用程序添加方法级别的安全保护，可以使用 `@EnableGlobalMethodSecurity` 注解设置。有关更多其他信息，您可以在 [Spring Security 参考指南](https://docs.spring.io/spring-security/site/docs/5.1.2.RELEASE/reference/htmlsingle#jc-method)中找到。
+
+默认的 `UserDetailsS​​ervice` 只有一个用户。用户名为 `user`，密码是随机的，在应用程序启动时会以 INFO 级别打印出来，如下所示：
+
+```
+Using generated security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
+```
+
+**注意**
+
+> 如果您对日志配置进行微调，请确保将 `org.springframework.boot.autoconfigure.security` 的级别设置为 `INFO`。否则，默认密码不会打印出来。
+
+您可以通过提供 `spring.security.user.name` 和 `spring.security.user.password` 来更改用户名和密码。
+
+您在 Web 应用程序中默认会获得以下基本功能：
+
+- 一个 `UserDetailsS​​ervice`（或 WebFlux 应用程序中的 `ReactiveUserDetailsS​​ervice`）bean，采用内存存储形式，有一个自动生成密码的用户（有关用户属性，请参阅 [`SecurityProperties.User`](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/api/org/springframework/boot/autoconfigure/security/SecurityProperties.User.html)）。
+- 用于整个应用程序（如果 actuator 在 classpath 上，则包括 actuator 端点）基于表单登录或 HTTP Basic 认证（取决于 Content-Type）。
+- 一个用于发布身份验证事件的 `DefaultAuthenticationEventPublisher`。
+
+您可以通过为其添加一个 bean 来提供不同的 `AuthenticationEventPublisher`。
+
+<a id="boot-features-security-mvc"></a>
+
+### 29.1、MVC 安全
+
+默认的安全配置在 `SecurityAutoConfiguration` 和 `UserDetailsS​​erviceAutoConfiguration` 中实现。 `SecurityAutoConfiguration` 导入用于 Web 安全的 `SpringBootWebSecurityConfiguration`,`UserDetailsS​​erviceAutoConfiguration` 配置身份验证，这同样适用于非 Web 应用程序。要完全关闭默认的 Web 应用程序安全配置，可以添加 `WebSecurityConfigurerAdapter` 类型的 bean（这样做不会禁用 `UserDetailsS​​ervice` 配置或 Actuator 的安全保护）。
+
+要同时关闭 `UserDetailsS​​ervice` 配置，您可以添加 `UserDetailsS​​ervice`、`AuthenticationProvider` 或 `AuthenticationManager` 类型的 bean。[Spring Boot 示例](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-samples/)中有几个使用了安全保护的应用程序，他们或许可以帮助到您。
+
+可以通过添加自定义 `WebSecurityConfigurerAdapter` 来重写访问规则。Spring Boot 提供了便捷方法，可用于重写 actuator 端点和静态资源的访问规则。`EndpointRequest` 可用于创建一个基于 `management.endpoints.web.base-path` 属性的 `RequestMatcher`。`PathRequest` 可用于为常用位置中的资源创建一个 `RequestMatcher`。
+
+<a id="boot-features-security-webflux"></a>
+
+### 29.2、WebFlux 安全
+
+与 Spring MVC 应用程序类似，您可以通过添加 `spring-boot-starter-security` 依赖来保护 WebFlux 应用程序。默认的安全配置在 `ReactiveSecurityAutoConfiguration` 和 `UserDetailsServiceAutoConfiguration` 中实现。`ReactiveSecurityAutoConfiguration` 导入用于 Web 安全的 `WebFluxSecurityConfiguration`,`UserDetailsServiceAutoConfiguration` 配置身份验证，这同样适用于非 Web 应用程序。要完全关闭默认的 Web 应用程序安全配置，可以添加 `WebFilterChainProxy` 类型的 bean（这样做不会禁用 `UserDetailsS​​ervice` 配置或 Actuator 的安全保护）。
+
+要同时关闭 `UserDetailsS​​ervice` 配置，您可以添加 `ReactiveUserDetailsService` 或 `ReactiveAuthenticationManager` 类型的 bean。
+
+可以通过添加自定义 `SecurityWebFilterChain` 来重写访问规则。Spring Boot 提供了便捷方法，可用于重写 actuator 端点和静态资源的访问规则。`EndpointRequest` 可用于创建一个基于 `management.endpoints.web.base-path` 属性的 `ServerWebExchangeMatcher`。
+
+`PathRequest` 可用于为常用位置中的资源创建一个 `ServerWebExchangeMatcher`。
+
+例如，您可以通过添加以下内容来自定义安全配置：
+
+```java
+@Bean
+public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+	return http
+		.authorizeExchange()
+			.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+			.pathMatchers("/foo", "/bar")
+				.authenticated().and()
+			.formLogin().and()
+		.build();
+}
+```
+
+<a id="boot-features-security-oauth2"></a>
+
+### 29.3、OAuth2
+
+[OAuth2](https://oauth.net/2/) 是 Spring 支持的一种广泛使用的授权框架。
+
+<a id="boot-features-security-oauth2-client"></a>
+
+#### 29.3.1、客户端
+
+如果您的 classpath 上有 `spring-security-oauth2-client`，则可以利用一些自动配置来轻松设置 `OAuth2/Open ID Connect 客户端。该配置使用 `OAuth2ClientProperties` 的属性。相同的属性适用于 servlet 和响应式应用程序。
+
+您可以在 `spring.security.oauth2.client` 前缀下注册多个 OAuth2 客户端和提供者（provider），如下所示：
+
+```ini
+spring.security.oauth2.client.registration.my-client-1.client-id=abcd
+spring.security.oauth2.client.registration.my-client-1.client-secret=password
+spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
+spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
+spring.security.oauth2.client.registration.my-client-1.scope=user
+spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=http://my-redirect-uri.com
+spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
+spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
+
+spring.security.oauth2.client.registration.my-client-2.client-id=abcd
+spring.security.oauth2.client.registration.my-client-2.client-secret=password
+spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
+spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
+spring.security.oauth2.client.registration.my-client-2.scope=email
+spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=http://my-redirect-uri.com
+spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
+spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
+
+spring.security.oauth2.client.provider.my-oauth-provider.authorization-uri=http://my-auth-server/oauth/authorize
+spring.security.oauth2.client.provider.my-oauth-provider.token-uri=http://my-auth-server/oauth/token
+spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=http://my-auth-server/userinfo
+spring.security.oauth2.client.provider.my-oauth-provider.user-info-authentication-method=header
+spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=http://my-auth-server/token_keys
+spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
+```
+
+对于支持 [OpenID Connect 发现](https://openid.net/specs/openid-connect-discovery-1_0.html)的 OpenID Connect 提供者，可以进一步简化配置。需要使用 `issuer-uri` 配置提供者，`issuer-uri` 是其 Issuer Identifier 的 URI。例如，如果提供的 `issuer-uri` 是 “https://example.com”，则将对 “https://example.com/.well-known/openid-configuration” 发起一个 `OpenID Provider Configuration Request`。期望结果是一个 `OpenID Provider Configuration Response`。以下示例展示了如何使用 `issuer-uri` 配置一个 OpenID Connect Provider：
+
+```
+spring.security.oauth2.client.provider.oidc-provider.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
+```
+
+默认情况下，Spring Security 的 `OAuth2LoginAuthenticationFilter` 仅处理与 `/login/oauth2/code/*` 相匹配的 URL。如果要自定义 `redirect-uri` 以使用其他匹配模式，则需要提供配置以处理该自定义模式。例如，对于 servlet 应用程序，您可以添加类似于以下 `WebSecurityConfigurerAdapter`：
+
+```java
+public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+			.authorizeRequests()
+				.anyRequest().authenticated()
+				.and()
+			.oauth2Login()
+				.redirectionEndpoint()
+					.baseUri("/custom-callback");
+	}
+}
+```
+
+<a id="boot-features-security-oauth2-common-providers"></a>
+
+**OAuth2 客户端注册常见的提供者**
+
+对于常见的 OAuth2 和 OpenID 提供者（provider），包括 Google、Github、Facebook 和 Okta，我们提供了一组提供者默认设置（分别是 `google`、`github`、`facebook` 和 `okta`）。
+
+如果您不需要自定义这些提供者，则可以将 `provider` 属性设置为您需要推断默认值的属性。此外，如果客户端注册的 key 与默认支持的提供者匹配，则 Spring Boot 也会推断出来。
+
+换而言之，以下示例中的两个配置使用了 Google 提供者：
+
+```ini
+spring.security.oauth2.client.registration.my-client.client-id=abcd
+spring.security.oauth2.client.registration.my-client.client-secret=password
+spring.security.oauth2.client.registration.my-client.provider=google
+
+spring.security.oauth2.client.registration.google.client-id=abcd
+spring.security.oauth2.client.registration.google.client-secret=password
+```
+
+<a id="boot-features-security-oauth2-server"></a>
+
+#### 29.3.2、资源服务器
+
+如果在 classpath 上有 `spring-security-oauth2-resource-server`，只要指定了 JWK Set URI 或 OIDC Issuer URI，Spring Boot 就可以设置 OAuth2 资源服务器，如下所示：
+
+```ini
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys
+```
+
+```ini
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
+```
+
+相同的属性适用于 servlet 和响应式应用程序。
+
+或者，您可以为 servlet 应用程序定义自己的 `JwtDecoder` bean，或为响应式应用程序定义 `ReactiveJwtDecoder`。
+
+<a id="_authorization_server"></a>
+
+#### 29.3.3、授权服务器
+
+目前，Spring Security 没有提供 OAuth 2.0 授权服务器实现。但此功能可从 [Spring Security OAuth](https://projects.spring.io/spring-security-oauth/) 项目获得，该项目最终会被 Spring Security 所取代。在此之前，您可以使用 `spring-security-oauth2-autoconfigure` 模块轻松设置 OAuth 2.0 授权服务器，请参阅其[文档](https://docs.spring.io/spring-security-oauth2-boot)以获取详细信息。
+
+<a id="boot-features-security-actuator"></a>
+
+### 29.4、Actuator 安全
+
+出于安全考虑，默认情况下禁用除 `/health` 和 `/info` 之外的所有 actuator。可用 `management.endpoints.web.exposure.include` 属性启用 actuator。
+
+如果 Spring Security 位于 classpath 上且没有其他 `WebSecurityConfigurerAdapter`，则除了 `/health` 和 `/info` 之外的所有 actuator 都由 Spring Boot 自动配置保护。如果您定义了自定义 `WebSecurityConfigurerAdapter`，则 Spring Boot 自动配置将不再生效，您可以完全控制 actuator 的访问规则。
+
+**注意**
+
+> 在设置 `management.endpoints.web.exposure.include` 之前，请确保暴露的 actuator 没有包含敏感信息和 `/` 或被防火墙保护亦或受 Spring Security 之类的保护。
+
+<a id="boot-features-security-csrf"></a>
+
+#### 29.4.1、跨站请求伪造保护
+
+由于 Spring Boot 依赖 Spring Security 的默认值配置，因此默认情况下会启用 CSRF 保护。这意味着当使用默认安全配置时，需要 `POST`（shutdown 和 loggers 端点）、`PUT` 或 `DELETE` 的 actuator 端点将返回 403 禁止访问错误。
+
+**注意**
+
+> 我们建议仅在创建非浏览器客户端使用的服务时才完全禁用 CSRF 保护。
+
+有关 CSRF 保护的其他信息，请参阅 [Spring Security 参考指南](https://docs.spring.io/spring-security/site/docs/5.1.2.RELEASE/reference/htmlsingle#csrf)。
+
 <a id="boot-features-sql"></a>
 
 ## 30、使用 SQL 数据库
@@ -2730,7 +2925,7 @@ Spring Data 包含了对 JDBC 资源库的支持，并将自动为 `CrudReposito
 
 ### 30.6、使用 jOOQ
 
-Java 面向对象查询（[Java Object Oriented Querying，jOOQ](http://www.jooq.org/)）是一款广受欢迎的产品，出自 [Data Geekery](http://www.datageekery.com/)，它可以通过数据库生成 Java 代码，并允许您使用流畅 API 来构建类型安全的 SQL 查询。商业版和开源版都可以与 Spring Boot 一起使用。
+Java 面向对象查询（[Java Object Oriented Querying，jOOQ](http://www.jooq.org/)）是一款广受欢迎的产品，出自 [Data Geekery](http://www.datageekery.com/)，它可以通过数据库生成 Java 代码，并允许您使用流式 API 来构建类型安全的 SQL 查询。商业版和开源版都可以与 Spring Boot 一起使用。
 
 <a id="_code_generation"></a>
 
@@ -2768,7 +2963,7 @@ Java 面向对象查询（[Java Object Oriented Querying，jOOQ](http://www.jooq
 
 #### 30.6.2、使用 DSLContext
 
-jOOQ 提供的流畅 API 是通过 `org.jooq.DSLContext` 接口初始化的。Spring Boot 将自动配置一个 `DSLContext` 作为 Spring Bean，并且将其连接到应用程序的 `DataSource`。`要使用 DSLContext`，您只需要 `@Autowire` 它：
+jOOQ 提供的流式 API 是通过 `org.jooq.DSLContext` 接口初始化的。Spring Boot 将自动配置一个 `DSLContext` 作为 Spring Bean，并且将其连接到应用程序的 `DataSource`。`要使用 DSLContext`，您只需要 `@Autowire` 它：
 
 ```java
 @Component

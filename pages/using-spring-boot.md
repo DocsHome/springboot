@@ -908,6 +908,6 @@ spring.devtools.remote.secret=mysecret
 
 <a id="using-boot-whats-next"></a>
 
-## 21、下一步
+## 22、下一步
 
 您现在应该知道如何使用 Spring Boot 以及应该遵循哪些最佳实践。接下来您可以深入地了解 [Spring Boot 功能](#boot-features)，或者您也可以跳过下一部分直接阅读[“生产就绪功能”](h#production-ready)方面的内容。
