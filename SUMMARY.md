@@ -230,4 +230,50 @@
             - [31.9.3、内嵌内存式 LDAP 服务器](pages/spring-boot-features.md#boot-features-ldap-embedded)
         - [31.10、InfluxDB](pages/spring-boot-features.md#boot-features-influxdb)
             - [31.10.1、连接 InfluxDB](pages/spring-boot-features.md#boot-features-connecting-to-influxdb)
+    - [32、缓存](pages/spring-boot-features.md#boot-features-caching)
+        - [32.1、支持的缓存提供者](pages/spring-boot-features.md#boot-features-caching-provider)
+            - [32.1.1、Generic](pages/spring-boot-features.md#boot-features-caching-provider-generic)
+            - [32.1.2、JCache (JSR-107)](pages/spring-boot-features.md#boot-features-caching-provider-jcache)
+            - [32.1.3、EhCache 2.x](pages/spring-boot-features.md#boot-features-caching-provider-ehcache2)
+            - [32.1.4、Hazelcast](pages/spring-boot-features.md#boot-features-caching-provider-hazelcast)
+            - [32.1.5、Infinispan](pages/spring-boot-features.md#boot-features-caching-provider-infinispan)
+            - [32.1.6、Couchbase](pages/spring-boot-features.md#boot-features-caching-provider-couchbase)
+            - [32.1.7、Redis](pages/spring-boot-features.md#boot-features-caching-provider-redis)
+            - [32.1.8、Caffeine](pages/spring-boot-features.md#boot-features-caching-provider-caffeine)
+            - [32.1.9、Simple](pages/spring-boot-features.md#boot-features-caching-provider-simple)
+            - [32.1.10、None](pages/spring-boot-features.md#boot-features-caching-provider-none)
+    - [33、消息传递](pages/spring-boot-features.md#boot-features-messaging)
+        - [33.1、JMS](pages/spring-boot-features.md#boot-features-jms)
+            - [33.1.1、ActiveMQ 支持](pages/spring-boot-features.md#boot-features-activemq)
+            - [33.1.2、Artemis 支持](pages/spring-boot-features.md#boot-features-artemis)
+            - [33.1.3、使用 JNDI ConnectionFactory](pages/spring-boot-features.md#boot-features-jms-jndi)
+            - [33.1.4、发送消息](pages/spring-boot-features.md#boot-features-using-jms-sending)
+            - [33.1.5、接收消息](pages/spring-boot-features.md#boot-features-using-jms-receiving)
+        - [33.2、AMQP](pages/spring-boot-features.md#boot-features-amqp)
+            - [33.2.1、RabbitMQ 支持](pages/spring-boot-features.md#boot-features-rabbitmq)
+            - [33.2.2、发送消息](pages/spring-boot-features.md#boot-features-using-amqp-sending)
+            - [33.2.3、接收消息](pages/spring-boot-features.md#boot-features-using-amqp-receiving)
+        - [33.3、Apache Kafka 支持](pages/spring-boot-features.md#boot-features-kafka)
+            - [33.3.1、发送消息](pages/spring-boot-features.md#boot-features-kafka-sending-a-message)
+            - [33.3.2、接收消息](pages/spring-boot-features.md#boot-features-kafka-receiving-a-message)
+            - [33.3.3、Kafka Stream](pages/spring-boot-features.md#boot-features-kafka-streams)
+            - [33.3.4、其他 Kafka 属性](pages/spring-boot-features.md#boot-features-kafka-extra-props)
+    - 34、使用 `RestTemplate` 调用 REST 服务
+    - 35、使用 `WebClient` 调用 REST 服务
+    - 36、验证
+    - 37、发送邮件
+    - 38、JTA 分布式事务
+    - 39、Hazelcast
+    - 40、Quartz 调度器
+    - 41、任务执行与调度
+    - 42、Spring Integration
+    - 43、Spring Session
+    - 44、通过 JMX 监控和管理
+    - 45、测试
+    - 46、WebSocket
+    - 47、Web Service
+    - 48、使用 `WebServiceTemplate` 调用 Web Service
+    - 49、创建自己的自动配置
+    - 50、Kotlin 支持
+    - 51、下一步
 
