@@ -4402,4 +4402,249 @@ spring.kafka.producer.properties.spring.json.add.type.headers=false
 
 > 以这种方式设置的属性将覆盖 Spring Boot 明确支持的任何配置项。
 
+<a id="boot-features-resttemplate"></a>
+
+## 34、使用 `RestTemplate` 调用 REST 服务
+
+如果您的应用程序需要调用远程 REST 服务，这可以使用 Spring Framework 的 [`RestTemplate`](https://docs.spring.io/spring/docs/5.1.3.RELEASE/javadoc-api/org/springframework/web/client/RestTemplate.html) 类。由于 `RestTemplate` 实例在使用之前通常需要进行自定义，因此 Spring Boot 不提供任何自动配置的 `RestTemplate` bean。但是，它会自动配置 `RestTemplateBuilder`，可在需要时创建 `RestTemplate` 实例。自动配置的 `RestTemplateBuilder` 确保将合适的 `HttpMessageConverters` 应用于 `RestTemplate` 实例。
+
+以下代码展示了一个典型示例：
+
+```java
+@Service
+public class MyService {
+
+	private final RestTemplate restTemplate;
+
+	public MyService(RestTemplateBuilder restTemplateBuilder) {
+		this.restTemplate = restTemplateBuilder.build();
+	}
+
+	public Details someRestCall(String name) {
+		return this.restTemplate.getForObject("/{name}/details", Details.class, name);
+	}
+
+}
+```
+
+**提示**
+
+> `RestTemplateBuilder` 包含许多可用于快速配置 ·RestTemplate· 的方法。例如，要添加 BASIC auth 支持，可以使用 `builder.basicAuthentication("user", "password").build()`。
+
+<a id="boot-features-resttemplate-customization"></a>
+
+### 34.1、自定义 RestTemplate
+
+`RestTemplate` 自定义有三种主要方法，具体取决于您希望自定义的程度。
+
+要想自定义的范围尽可能地窄，请注入自动配置的 `RestTemplateBuilder`，然后根据需要调用其方法。每个方法调用都返回一个新的 `RestTemplateBuilder` 实例，因此自定义只会影响当前构建器。
+
+要在应用程序范围内添加自定义配置，请使用 `RestTemplateCustomizer` bean。所有这些 bean 都会自动注册到自动配置的 `RestTemplateBuilder`，并应用于使用它构建的所有模板。
+
+以下示例展示了一个 customizer，它为除 `192.168.0.5` 之外的所有主机配置代理：
+
+```java
+static class ProxyCustomizer implements RestTemplateCustomizer {
+
+	@Override
+	public void customize(RestTemplate restTemplate) {
+		HttpHost proxy = new HttpHost("proxy.example.com");
+		HttpClient httpClient = HttpClientBuilder.create()
+				.setRoutePlanner(new DefaultProxyRoutePlanner(proxy) {
+
+					@Override
+					public HttpHost determineProxy(HttpHost target,
+							HttpRequest request, HttpContext context)
+							throws HttpException {
+						if (target.getHostName().equals("192.168.0.5")) {
+							return null;
+						}
+						return super.determineProxy(target, request, context);
+					}
+
+				}).build();
+		restTemplate.setRequestFactory(
+				new HttpComponentsClientHttpRequestFactory(httpClient));
+	}
+
+}
+```
+
+最后，最极端（也很少使用）的选择是创建自己的 `RestTemplateBuilder` bean。这样做会关闭 `RestTemplateBuilder` 的自动配置，并阻止使用任何 `RestTemplateCustomizer` bean。
+
+<a id="boot-features-webclient"></a>
+
+## 35、使用 `WebClient` 调用 REST 服务
+
+如果在 classpath 上存在 Spring WebFlux，则还可以选择使用 `WebClient` 来调用远程 REST 服务。与 `RestTemplate` 相比，该客户端更具函数式风格并且完全响应式。您可以在 [Spring Framework 文档的相关部分](https://docs.spring.io/spring/docs/5.1.3.RELEASE/spring-framework-reference/web-reactive.html#webflux-client)中了解有关 `WebClient` 的更多信息。
+
+Spring Boot 为您创建并预配置了一个 `WebClient.Builder`。强烈建议将其注入您的组件中并使用它来创建 `WebClient` 实例。Spring Boot 配置该构建器以共享 HTTP 资源，以与服务器相同的方式反射编解码器设置（请参阅 [WebFlux HTTP 编解码器自动配置](#boot-features-webflux-httpcodecs)）等。
+
+以下代码是一个典型示例：
+
+```java
+@Service
+public class MyService {
+
+	private final WebClient webClient;
+
+	public MyService(WebClient.Builder webClientBuilder) {
+		this.webClient = webClientBuilder.baseUrl("http://example.org").build();
+	}
+
+	public Mono<Details> someRestCall(String name) {
+		return this.webClient.get().uri("/{name}/details", name)
+						.retrieve().bodyToMono(Details.class);
+	}
+
+}
+```
+
+<a id="boot-features-webclient-runtime"></a>
+
+### 35.1、WebClient 运行时
+
+Spring Boot 将自动检测用于驱动 `WebClient` 的 `ClientHttpConnector`，具体取决于应用程序 classpath 上可用的类库。目前支持 Reactor Netty 和 Jetty RS 客户端。
+
+默认情况下 `spring-boot-starter-webflux` starter 依赖于 `io.projectreactor.netty:reactor-netty`，它包含了服务器和客户端的实现。如果您选择将 `Jetty` 用作响应式服务器，则应添加 Jetty Reactive HTTP 客户端库依赖项 `org.eclipse.jetty:jetty-reactive-httpclient`。服务器和客户端使用相同的技术具有一定优势，因为它会自动在客户端和服务器之间共享 HTTP 资源。
+
+开发人员可以通过提供自定义的 `ReactorResourceFactory` 或 `JettyResourceFactory` bean 来覆盖 Jetty 和 Reactor Netty 的资源配置 —— 这将同时应用于客户端和服务器。
+
+如果您只希望覆盖客户端选项，则可以定义自己的 `ClientHttpConnector` bean 并完全控制客户端配置。
+
+您可以在 [Spring Framework 参考文档中了解有关 `WebClient` 配置选项的更多信息](https://docs.spring.io/spring/docs/5.1.3.RELEASE/spring-framework-reference/web-reactive.html#webflux-client-builder)。
+
+<a id="boot-features-webclient-customization"></a>
+
+### 35.2、自定义 WebClient
+
+`WebClient` 自定义有三种主要方法，具体取决于您希望自定义的程度。
+
+要想自定义的范围尽可能地窄，请注入自动配置的 `WebClient.Builder`，然后根据需要调用其方法。`WebClient.Builder` 实例是有状态的：构建器上的任何更改都会影响到之后所有使用它创建的客户端。如果要使用相同的构建器创建多个客户端，可以考虑使用 `WebClient.Builder other = builder.clone();` 的方式克隆构建器。
+
+要在应用程序范围内对所有 `WebClient.Builder` 实例添加自定义，可以声明 `WebClientCustomizer` bean 并在注入点局部更改 `WebClient.Builder`。
+
+最后，您可以回退到原始 API 并使用 `WebClient.create()`。在这种情况下，不会应用自动配置或 `WebClientCustomizer`。
+
+<a id="boot-features-validation"></a>
+
+## 36、验证
+
+只要 classpath 上存在 JSR-303 实现（例如 Hibernate 验证器），就会自动启用 Bean Validation 1.1 支持的方法验证功能。这允许 bean 方法在其参数和/或返回值上使用 `javax.validation` 约束进行注解。带有此类注解方法的目标类需要在类级别上使用 `@Validated` 进行注解，以便搜索其内联约束注解的方法。
+
+例如，以下服务触发第一个参数的验证，确保其大小在 8 到 10 之间：
+
+```java
+@Service
+@Validated
+public class MyBean {
+
+	public Archive findByCodeAndAuthor(@Size(min = 8, max = 10) String code,
+			Author author) {
+		...
+	}
+
+}
+```
+
+<a id="boot-features-email"></a>
+
+## 37、发送邮件
+
+Spring Framework 提供了一个使用 `JavaMailSender` 接口发送电子邮件的简单抽象，Spring Boot 为其提供了自动配置以及一个 starter 模块。
+
+**提示**
+
+> 有关如何使用 `JavaMailSender` 的详细说明，请参阅[参考文档](https://docs.spring.io/spring/docs/5.1.3.RELEASE/spring-framework-reference/integration.html#mail)。
+
+如果 `spring.mail.host` 和相关库（由 `spring-boot-starter-mail` 定义）可用，则创建默认的 `JavaMailSender`（如果不存在）。可以通过 `spring.mail` 命名空间中的配置项进一步自定义发件人。有关更多详细信息，请参阅 [`MailProperties`](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/mail/MailProperties.java)。
+
+特别是，某些默认超时时间的值是无限的，您可能想更改它以避免线程被无响应的邮件服务器阻塞，如下示例所示：
+
+```ini
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=3000
+spring.mail.properties.mail.smtp.writetimeout=5000
+```
+
+也可以使用 JNDI 中的现有 `Session` 配置一个 `JavaMailSender`：
+
+```ini
+spring.mail.jndi-name=mail/Session
+```
+
+设置 `jndi-name` 时，它优先于所有其他与 `Session` 相关的设置。
+
+<a id="boot-features-jta"></a>
+
+## 38、JTA 分布式事务
+
+Spring Boot 通过使用 [Atomikos](http://www.atomikos.com/) 或 [Bitronix](https://github.com/bitronix/btm) 嵌入式事务管理器来支持跨多个 XA 资源的分布式 JTA 事务。部署在某些 Java EE 应用服务器（Application Server）上也支持 JTA 事务。
+
+当检测到 JTA 环境时，Spring 的 `JtaTransactionManager` 将用于管理事务。自动配置的 JMS、DataSource 和 JPA bean 已升级为支持 XA 事务。您可以使用标准的 Spring 方式（例如 `@Transactional`）来使用分布式事务。如果您处于 JTA 环境中并且仍想使用本地事务，则可以将 `spring.jta.enabled` 属性设置为 `false` 以禁用 JTA 自动配置。
+
+<a id="boot-features-jta-atomikos"></a>
+
+### 38.1、使用 Atomikos 事务管理器
+
+[Atomikos](https://www.atomikos.com/) 是一个流行的开源事务管理器，可以嵌入到 Spring Boot 应用程序中。您可以使用 `spring-boot-starter-jta-atomikos` starter 来获取相应的 Atomikos 库。Spring Boot 自动配置 Atomikos 并确保将合适的依赖设置应用于 Spring bean，以确保启动和关闭顺序正确。
+
+默认情况下，Atomikos 事务日志将写入应用程序主目录（应用程序 jar 文件所在的目录）中的 `transaction-logs` 目录。您可以通过在 `application.properties` 文件中设置 `spring.jta.log-dir` 属性来自定义此目录的位置。也可用 `spring.jta.atomikos.properties` 开头的属性来自定义 Atomikos `UserTransactionServiceImp`。有关完整的详细信息，请参阅 [AtomikosProperties Javadoc](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/api/org/springframework/boot/jta/atomikos/AtomikosProperties.html)。
+
+**注意**
+
+> 为确保多个事务管理器可以安全地协调相同的资源管理器，必须为每个 Atomikos 实例配置唯一 ID。默认情况下，此 ID 是运行 Atomikos 的计算机的 IP 地址。在生产环境中要确保唯一性，应为应用程序的每个实例配置 `spring.jta.transaction-manager-id` 属性，并使用不同的值。
+
+<a id="boot-features-jta-bitronix"></a>
+
+### 38.2、使用 Bitronix 事务管理器
+
+[Bitronix](https://github.com/bitronix/btm) 是一个流行的开源 JTA 事务管理器实现。您可以使用 `spring-boot-starter-jta-bitronix` starter 为您的项目添加合适的 Bitronix 依赖。与 Atomikos 一样，Spring Boot 会自动配置 Bitronix 并对 bean 进行后处理（post-processes），以确保启动和关闭顺序正确。
+
+默认情况下，Bitronix 事务日志文件（`part1.btm` 和 `part2.btm`）将写入应用程序主目录中的 `transaction-logs` 目录。您可以通过设置 `spring.jta.log-dir` 属性来自定义此目录的位置。以 `spring.jta.bitronix.properties` 开头的属性绑定到了 `bitronix.tm.Configuration` bean，允许完全自定义。有关详细信息，请参阅 [Bitronix 文档](https://github.com/bitronix/btm/wiki/Transaction-manager-configuration)。
+
+**注意**
+
+> 为确保多个事务管理器能够安全地协调相同的资源管理器，必须为每个 Bitronix 实例配置唯一的 ID。默认情况下，此 ID 是运行 Bitronix 的计算机的 IP 地址。生产环境要确保唯一性，应为应用程序的每个实例配置 `spring.jta.transaction-manager-id` 属性，并使用不同的值。
+
+<a id="boot-features-jta-javaee"></a>
+
+### 38.3、使用 Java EE 管理的事务管理器
+
+如果将 Spring Boot 应用程序打包为 `war` 或 `ear` 文件并将其部署到 Java EE 应用程序服务器，则可以使用应用程序服务器的内置事务管理器。Spring Boot 尝试通过查找常见的 JNDI 位置（`java:comp/UserTransaction`、`java:comp/TransactionManager` 等）来自动配置事务管理器。如果使用应用程序服务器提供的事务服务，通常还需要确保所有资源都由服务器管理并通过 JNDI 暴露。Spring Boot 尝试通过在 JNDI 路径（`java:/JmsXA` 或 `java:/JmsXA`）中查找 `ConnectionFactory` 来自动配置 JMS，并且可以使用 [`spring.datasource.jndi-name` 属性](#boot-features-connecting-to-a-jndi-datasource)来配置 `DataSource`。
+
+<a id="boot-features-jta-mixed-jms"></a>
+
+### 38.4、混合使用 XA 与非 XA JMS 连接
+
+使用 JTA 时，主 JMS `ConnectionFactory` bean 可识别 XA 并参与分布式事务。在某些情况下，您可能希望使用非 XA `ConnectionFactory` 处理某些 JMS 消息。例如，您的 JMS 处理逻辑可能需要比 XA 超时时间更长的时间。
+
+如果要使用非 XA `ConnectionFactory`，可以注入 `nonXaJmsConnectionFactory` bean 而不是 `@Primary` `jmsConnectionFactory` bean。为了保持一致性，提供的 `jmsConnectionFactory` bean 还需要使用 `xaJmsConnectionFactory` 别名。
+
+以下示例展示了如何注入 `ConnectionFactory` 实例：
+
+```java
+// Inject the primary (XA aware) ConnectionFactory
+@Autowired
+private ConnectionFactory defaultConnectionFactory;
+
+// Inject the XA aware ConnectionFactory (uses the alias and injects the same as above)
+@Autowired
+@Qualifier("xaJmsConnectionFactory")
+private ConnectionFactory xaConnectionFactory;
+
+// Inject the non-XA aware ConnectionFactory
+@Autowired
+@Qualifier("nonXaJmsConnectionFactory")
+private ConnectionFactory nonXaConnectionFactory;
+```
+
+<a id="boot-features-jta-supporting-alternative-embedded"></a>
+
+## 38.5、支持嵌入式事务管理器
+
+[`XAConnectionFactoryWrapper`](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jms/XAConnectionFactoryWrapper.java) 和 [`XADataSourceWrapper`](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jdbc/XADataSourceWrapper.java) 接口可用于支持其他嵌入式事务管理器。接口负责包装 `XAConnectionFactory` 和 `XADataSource` bean，并将它们公开为普通的 `ConnectionFactory` 和 `DataSource` bean，它们透明地加入分布式事务。`DataSource` 和 JMS 自动配置使用 JTA 变体，前提是您需要有一个 `JtaTransactionManager` bean 和在 `ApplicationContext` 中注册有的相应 XA 包装器（wrapper） bean。
+
+[BitronixXAConnectionFactoryWrapper](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jta/bitronix/BitronixXAConnectionFactoryWrapper.java) 和 [BitronixXADataSourceWrapper](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jta/bitronix/BitronixXADataSourceWrapper.java) 为如何编写 XA 包装器提供了很好示例。
+
 **待续……**

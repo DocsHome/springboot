@@ -258,11 +258,19 @@
             - [33.3.2、接收消息](pages/spring-boot-features.md#boot-features-kafka-receiving-a-message)
             - [33.3.3、Kafka Stream](pages/spring-boot-features.md#boot-features-kafka-streams)
             - [33.3.4、其他 Kafka 属性](pages/spring-boot-features.md#boot-features-kafka-extra-props)
-    - 34、使用 `RestTemplate` 调用 REST 服务
-    - 35、使用 `WebClient` 调用 REST 服务
-    - 36、验证
-    - 37、发送邮件
-    - 38、JTA 分布式事务
+    - [34、使用 `RestTemplate` 调用 REST 服务](pages/spring-boot-features.md#boot-features-resttemplate)
+        - [34.1、自定义 RestTemplate](pages/spring-boot-features.md#boot-features-resttemplate-customization)
+        - [34、使用 `RestTemplate` 调用 REST 服务](pages/spring-boot-features.md#boot-features-resttemplate)
+    - [35、使用 `WebClient` 调用 REST 服务](pages/spring-boot-features.md#boot-features-webclient)
+        - [35.1、WebClient 运行时](pages/spring-boot-features.md#boot-features-webclient-runtime)
+        - [35.2、自定义 WebClient](pages/spring-boot-features.md#boot-features-webclient-customization)
+    - [36、验证](pages/spring-boot-features.md#boot-features-validation)
+    - [37、发送邮件](pages/spring-boot-features.md#boot-features-email)
+    - [38、JTA 分布式事务](pages/spring-boot-features.md#boot-features-jta)
+        - [38.1、使用 Atomikos 事务管理器](pages/spring-boot-features.md#boot-features-jta-atomikos)
+        - [38.2、使用 Bitronix 事务管理器](pages/spring-boot-features.md#boot-features-jta-bitronix)
+        - [38.3、使用 Java EE 管理的事务管理器](pages/spring-boot-features.md#boot-features-jta-javaee)
+        - [38.4、混合使用 XA 与非 XA JMS 连接](pages/spring-boot-features.md#boot-features-jta-mixed-jms)
     - 39、Hazelcast
     - 40、Quartz 调度器
     - 41、任务执行与调度
