@@ -271,17 +271,17 @@
         - [38.2、使用 Bitronix 事务管理器](pages/spring-boot-features.md#boot-features-jta-bitronix)
         - [38.3、使用 Java EE 管理的事务管理器](pages/spring-boot-features.md#boot-features-jta-javaee)
         - [38.4、混合使用 XA 与非 XA JMS 连接](pages/spring-boot-features.md#boot-features-jta-mixed-jms)
-    - 39、Hazelcast
-    - 40、Quartz 调度器
-    - 41、任务执行与调度
-    - 42、Spring Integration
-    - 43、Spring Session
-    - 44、通过 JMX 监控和管理
+    - [39、Hazelcast](pages/spring-boot-features.md#boot-features-hazelcast)
+    - [40、Quartz 调度器](pages/spring-boot-features.md#boot-features-quartz)
+    - [41、任务执行与调度](pages/spring-boot-features.md#boot-features-task-execution-scheduling)
+    - [42、Spring Integration](pages/spring-boot-features.md#boot-features-integration)
+    - [43、Spring Session](pages/spring-boot-features.md#boot-features-session)
+    - [44、通过 JMX 监控和管理](pages/spring-boot-features.md#boot-features-jmx)
     - 45、测试
-    - 46、WebSocket
-    - 47、Web Service
-    - 48、使用 `WebServiceTemplate` 调用 Web Service
-    - 49、创建自己的自动配置
-    - 50、Kotlin 支持
-    - 51、下一步
+    - [46、WebSocket](pages/spring-boot-features.md#boot-features-websockets)
+    - [47、Web Service](pages/spring-boot-features.md#boot-features-webservices)
+        - [47.1、使用 `WebServiceTemplate` 调用 Web Service](pages/spring-boot-features.md#boot-features-webservices-template)
+    - 48、创建自己的自动配置
+    - 49、Kotlin 支持
+    - 50、下一步
 

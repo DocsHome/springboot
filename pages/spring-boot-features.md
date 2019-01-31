@@ -504,12 +504,12 @@ Spring Framework 提供了两个便捷类，可用于加载 YAML 文档。`YamlP
 
 ```yaml
 environments:
-	dev:
-		url: http://dev.example.com
-		name: Developer Setup
-	prod:
-		url: http://another.example.com
-		name: My Cool App
+  dev:
+	url: http://dev.example.com
+    name: Developer Setup
+  prod:
+	url: http://another.example.com
+	name: My Cool App
 ```
 
 前面的示例将转换为以下属性（properties）：
@@ -526,8 +526,8 @@ YAML 列表表示带有 `[index]` 下标引用的属性键。例如以下 YAML�
 ```yaml
 my:
 servers:
-	- dev.example.com
-	- another.example.com
+  - dev.example.com
+  - another.example.com
 ```
 
 以上示例将转成以下属性：
@@ -565,17 +565,17 @@ public class Config {
 
 ```yaml
 server:
-	address: 192.168.1.100
+  address: 192.168.1.100
 ---
 spring:
-	profiles: development
+  profiles: development
 server:
-	address: 127.0.0.1
+  address: 127.0.0.1
 ---
 spring:
-	profiles: production & eu-central
+  profiles: production & eu-central
 server:
-	address: 192.168.1.120
+  address: 192.168.1.120
 ```
 
 在前面示例中，如果 `development` profile 处于激活状态，则 `server.address` 属性得值为 `127.0.0.1`。 同样，如果 `production` 和 `eu-central` profile 处于激活状态，则 `server.address` 属性的值为 `192.168.1.120`。如果未激活 `development`、`production` 或 `eu-central` profile，则该属性的值为 `192.168.1.100`。
@@ -4641,10 +4641,258 @@ private ConnectionFactory nonXaConnectionFactory;
 
 <a id="boot-features-jta-supporting-alternative-embedded"></a>
 
-## 38.5、支持嵌入式事务管理器
+### 38.5、支持嵌入式事务管理器
 
 [`XAConnectionFactoryWrapper`](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jms/XAConnectionFactoryWrapper.java) 和 [`XADataSourceWrapper`](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jdbc/XADataSourceWrapper.java) 接口可用于支持其他嵌入式事务管理器。接口负责包装 `XAConnectionFactory` 和 `XADataSource` bean，并将它们公开为普通的 `ConnectionFactory` 和 `DataSource` bean，它们透明地加入分布式事务。`DataSource` 和 JMS 自动配置使用 JTA 变体，前提是您需要有一个 `JtaTransactionManager` bean 和在 `ApplicationContext` 中注册有的相应 XA 包装器（wrapper） bean。
 
 [BitronixXAConnectionFactoryWrapper](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jta/bitronix/BitronixXAConnectionFactoryWrapper.java) 和 [BitronixXADataSourceWrapper](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jta/bitronix/BitronixXADataSourceWrapper.java) 为如何编写 XA 包装器提供了很好示例。
+
+<a name="boot-features-hazelcast"></a>
+
+## 39、Hazelcast
+
+如果 [Hazelcast](https://hazelcast.com/) 在 classpath 上并有合适的配置，则 Spring Boot 会自动配置一个可以在应用程序中注入的 `HazelcastInstance`。
+
+如果定义了 `com.hazelcast.config.Config` bean，则 Spring Boot 会使用它。如果您的配置定义了实例名称，Spring Boot 会尝试查找现有的实例，而不是创建新实例。
+
+您还可以通过配置指定要使用的 `hazelcast.xml` 配置文件，如下所示：
+
+```ini
+spring.hazelcast.config=classpath:config/my-hazelcast.xml
+```
+
+否则，Spring Boot 会尝试从默认位置查找 Hazelcast 配置：工作目录或 classpath 根目录中的 `hazelcast.xml` 。我们还检查是否设置了 `hazelcast.config` 系统属性。有关更多详细信息，请参阅 [Hazelcast 文档](http://docs.hazelcast.org/docs/latest/manual/html-single/)。
+
+如果 classpath 中存在 `hazelcast-client`，则 Spring Boot 会首先尝试通过检查以下配置项来创建客户端：
+
+- 存在 `com.hazelcast.client.config.ClientConfig` bean。
+- `spring.hazelcast.config` 属性定义的配置文件。
+- 存在 `hazelcast.client.config` 系统属性。
+- 工作目录中或 classpath 根目录下的 `hazelcast-client.xml`。
+
+**注意**
+
+> Spring Boot 还为 Hazelcast 提供了[缓存支持](#boot-features-caching-provider-hazelcast)。如果启用了缓存，`HazelcastInstance` 将自动包装在 `CacheManager` 实现中。
+
+<a name="boot-features-quartz"></a>
+
+## 40、Quartz 调度器
+
+Spring Boot 提供了几种使用 [Quartz 调度器](http://www.quartz-scheduler.org/)的便捷方式，它们来自 `spring-boot-starter-quartz` starter。如果 Quartz 可用，则 Spring Boot 将自动配置 `Scheduler`（通过 `SchedulerFactoryBean` 抽象）。
+
+自动选取以下类型的 Bean 并将其与 `Scheduler` 关联起来：
+
+- `JobDetail`：定义一个特定的 job。可以使用 `JobBuilder` API 构建 `JobDetail` 实例。
+- `Calendar`。
+- `Trigger`：定义何时触发 job。
+
+默认使用内存存储方式的 `JobStore`。 但如果应用程序中有 `DataSource` bean，并且配置了 `spring.quartz.job-store-type` 属性，则可以配置基于 JDBC 的存储，如下所示：
+
+```ini
+spring.quartz.job-store-type=jdbc
+```
+
+使用 JDBC 存储时，可以在启动时初始化 schema（表结构），如下所示：
+
+```ini
+spring.quartz.jdbc.initialize-schema=always
+```
+
+**警告**
+
+> 默认将使用 Quartz 库提供的标准脚本检测并初始化数据库。这些脚本会删除现有表，在每次重启时删除所有触发器。可以通过设置 `spring.quartz.jdbc.schema` 属性来提供自定义脚本。
+
+要让 Quartz 使用除应用程序主 `DataSource` 之外的 `DataSource`，请声明一个 `DataSource` bean，使用 `@QuartzDataSource` 注解其 `@Bean` 方法。这样做可确保 `SchedulerFactoryBean` 和 schema 初始化都使用 Quartz 指定的 `DataSource`。
+
+默认情况下，配置创建的 job 不会覆盖已从持久 job 存储读取的已注册的 job。要启用覆盖现有的 job 定义，请设置 `spring.quartz.overwrite-existing-jobs` 属性。
+
+Quartz 调取器配置可以使用 `spring.quartz` 属性和 `SchedulerFactoryBeanCustomizer` bean 进行自定义，它们允许以编程方式的 SchedulerFactoryBean 自定义。可以使用 `spring.quartz.properties.*` 自定义高级 Quartz 配置属性。
+
+**注意**
+
+> 需要强调的是，`Executor` bean 与调度程序没有关联，因为 Quartz 提供了通过 `spring.quartz.properties` 配置调度器的方法。如果需要自定义执行器，请考虑实现 `SchedulerFactoryBeanCustomizer`。
+
+job 可以定义 `setter` 以注入数据映射属性。也可以以类似的方式注入常规的 bean，如下所示：
+
+```java
+public class SampleJob extends QuartzJobBean {
+
+	private MyService myService;
+
+	private String name;
+
+	// Inject "MyService" bean
+	public void setMyService(MyService myService) { ... }
+
+	// Inject the "name" job data property
+	public void setName(String name) { ... }
+
+	@Override
+	protected void executeInternal(JobExecutionContext context)
+			throws JobExecutionException {
+		...
+	}
+
+}
+```
+
+<a name="boot-features-task-execution-scheduling"></a>
+
+## 41、任务执行与调度
+
+在上下文中没有 `Executor` bean 的情况下，Spring Boot 会自动配置一个有合理默认值的 `ThreadPoolTask​​Executor`，它可以自动与异步任务执行（`@EnableAsync`）和 Spring MVC 异步请求处理相关联。
+
+**提示**
+
+<blockquote>
+
+如果您在上下文中定义了自定义 `Executor`，则常规任务执行（即 `@EnableAsync`）将透明地使用它，但不会配置 Spring MVC 支持，因为它需要 `AsyncTaskExecutor` 实现（名为 `applicationTaskExecutor`）。根据您的目标安排，您可以将 `Executor` 更改为 `ThreadPoolTask​​Executor`，或者定义 `Executor的ThreadPoolTask​​Executor` 和 `AsyncConfigurer` 来包装自定义的 `Executor`。
+
+您可以使用自动配置的 `TaskExecutorBuilder` 来轻松创建实例，以复制默认的自动配置。
+
+</blockquote>
+
+线程池使用 8 个核心线程，可根据负载情况增加和减少。可以使用 `spring.task.execution` 命名空间对这些默认设置进行微调，如下所示：
+
+```ini
+spring.task.execution.pool.max-threads=16
+spring.task.execution.pool.queue-capacity=100
+spring.task.execution.pool.keep-alive=10s
+```
+
+这会将线程池更改为使用有界队列，在队列满（100 个任务）时，线程池将增加到最多 16 个线程。当线程在闲置10 秒（而不是默认的 60 秒）时回收线程，池的收缩更为明显。
+
+如果需要与调度任务执行（`@EnableScheduling`）相关联，可以自动配置一个 `ThreadPoolTaskScheduler`。默认情况下，线程池使用一个线程，可以使用 `spring.task.scheduling` 命名空间对这些设置进行微调。
+
+如果需要创建自定义执行器或调度器，则在上下文中可以使用 `TaskExecutorBuilder` bean 和 `TaskSchedulerBuilder` bean。
+
+<a name="boot-features-integration"></a>
+
+## 42、Spring Integration
+
+Spring Boot 为 [Spring Integration](https://projects.spring.io/spring-integration/) 提供了一些便捷的使用方式，它们包含在 `spring-boot-starter-integration` starter 中。Spring Integration 为消息传递以及其他传输（如 HTTP、TCP 等）提供了抽象。如果 classpath 上存在 Spring Integration，则 Spring Boot 会通过 `@EnableIntegration` 注解对其进行初始化。
+
+Spring Boot 还配置了一些由其他 Spring Integration 模块触发的功能。如果 `spring-integration-jmx` 也在 classpath 上，则消息处理统计信息将通过 JMX 发布。如果 `spring-integration-jdbc` 可用，则可以在启动时创建默认数据库模式，如下所示：
+
+```ini
+spring.integration.jdbc.initialize-schema=always
+```
+
+有关更多详细信息，请参阅 [IntegrationAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/v2.1.2.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/integration/IntegrationAutoConfiguration.java) 和 [IntegrationProperties](https://github.com/spring-projects/spring-boot/tree/v2.1.2.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/integration/IntegrationProperties.java) 类。
+
+默认情况下，如果存在 Micrometer `meterRegistry` bean，则 Micrometer 将管理 Spring Integration 的指标。如果您希望使用旧版 Spring Integration 度量，请将 `DefaultMetricsFactory` bean 添加到应用程序上下文中。
+
+<a name="boot-features-session"></a>
+
+## 43、Spring Session
+
+Spring Boot 为各种数据存储提供 [Spring Session](https://projects.spring.io/spring-session/) 自动配置。在构建 Servlet Web 应用程序时，可以自动配置以下存储：
+
+- JDBC
+- Redis
+- Hazelcast
+- MongoDB
+
+构建响应式 Web 应用程序时，可以自动配置以下存储：
+
+- Redis
+- MongoDB
+
+如果 classpath 上存在单个 Spring Session 模块，则 Spring Boot 会自动使用该存储实现。如果您有多个实现，则必须选择要用于存储会话的 [`StoreType`](https://github.com/spring-projects/spring-boot/tree/v2.1.2.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/session/StoreType.java)。 例如，要使用 JDBC 作为后端存储，您可以按如下方式配置应用程序：
+
+```ini
+spring.session.store-type=jdbc
+```
+
+**提示**
+
+> 可以将 `store-type` 设置为 `none` 来禁用 Spring Session。
+
+每个 store 都有自己的额外设置。例如，可以为 JDBC 存储定制表的名称，如下所示：
+
+```ini
+spring.session.jdbc.table-name=SESSIONS
+```
+
+可以使用 `spring.session.timeout` 属性来设置会话的超时时间。如果未设置该属性，则自动配置将使用 `server.servlet.session.timeout` 的值。
+
+<a name="boot-features-jmx"></a>
+
+## 44、通过 JMX 监控和管理
+
+Java Management Extensions（JMX，Java 管理扩展）提供了一种监视和管理应用程序的标准机制。默认情况下，Spring Boot 会创建一个 ID 为 `mbeanServer` 的 `MBeanServer` bean，并暴露使用 Spring JMX 注解（`@ManagedResource`、`@ManagedAttribute` 或 `@ManagedOperation`）的 bean。
+
+有关更多详细信息，请参阅 [`JmxAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/v2.1.2.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jmx/JmxAutoConfiguration.java) 类。
+
+<a name="boot-features-testing"></a>
+
+## 45、测试
+
+<a name="boot-features-websockets"></a>
+
+## 46、WebSocket
+
+Spring Boot 为内嵌式 Tomcat、Jetty 和 Undertow 提供了 WebSocket 自动配置。如果将 war 文件部署到独立容器，则 Spring Boot 假定容器负责配置其 WebSocket 支持。
+
+Spring Framework 为 MVC Web 应用程序提供了[丰富的 WebSocket 支持](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#websocket)，可以通过 `spring-boot-starter-websocket` 模块轻松访问。
+
+WebSocket 支持也可用于[响应式 Web 应用程序](https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web-reactive.html#webflux-websocket)，并且引入 WebSocket API 以及 `spring-boot-starter-webflux`：
+
+```xml
+<dependency>
+	<groupId>javax.websocket</groupId>
+	<artifactId>javax.websocket-api</artifactId>
+</dependency>
+```
+
+<a name="boot-features-webservices"></a>
+
+## 47、Web Service
+
+Spring Boot 提供 Web Service 自动配置，因此您要做的就是定义 `Endpoints`。
+
+可以使用 `spring-boot-starter-webservices` 模块轻松访问 [Spring Web Service 功能](https://docs.spring.io/spring-ws/docs/3.0.6.RELEASE/reference/)。
+
+可以分别为 WSDL 和 XSD 自动创建 `SimpleWsdl11Definition` 和 `SimpleXsdSchema` bean。为此，请配置其位置，如下所示：
+
+```ini
+spring.webservices.wsdl-locations=classpath:/wsdl
+```
+
+<a name="boot-features-webservices-template"></a>
+
+### 47.1、使用 `WebServiceTemplate` 调用 Web Service
+
+如果您需要从应用程序调用远程 Web 服务，则可以使用 `WebServiceTemplate` 类。由于 `WebServiceTemplate` 实例在使用之前通常需要进行自定义，因此 Spring Boot 不提供任何自动配置的 `WebServiceTemplate` bean。但是，它会自动配置 `WebServiceTemplateBuilder`，可在需要创建 `WebServiceTemplate` 实例时使用。
+
+以下代码为一个典型示例：
+
+```java
+@Service
+public class MyService {
+
+	private final WebServiceTemplate webServiceTemplate;
+
+	public MyService(WebServiceTemplateBuilder webServiceTemplateBuilder) {
+		this.webServiceTemplate = webServiceTemplateBuilder.build();
+	}
+
+	public DetailsResp someWsCall(DetailsReq detailsReq) {
+		 return (DetailsResp) this.webServiceTemplate.marshalSendAndReceive(detailsReq, new SoapActionCallback(ACTION));
+
+	}
+
+}
+```
+
+默认情况下，`WebServiceTemplateBuilder` 使用 classpath 上的可用 HTTP 客户端库检测合适的基于 HTTP 的 `WebServiceMessageSender`。您还可以按如下方式自定义读取和连接的超时时间：
+
+```java
+@Bean
+public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
+	return builder.messageSenders(new HttpWebServiceMessageSenderBuilder()
+			.setConnectTimeout(5000).setReadTimeout(2000).build()).build();
+}
+```
 
 **待续……**
