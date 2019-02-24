@@ -12,6 +12,28 @@
 
 [Github](https://github.com/DocsHome/springboot/blob/master/SUMMARY.md) | [Gitbook](https://www.gitbook.com/book/docshome/springboot)
 
+## 安装
+
+本项目使用 [GitBook](https://www.gitbook.com) 生成文档，如果您想在本地运行项目，请先安装 GitBook。
+
+安装 GitBook 命令行工具（请确保您已经安装了 [Node.js](https://nodejs.org) 和 npm）。
+
+```bash
+npm install gitbook-cli -g
+```
+
+进入项目根目录，执行以下命令安装 gitbook 依赖：
+
+```bash
+gitbook install
+```
+
+启动本地服务器
+
+```bash
+gitbook serve
+```
+
 ## 项目状态
 
 翻译中……

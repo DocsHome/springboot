@@ -1233,7 +1233,7 @@ Spring Boot 使用 [Commons Logging](https://commons.apache.org/logging) 记录�
 
 Spring Boot 默认日志输出类似于以下示例：
 
-```console
+```
 2014-03-05 10:57:51.112  INFO 45469 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/7.0.52
 2014-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
 2014-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1358 ms
@@ -1261,7 +1261,7 @@ Spring Boot 默认日志输出类似于以下示例：
 
 默认日志配置会在写入时将消息回显到控制台。默认情况下，会记录 `ERROR`、`WARN` 和 `INFO` 级别的日志。您还可以通过使用 `--debug` 标志启动应用程序来启用**调试**模式。
 
-```console
+```bash
 $ java -jar myapp.jar --debug
 ```
 
@@ -1438,7 +1438,7 @@ Spring Boot 包含以下预定义的日志记录组，可以直接使用：
 
 您可以通过仅覆盖 `LOG_LEVEL_PATTERN`（或带 Logback 的 `logging.pattern.level`）将 MDC 和其他特别的内容添加到日志行。例如，如果使用 `logging.pattern.level=user:%X{user} %5p`，则默认日志格式包含 **user** MDC 项（如果存在），如下所示:
 
-```console
+```
 2015-09-30 12:30:04.031 user:someone INFO 22174 --- [  nio-8080-exec-0] demo.Controller
 Handling authenticated request
 ```
@@ -1459,7 +1459,7 @@ Spring Boot 包含许多 Logback 扩展，可用于进行高级配置。您可�
 
 > 扩展不能与 Logback 的[配置扫描](http://logback.qos.ch/manual/configuration.html#autoScan)一起使用。如果尝试这样做，更改配置文件会导致发生类似以下错误日志：
 
-```console
+```
 ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
 ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
 ```
@@ -4647,7 +4647,7 @@ private ConnectionFactory nonXaConnectionFactory;
 
 [BitronixXAConnectionFactoryWrapper](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jta/bitronix/BitronixXAConnectionFactoryWrapper.java) 和 [BitronixXADataSourceWrapper](https://github.com/spring-projects/spring-boot/tree/v2.1.1.RELEASE/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jta/bitronix/BitronixXADataSourceWrapper.java) 为如何编写 XA 包装器提供了很好示例。
 
-<a name="boot-features-hazelcast"></a>
+<a id="boot-features-hazelcast"></a>
 
 ## 39、Hazelcast
 
@@ -4674,7 +4674,7 @@ spring.hazelcast.config=classpath:config/my-hazelcast.xml
 
 > Spring Boot 还为 Hazelcast 提供了[缓存支持](#boot-features-caching-provider-hazelcast)。如果启用了缓存，`HazelcastInstance` 将自动包装在 `CacheManager` 实现中。
 
-<a name="boot-features-quartz"></a>
+<a id="boot-features-quartz"></a>
 
 ## 40、Quartz 调度器
 
@@ -4736,7 +4736,7 @@ public class SampleJob extends QuartzJobBean {
 }
 ```
 
-<a name="boot-features-task-execution-scheduling"></a>
+<a id="boot-features-task-execution-scheduling"></a>
 
 ## 41、任务执行与调度
 
@@ -4766,7 +4766,7 @@ spring.task.execution.pool.keep-alive=10s
 
 如果需要创建自定义执行器或调度器，则在上下文中可以使用 `TaskExecutorBuilder` bean 和 `TaskSchedulerBuilder` bean。
 
-<a name="boot-features-integration"></a>
+<a id="boot-features-integration"></a>
 
 ## 42、Spring Integration
 
@@ -4782,7 +4782,7 @@ spring.integration.jdbc.initialize-schema=always
 
 默认情况下，如果存在 Micrometer `meterRegistry` bean，则 Micrometer 将管理 Spring Integration 的指标。如果您希望使用旧版 Spring Integration 度量，请将 `DefaultMetricsFactory` bean 添加到应用程序上下文中。
 
-<a name="boot-features-session"></a>
+<a id="boot-features-session"></a>
 
 ## 43、Spring Session
 
@@ -4816,7 +4816,7 @@ spring.session.jdbc.table-name=SESSIONS
 
 可以使用 `spring.session.timeout` 属性来设置会话的超时时间。如果未设置该属性，则自动配置将使用 `server.servlet.session.timeout` 的值。
 
-<a name="boot-features-jmx"></a>
+<a id="boot-features-jmx"></a>
 
 ## 44、通过 JMX 监控和管理
 
@@ -4824,11 +4824,11 @@ Java Management Extensions（JMX，Java 管理扩展）提供了一种监视和�
 
 有关更多详细信息，请参阅 [`JmxAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/v2.1.2.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jmx/JmxAutoConfiguration.java) 类。
 
-<a name="boot-features-testing"></a>
+<a id="boot-features-testing"></a>
 
 ## 45、测试
 
-<a name="boot-features-websockets"></a>
+<a id="boot-features-websockets"></a>
 
 ## 46、WebSocket
 
@@ -4845,7 +4845,7 @@ WebSocket 支持也可用于[响应式 Web 应用程序](https://docs.spring.io/
 </dependency>
 ```
 
-<a name="boot-features-webservices"></a>
+<a id="boot-features-webservices"></a>
 
 ## 47、Web Service
 
@@ -4859,7 +4859,7 @@ Spring Boot 提供 Web Service 自动配置，因此您要做的就是定义 `En
 spring.webservices.wsdl-locations=classpath:/wsdl
 ```
 
-<a name="boot-features-webservices-template"></a>
+<a id="boot-features-webservices-template"></a>
 
 ### 47.1、使用 `WebServiceTemplate` 调用 Web Service
 
@@ -4895,4 +4895,476 @@ public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) 
 }
 ```
 
-**待续……**
+<a id="boot-features-developing-auto-configuration"></a>
+
+## 49、创建自己的自动配置
+
+如果您在公司负责开发公共类库，或者如果您在开发一个开源或商业库，您可能希望开发自己的自动配置。自动配置类可以捆绑在外部 jar 中，他仍然可以被 Spring Boot 获取。
+
+自动配置可以与提供自动配置代码的 starter 以及您将使用的类库库相关联。我们首先介绍构建自己的自动配置需要了解的内容，然后我们将继续介绍[创建自定义 starter 所需的步骤](#boot-features-custom-starter)。
+
+**提示**
+
+> 这里有一个[演示项目](https://github.com/snicoll-demos/spring-boot-master-auto-configuration)展示了如何逐步创建 starter。
+
+<a id="boot-features-understanding-auto-configured-beans"></a>
+
+### 49.1、理解自定配置 Bean
+
+在内部，自动配置使用了标准的 `@Configuration` 类来实现。`@Conditional` 注解用于约束何时应用自动配置。通常，自动配置类使用 `@ConditionalOnClass` 和 `@ConditionalOnMissingBean` 注解。这可确保仅在找到相关类时以及未声明您自己的 `@Configuration` 时才应用自动配置。
+
+您可以浏览 [`spring-boot-autoconfigure`](https://github.com/spring-projects/spring-boot/tree/v2.1.3.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure) 的源代码，以查看 Spring 提供的 `@Configuration` 类（请参阅 [`META-INF/spring.factories`](https://github.com/spring-projects/spring-boot/tree/v2.1.3.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories) 文件）。
+
+<a id="boot-features-locating-auto-configuration-candidates"></a>
+
+### 49.2、找到候选的自动配置
+
+Spring Boot 会检查已发布 jar 中是否存在 `META-INF/spring.factories` 文件。该文件应列出 `EnableAutoConfiguration` key 下的配置类，如下所示：
+
+```ini
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.mycorp.libx.autoconfigure.LibXAutoConfiguration,\
+com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
+```
+
+**注意**
+
+> **必须**以这种方式加载自动配置。确保它们在特定的包空间中定义，并且它们不能是组件扫描的目标。此外，自动配置类不应启用组件扫描以查找其他组件。应该使用特定的`@Imports` 来代替。
+
+如果需要按特定顺序应用配置，则可以使用 [`@AutoConfigureAfter`](https://github.com/spring-projects/spring-boot/tree/v2.1.3.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/AutoConfigureAfter.java) 或 [`@AutoConfigureBefore`](https://github.com/spring-projects/spring-boot/tree/v2.1.3.RELEASE/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/AutoConfigureBefore.java) 注解。例如，如果您提供特定于 Web 的配置，则可能需要在`WebMvcAutoConfiguration` 之后应用您的类。
+
+如果您想排序某些不应该彼此直接了解的自动配置，您也可以使用 `@AutoConfigureOrder`。该注解与常规 `@Order` 注解有相同的语义，但它为自动配置类提供了专用顺序。
+
+<a id="boot-features-condition-annotations"></a>
+
+### 49.3、条件注解
+
+您几乎总希望在自动配置类中包含一个或多个 `@Conditional` 注解。`@ConditionalOnMissingBean` 是一个常用的注解，其允许开发人员在对您的默认值不满意用于覆盖自动配置。
+
+Spring Boot 包含许多 `@Conditional` 注解，您可以通过注解 `@Configuration` 类或单独的 `@Bean` 方法在您自己的代码中复用它们。这些注解包括：
+
+- [第 49.3.1 节，类条件](#boot-features-class-conditions)
+- [第 49.3.2 节，Bean 条件](#boot-features-bean-conditions)
+- [第 49.3.3 节，属性条件](#boot-features-property-conditions)
+- [第 49.3.4 节，资源条件](#boot-features-resource-conditions)
+- [第 49.3.5 节，Web 应用程序条件](#boot-features-web-application-conditions)
+- [第 49.3.6 节，SpEL 表达式条件](#boot-features-spel-conditions)
+
+<a id="boot-features-class-conditions"></a>
+
+#### 49.3.1、类条件
+
+`@ConditionalOnClass` 和 `@ConditionalOnMissingClass` 注解允许根据特定类的是否存在来包含 `@Configuration` 类。由于使用 [ASM](http://asm.ow2.org/) 解析注解元数据，您可以使用 `value` 属性来引用真实类，即使该类实际上可能不会出现在正在运行的应用程序的 classpath 中。如果您希望使用 `String` 值来指定类名，也可以使用 `name` 属性。
+
+此机制不会以相同的方式应用于返回类型是条件的目标的 `@Bean` 方法：在方法上的条件应用之前，JVM 将加载类和可能处理的方法引用，如果找不到类，将发生失败。
+
+要处理这种情况，可以使用单独的 `@Configuration` 类来隔离条件，如下所示：
+
+```java
+@Configuration
+// Some conditions
+public class MyAutoConfiguration {
+
+	// Auto-configured beans
+
+	@Configuration
+	@ConditionalOnClass(EmbeddedAcmeService.class)
+	static class EmbeddedConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public EmbeddedAcmeService embeddedAcmeService() { ... }
+
+	}
+
+}
+```
+
+**提示**
+
+> 如果使用 `@ConditionalOnClass` 或 `@ConditionalOnMissingClass` 作为元注解的一部分来组成自己的组合注解，则必须使用 `name` 来引用类，在这种情况将不作处理。
+
+<a id="boot-features-bean-conditions"></a>
+
+#### 49.3.2、Bean 条件
+
+`@ConditionalOnBean` 和 `@ConditionalOnMissingBean` 注解允许根据特定 bean 是否存在来包含 bean。您可以使用 `value` 属性按类型或使用 `name` 来指定 bean。`search` 属性允许您限制在搜索 bean 时应考虑的 `ApplicationContext` 层次结构。
+
+放置在 `@Bean` 方法上时，目标类型默认为方法的返回类型，如下所示：
+
+```java
+@Configuration
+public class MyAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public MyService myService() { ... }
+
+}
+```
+
+在前面的示例中，如果 `ApplicationContext` 中不包含 `MyService` 类型的 bean，则将创建 `myService` bean。
+
+**提示**
+
+> 您需要非常小心地添加 bean 定义的顺序，因为这些条件是根据到目前为止已处理的内容进行计算的。因此，我们建议在自动配置类上仅使用 `@ConditionalOnBean` 和 `@ConditionalOnMissingBean` 注解（因为这些注解保证在添加所有用户定义的 bean 定义后加载）。
+
+**注意**
+
+> `@ConditionalOnBean` 和 `@ConditionalOnMissingBean` 不会阻止创建 `@Configuration` 类。在类级别使用这些条件并使用注解标记每个包含 `@Bean` 方法的唯一区别是，如果条件不匹配，前者会阻止将 `@Configuration` 类注册为 bean。
+
+<a id="boot-features-property-conditions"></a>
+
+#### 49.3.3、属性条件
+
+`@ConditionalOnProperty` 注解允许基于 Spring Environment 属性包含配置。使用 `prefix` 和 `name` 属性指定需要检查的属性。默认情况下，匹配存在且不等于 `false` 的所有属性。您还可以使用 `havingValue` 和 `matchIfMissing` 属性创建更高级的检查。
+
+<a id="boot-features-resource-conditions"></a>
+
+#### 49.3.4、资源条件
+
+`@ConditionalOnResource` 注解仅允许在存在特定资源时包含配置。可以使用常用的 Spring 约定来指定资源，如下所示：`file:/home/user/test.dat`。
+
+<a id="boot-features-web-application-conditions"></a>
+
+#### 49.3.5、Web 应用程序条件
+
+`@ConditionalOnWebApplication` 和 `@ConditionalOnNotWebApplication` 注解在应用程序为 **Web 应用程序**的情况下是否包含配置。Web 应用程序是使用 Spring `WebApplicationContext`，定义一个 `session` 范围或具有 `StandardServletEnvironment` 的任何应用程序。
+
+<a id="boot-features-spel-conditions"></a>
+
+#### 49.3.6、SpEL 表达式条件
+
+`@ConditionalOnExpression` 注解允许根据 [SpEL 表达式](https://docs.spring.io/spring/docs/5.1.5.RELEASE/spring-framework-reference/core.html#expressions)的结果包含配置。
+
+<a id="boot-features-test-autoconfig"></a>
+
+#### 49.4、测试自动配置
+
+自动配置可能受许多因素的影响：用户配置（`@Bean` 定义和 `Environment` 自定义）、条件评估（存在特定的类库）等。具体而言，每个测试都应该创建一个定义良好的 `ApplicationContext`，它表示这些自定义的组合。`ApplicationContextRunner` 提供了一个好的实现方法。
+
+`ApplicationContextRunner` 通常被定义为测试类的一个字段，用于收集基本的通用配置。以下示例确保始终调用 `UserServiceAutoConfiguration`：
+
+```java
+private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(UserServiceAutoConfiguration.class));
+```
+
+**提示**
+
+> 如果必须定义多个自动配置，则无需按照与运行应用程序时完全相同的顺序调用它们的声明。
+
+每个测试都可以使用 runner 来表示特定的用例。例如，下面的示例调用用户配置（`UserConfiguration`）并检查自动配置是否正确退回。调用 `run` 提供了一个可以与 `Assert4J` 一起使用的回调上下文。
+
+```java
+@Test
+public void defaultServiceBacksOff() {
+	this.contextRunner.withUserConfiguration(UserConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(UserService.class);
+				assertThat(context.getBean(UserService.class)).isSameAs(
+						context.getBean(UserConfiguration.class).myUserService());
+			});
+}
+
+@Configuration
+static class UserConfiguration {
+
+	@Bean
+	public UserService myUserService() {
+		return new UserService("mine");
+	}
+
+}
+```
+
+也可以轻松自定义 `Environment`，如下所示：
+
+```java
+@Test
+public void serviceNameCanBeConfigured() {
+	this.contextRunner.withPropertyValues("user.name=test123").run((context) -> {
+		assertThat(context).hasSingleBean(UserService.class);
+		assertThat(context.getBean(UserService.class).getName()).isEqualTo("test123");
+	});
+}
+```
+
+runner 还可用于展示 `ConditionEvaluationReport`。报告可以在 `INFO` 或 `DEBUG` 级别下打印。以下示例展示如何使用 `ConditionEvaluationReportLoggingListener` 在自动配置测试中打印报表。
+
+```java
+@Test
+public void autoConfigTest {
+	ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
+			LogLevel.INFO);
+	ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withInitializer(initializer).run((context) -> {
+					// Do something...
+			});
+}
+```
+
+<a id="_simulating_a_web_context"></a>
+
+#### 49.4.1、模拟一个 Web 上下文
+
+如果需要测试一个仅在 Servlet 或响应式 Web 应用程序上下文中运行的自动配置，请分别使用 `WebApplicationContextRunner` 或 `ReactiveWebApplicationContextRunner`。
+
+<a id="_overriding_the_classpath"></a>
+
+#### 49.4.2、覆盖 Classpath
+
+还可以测试在运行时不存在特定类和/或包时发生的情况。 Spring Boot附带了一个可以由跑步者轻松使用的FilteredClassLoader。 在以下示例中，我们声明如果UserService不存在，则会正确禁用自动配置：
+
+```java
+@Test
+public void serviceIsIgnoredIfLibraryIsNotPresent() {
+	this.contextRunner.withClassLoader(new FilteredClassLoader(UserService.class))
+			.run((context) -> assertThat(context).doesNotHaveBean("userService"));
+}
+```
+
+<a id="boot-features-custom-starter"></a>
+
+### 49.5、创建自己的 Starter
+
+一个完整的 Spring Boot starter 类库可能包含以下组件：
+
+- `autoconfigure` 模块，包含自动配置代码。
+- `starter` 模块，它提供对 `autoconfigure` 模块依赖关系以及类库和常用的其他依赖关系。简而言之，添加 starter 应该提供该库开始使用所需的一切。
+
+**提示**
+
+> 如果您不想将这两个模块分开，则可以将自动配置代码和依赖关系管理组合在一个模块中。
+
+<a id="boot-features-custom-starter-naming"></a>
+
+#### 49.5.1、命名
+
+您应该确保为您的 starter 提供一个合适的命名空间。即使您使用其他 Maven `groupId`，也不要使用 `spring-boot` 作为模块名称的开头。我们可能会为您以后自动配置的内容提供官方支持。
+
+根据经验，您应该在 starter 后命名一个组合模块。例如，假设您正在为 **acme** 创建一个 starter，并且您将自动配置模块命名为 `acme-spring-boot-autoconfigure`，将 starter 命名为 `acme-spring-boot-starter`。如果您只有一个组合这两者的模块，请将其命名为 `acme-spring-boot-starter`。
+
+此外，如果您的 starter 提供配置 key，请为它们使用唯一的命名空间。尤其是，不要将您的 key 包含在 Spring Boot 使用的命名空间中（例如 `server`、`management`、`spring` 等）。如果您使用了相同的命名空间，我们将来可能会以破坏您的模块的方式来修改这些命名空间。
+
+确[保触发元数据生成](#configuration-metadata-annotation-processor)，以便为您的 key 提供 IDE 帮助。您可能想查看生成的元数据（`META-INF/spring-configuration-metadata.json`）以确保您的 key 记录是否正确。
+
+<a id="boot-features-custom-starter-module-autoconfigure"></a>
+
+#### 49.5.2、`autoconfigure` 模块
+
+`autoconfigure` 模块包含类库开始使用所需的所有内容。它还可以包含配置 key 定义（例如 `@ConfigurationProperties`）和任何可用于进一步自定义组件初始化方式的回调接口。
+
+**提示**
+
+> 您应该将类库的依赖项标记为可选，以便您可以更轻松地在项目中包含 `autoconfigure` 模块。如果以这种方式执行，则不提供类库，默认情况下，Spring Boot 将会退出。
+
+Spring Boot 使用注解处理器来收集元数据文件（`META-INF/spring-autoconfigure-metadata.properties`）中自动配置的条件。如果该文件存在，则用于快速过滤不匹配的自动配置，缩短启动时间。建议在包含自动配置的模块中添加以下依赖项：
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-autoconfigure-processor</artifactId>
+	<optional>true</optional>
+</dependency>
+```
+
+使用 Gradle 4.5 及更早版本时，应在 `compileOnly` 配置中声明依赖项，如下所示：
+
+```groovy
+dependencies {
+	compileOnly "org.springframework.boot:spring-boot-autoconfigure-processor"
+}
+```
+
+使用 Gradle 4.6 及更高版本时，应在 `annotationProcessor` 配置中声明依赖项，如下所示：
+
+```groovy
+dependencies {
+	annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+}
+```
+
+<a id="boot-features-custom-starter-module-starter"></a>
+
+#### 49.5.3、Starter 模块
+
+starter 真的是一个空 jar。它的唯一目的是为使用类库提供必要的依赖项。您可以将其视为使用类库的一切基础。
+
+不要对添加 starter 的项目抱有假设想法。如果您自动配置的库经常需要其他 starter，请一并声明它们。如果可选依赖项的数量很多，则提供一组适当的默认依赖项可能很难，因为您本应该避免包含对常用库的使用不必要的依赖项。换而言之，您不应该包含可选的依赖项。
+
+**注意**
+
+> 无论哪种方式，您的 starter 必须直接或间接引用核心 Spring Boot starter（`spring-boot-starter`）（如果您的 starter 依赖于另一个 starter ，则无需添加它）。如果只使用自定义 starter 创建项目，则 Spring Boot 的核心功能将通过存在的核心 starter 来实现。
+
+
+<a id="boot-features-kotlin"></a>
+
+## 50、Kotlin 支持
+
+[Kotlin](https://kotlinlang.org/) 是一种针对 JVM（和其他平台）的静态类型语言，它可编写出简洁而优雅的代码，同时提供与使用 Java 编写的现有库的[互操作性](https://kotlinlang.org/docs/reference/java-interop.html)。
+
+Spring Boot 通过利用其他 Spring 项目（如 Spring Framework、Spring Data 和 Reactor）的支持来提供 Kotlin 支持。有关更多信息，请参阅 [Spring Framework Kotlin 支持文档](https://docs.spring.io/spring/docs/5.1.5.RELEASE/spring-framework-reference/languages.html#kotlin)。
+
+开始学习 Spring Boot 和 Kotlin 最简单方法是遵循这个[全面教程](https://spring.io/guides/tutorials/spring-boot-kotlin/)。您可以通过 [start.spring.io](https://start.spring.io/#!language=kotlin) 创建新的 Kotlin 项目。如果您需要支持，请免费加入 [Kotlin Slack](http://slack.kotlinlang.org/) 的 #spring 频道或使用 [Stack Overflow](https://stackoverflow.com/questions/tagged/spring+kotlin) 上的 `spring` 和 `kotlin` 标签提问。
+
+<a id="boot-features-kotlin-requirements"></a>
+
+### 50.1、要求
+
+Spring Boot 支持 Kotlin 1.2.x。要使用 Kotlin，classpath 下必须存在 `org.jetbrains.kotlin:kotlin-stdlib` 和 `org.jetbrains.kotlin:kotlin-reflect`。也可以使用 `kotlin-stdlib` 的变体 `kotlin-stdlib-jdk7` 和 `kotlin-stdlib-jdk8`。
+
+由于 [Kotlin 类默认为 final](https://discuss.kotlinlang.org/t/classes-final-by-default/166)，因此您可能需要配置 [kotlin-spring](https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support) 插件以自动打开 `Spring-annotated` 类，以便可以代理它们。
+
+在 Kotlin 中序列化/反序列化 JSON 数据需要使用 [Jackson 的 Kotlin 模块](https://github.com/FasterXML/jackson-module-kotlin)。在 classpath 中找到它时会自动注册。如果 Jackson 和 Kotlin 存在但 Jackson Kotlin 模块不存在，则会记录警告消息。
+
+**提示**
+
+> 如果在 [start.spring.io](https://start.spring.io/#!language=kotlin) 上创建 Kotlin 项目，则默认提供这些依赖项和插件。
+
+<a id="boot-features-kotlin-null-safety"></a>
+
+### 50.2、Null 安全
+
+Kotlin 的一个关键特性是 [null 安全](https://kotlinlang.org/docs/reference/null-safety.html)。它在编译时处理空值，而不是将问题推迟到运行时并遇到 `NullPointerException`。这有助于消除常见的错误来源，而无需支付像 `Optional` 这样的包装器的成本。Kotlin 还允许使用有可空值的，如 [Kotlin null 安全综合指南](http://www.baeldung.com/kotlin-null-safety)中所述。
+
+虽然 Java 不允许在其类型系统中表示 null 安全，但 Spring Framework、Spring Data 和 Reactor 现在通过易于使用的工具的注解提供其 API 的安全性。默认情况下，Kotlin 中使用的 Java API 类型被识别为放宽空检查的[平台类型](https://kotlinlang.org/docs/reference/java-interop.html#null-safety-and-platform-types)。[Kotlin 对 JSR 305 注解的支持](https://kotlinlang.org/docs/reference/java-interop.html#jsr-305-support)与可空注解相结合，为 Kotlin 中 Spring API 相关的代码提供了空安全。
+
+可以通过使用以下选项添加 `-Xjsr305` 编译器标志来配置 JSR 305 检查：`-Xjsr305={strict|warn|ignore}`。默认行为与 `-Xjsr305=warn` 相同。在从 Spring API 推断出的 Kotlin 类型中需要考虑 null 安全的 `strict` 值，但是应该使用 Spring API 可空声明甚至可以在次要版本之间发展并且将来可能添加更多检查的方案。
+
+**警告**
+
+> 尚不支持泛型类型参数、`varargs` 和数组元素可空性。有关最新信息，请参见 [SPR-15942](https://jira.spring.io/browse/SPR-15942)。另请注意，Spring Boot 自己的 API [尚未注解](https://github.com/spring-projects/spring-boot/issues/10712)。
+
+<a id="boot-features-kotlin-api"></a>
+
+### 50.3、Kotlin API
+
+<a id="boot-features-kotlin-api-runapplication"></a>
+
+#### 50.3.1、runApplication
+
+Spring Boot 提供了使用 `runApplication<MyApplication>(*args)` 运行应用程序的惯用方法，如下所示：
+
+```kotlin
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+@SpringBootApplication
+class MyApplication
+
+fun main(args: Array<String>) {
+	runApplication<MyApplication>(*args)
+}
+```
+
+这是 `SpringApplication.run(MyApplication::class.java, *args)` 的替代方式。它还允许自定义应用程序，如下所示：
+
+```kotlin
+runApplication<MyApplication>(*args) {
+	setBannerMode(OFF)
+}
+```
+
+<a id="boot-features-kotlin-api-extensions"></a>
+
+#### 50.3.2、扩展
+
+Kotlin [扩展](https://kotlinlang.org/docs/reference/extensions.html)提供了使用附加功能扩展现有类的能力。Spring Boot Kotlin API 利用这些扩展为现有 API 添加新的 Kotlin 特定便利。
+
+提供的 `TestRestTemplate` 扩展类似于 Spring Framework 为 `RestOperations` 提供的。除此之外，扩展使得利用 Kotlin reified 类型参数变为可能。
+
+<a id="boot-features-kotlin-dependency-management"></a>
+
+### 50.4、依赖管理
+
+为了避免在 classpath 上混合不同版本的 Kotlin 依赖项，提供了以下 Kotlin 依赖项的依赖项管理：
+
+- `kotlin-reflect`
+- `kotlin-runtime`
+- `kotlin-stdlib`
+- `kotlin-stdlib-jdk7`
+- `kotlin-stdlib-jdk8`
+- `kotlin-stdlib-jre7`
+- `kotlin-stdlib-jre8`
+
+使用 Maven，可以通过 `kotlin.version` 属性自定义 Kotlin 版本，并为 `kotlin-maven-plugin` 提供插件管理。使用 Gradle，Spring Boot 插件会自动将 `kotlin.version` 与 Kotlin 插件的版本保一致。
+
+<a id="boot-features-kotlin-configuration-properties"></a>
+
+### 50.5、`@ConfigurationProperties`
+
+`@ConfigurationProperties` 目前仅适用于 `lateinit` 或可空的 `var` 属性（建议使用前者），因为[尚不支持](https://github.com/spring-projects/spring-boot/issues/8762)由构造函数初始化的不可变类。
+
+```kotlin
+@ConfigurationProperties("example.kotlin")
+class KotlinExampleProperties {
+
+	lateinit var name: String
+
+	lateinit var description: String
+
+	val myService = MyService()
+
+	class MyService {
+
+		lateinit var apiToken: String
+
+		lateinit var uri: URI
+
+	}
+
+}
+```
+
+**提示**
+
+> 要使用注解处理器生成[您自己的元数据](#configuration-metadata-annotation-processor)，应使用 `spring-boot-configuration-processor` 依赖[配置 `kapt`](https://kotlinlang.org/docs/reference/kapt.html)。
+
+<a id="boot-features-kotlin-testing"></a>
+
+### 50.6、测试
+
+虽然可以使用 JUnit 4（`spring-boot-starter-test` 提供的默认配置）来测试 Kotlin 代码，但建议使用 JUnit 5。JUnit 5 允许测试类实例化一次，并在所有类的测试中复用。这使得可以在非静态方法上使用 `@BeforeAll` 和 `@AfterAll` 注解，这非常适合 Kotlin。
+
+要使用 JUnit 5，请从 `spring-boot-starter-test` 中排除 `junit:junit` 依赖项，然后添加 JUnit 5 依赖项，并相应地配置 Maven 或 Gradle 插件。有关更多详细信息，请参阅 [JUnit 5 文档](https://junit.org/junit5/docs/current/user-guide/#dependency-metadata-junit-jupiter-samples)。您还需要[将测试实例生命周期切换为 **per-class**](https://junit.org/junit5/docs/current/user-guide/#writing-tests-test-instance-lifecycle-changing-default)。
+
+为了模拟 Kotlin 类，建议使用 [Mockk](https://mockk.io/)。如果需要 Mockk 等效的 Mockito 特定的 [`@MockBean` 和 `@SpyBean` 注解](boot-features-testing-spring-boot-applications-mocking-beans)，则可以使用 [SpringMockK](https://github.com/Ninja-Squad/springmockk)，它提供类似的 `@MockkBean` 和 `@SpykBean` 注解。
+
+<a id="boot-features-kotlin-resources"></a>
+
+### 50.7、资源
+
+<a id="boot-features-kotlin-resources-further-reading"></a>
+
+#### 50.7.1、进阶阅读
+
+- [Kotlin 语言参考](https://kotlinlang.org/docs/reference/)
+- [Kotlin Slack](http://slack.kotlinlang.org/)（有专用的 #spring 频道）
+- [Stackoverflow 上 `spring` 和 `kotlin` 标签](https://stackoverflow.com/questions/tagged/spring+kotlin)
+- [在浏览器中尝试 Kotlin](https://try.kotlinlang.org/)
+- [Kotlin 博客](https://blog.jetbrains.com/kotlin/)
+- [Awesome Kotlin](https://kotlin.link/)
+- [教程：使用 Spring Boot 和 Kotlin 构建 Web 应用程序](https://spring.io/guides/tutorials/spring-boot-kotlin/)
+- [使用 Kotlin 开发 Spring Boot 应用程序](https://spring.io/blog/2016/02/15/developing-spring-boot-applications-with-kotlin)
+- [使用 Kotlin、Spring Boot 和 PostgreSQL 开发地理信使](https://spring.io/blog/2016/03/20/a-geospatial-messenger-with-kotlin-spring-boot-and-postgresql)
+- [在 Spring Framework 5.0 中引入 Kotlin 支持](https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0)
+- [Spring Framework 5 Kotlin API 实现函数式](https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way)
+
+<a id="boot-features-kotlin-resources-examples"></a>
+
+#### 50.7.2、示例
+
+- [spring-boot-kotlin-demo](https://github.com/sdeleuze/spring-boot-kotlin-demo)：常规的 Spring Boot + Spring Data JPA 项目
+- [mixit](https://github.com/mixitconf/mixit)：Spring Boot 2 + WebFlux + Reactive Spring Data MongoDB
+- [spring-kotlin-fullstack](https://github.com/sdeleuze/spring-kotlin-fullstack)：WebFlux Kotlin 全栈示例，在前端使用 Kotlin2js 代替 JavaScript 和 TypeScript
+- [spring-petclinic-kotlin](https://github.com/spring-petclinic/spring-petclinic-kotlin)：Spring PetClinic 示例应用的 Kotlin 版本
+- [spring-kotlin-deepdive](https://github.com/sdeleuze/spring-kotlin-deepdive)：将Boot 1.0 + Java 逐步迁移到 Boot 2.0 + Kotlin
+
+<a id="boot-features-whats-next"></a>
+
+## 51、下一步
+
+如果您想了解本节中讨论的任何类目的更多信息，可以查看 [Spring Boot API 文档](https://docs.spring.io/spring-boot/docs/2.1.3.RELEASE/api)，也可以直接浏览[源代码](https://github.com/spring-projects/spring-boot/tree/v2.1.3.RELEASE)。如果您有具体问题，请查看 [how-to](howto.md) 部分。
+
+如果您对 Spring Boot 的核心功能感到满意，可以继续阅读有关生产就绪功能的内容。

@@ -131,7 +131,7 @@ Spring Boot 依赖 `org.springframework.boot` `group`。通常，您的项目将
 
 这是一个典型的 `build.gradle` 文件：
 
-```gradle
+```groovy
 plugins {
     id 'org.springframework.boot' version '1.5.4.RELEASE'
     id 'java'
