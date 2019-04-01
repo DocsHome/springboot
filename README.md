@@ -2,7 +2,7 @@
 
 ![Spring Boot](https://spring.io/img/homepage/icon-spring-boot.svg)
 
-使用 Spring Boot，您只需极少的配置就能轻松构建出独立、基于 Spring 的生产级别应用程序。
+使用 Spring Boot，您只需极少的配置就能轻松构建出一个独立、基于 Spring 的生产级应用程序。
 
 该项目为 Spring Boot 文档翻译项目，由本人个人发起，基于 [Spring Boot 2.x](https://spring.io/projects/spring-boot) 的官方文档进行翻译。
 
