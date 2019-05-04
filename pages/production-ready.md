@@ -74,8 +74,7 @@ dependencies {
 | ID | 描述 | 默认启用 |
 | --- | --- | :---: |
 | `heapdump` | 返回一个 `hprof` 堆 dump 文件。 | 是 |
-| `jolokia` | 通过 HTTP 暴露 JMX bean（当 Jolokia 在 classpath 上时，不适用于 WebFlux）。
- | 是 |
+| `jolokia` | 通过 HTTP 暴露 JMX bean（当 Jolokia 在 classpath 上时，不适用于 WebFlux）。 | 是 |
 | `logfile` | 返回日志文件的内容（如果已设置 `logging.file` 或 `logging.path` 属性）。支持使用 HTTP `Range` 头来检索部分日志文件的内容。 | 是 |
 | `prometheus` | 以可以由 Prometheus 服务器抓取的格式暴露指标。 | 是 |
 
@@ -555,7 +554,7 @@ public class MyReactiveHealthIndicator implements ReactiveHealthIndicator {
 
 **提示**
 
-> 必要时，响应式指示器取代常规指示器。此外，任何未明确处理的 `HealthIndicator` 都会自动换行。
+> 必要时，响应式指示器取代常规指示器。此外，任何未明确处理的 `HealthIndicator` 都会自动包装。
 
 <a id="production-ready-application-info"></a>
 
@@ -667,6 +666,568 @@ public class ExampleInfoContributor implements InfoContributor {
 		"key" : "value"
 	}
 }
+```
+
+<a id="production-ready-monitoring"></a>
+
+## 54、通过 HTTP 监控和管理
+
+如果您正在开发 Web 应用程序，Spring Boot Actuator 会自动配置所有已启用的端点以通过 HTTP 暴露。默认约定是使用前缀为 `/actuator` 的端点的 `id` 作为 URL 路径。例如，`health` 以 `/actuator/health` 暴露。提示：Spring MVC、Spring WebFlux 和 Jersey 本身支持 Actuator。
+
+<a id="production-ready-customizing-management-server-context-path"></a>
+
+### 54.1、自定义 Management 端点路径
+
+有时，自定义 management 端点的前缀很有用。例如，您的应用程序可能已将 `/actuator` 用于其他目的。您可以使用 `management.endpoints.web.base-path` 属性更改 management 端点的前缀，如下所示：
+
+```ini
+management.endpoints.web.base-path=/manage
+```
+
+前面的 `application.properties` 示例将端点从 `/actuator/{id}` 更改为 `/manage/{id}`（例如，`/manage/info`）。
+
+**注意**
+
+> 除非已将 management 端口配置为[使用其他 HTTP 端口暴露端点](production-ready-customizing-management-server-port)，否则 `management.endpoints.web.base-path` 与 `server.servlet.context-path` 相关联。如果配置了 `management.server.port`，则 `management.endpoints.web.base-path` 与 `management.server.servlet.context-path` 相关联。
+
+如果要将端点映射到其他路径，可以使用 `management.endpoints.web.path-mapping` 属性。
+
+以下示例将 `/actuator/health` 重新映射到 `/healthcheck`：
+
+**application.properties**
+
+```ini
+management.endpoints.web.base-path=/
+management.endpoints.web.path-mapping.health=healthcheck
+```
+
+<a id="production-ready-customizing-management-server-port"></a>
+
+### 54.2、自定义 Management 服务器端口
+
+使用默认 HTTP 端口暴露 management 端点是基于云部署的明智选择。但是，如果应用程序是在自己的数据中心内运行，您可能更喜欢使用其他 HTTP 端口暴露端点。
+
+您可以设置 `management.server.port` 属性以更改 HTTP 端口，如下所示：
+
+```ini
+management.server.port=8081
+```
+
+<a id="production-ready-management-specific-ssl"></a>
+
+### 54.3、配置 Management 的 SSL
+
+当配置为使用自定义端口时，还可以使用各种 `management.server.ssl.*` 属性为 management 服务器配置自己的 SSL。例如，这样做可以在主应用程序使用 HTTPS 时可通过 HTTP 使用 management 服务器，如以下属性设置所示：
+
+```ini
+server.port=8443
+server.ssl.enabled=true
+server.ssl.key-store=classpath:store.jks
+server.ssl.key-password=secret
+management.server.port=8080
+management.server.ssl.enabled=false
+```
+
+或者，主服务器和 management 服务器都可以使用 SSL，但他们的 key store 不同，如下所示：
+
+```ini
+server.port=8443
+server.ssl.enabled=true
+server.ssl.key-store=classpath:main.jks
+server.ssl.key-password=secret
+management.server.port=8080
+management.server.ssl.enabled=true
+management.server.ssl.key-store=classpath:management.jks
+management.server.ssl.key-password=secret
+```
+
+<a id="production-ready-customizing-management-server-address"></a>
+
+### 54.4、配置 Management 服务器地址
+
+您可以通过设置 `management.server.address` 属性来自定义 management 端点可用的地址。如果您只想在内部或操作的网络上监听或仅监听来自 `localhost` 的连接，那么这样做会非常有用。
+
+**注意**
+
+> 仅当端口与主服务器端口不同时，才能监听不同的地址。
+
+以下 `application.properties` 示例不允许远程连接 management：
+
+```ini
+management.server.port=8081
+management.server.address=127.0.0.1
+```
+
+<a id="production-ready-disabling-http-endpoints"></a>
+
+### 54.5、禁用 HTTP 端点
+
+如果您不希望通过 HTTP 暴露端点，则可以将 management 端口设置为 `-1`，如下所示：
+
+```ini
+management.server.port=-1
+```
+
+这可以使用 `management.endpoints.web.exposure.exclude` 属性来实现，如下所示：
+
+```ini
+management.endpoints.web.exposure.exclude=*
+```
+
+<a id="production-ready-jmx"></a>
+
+## 55、通过 JMX 监控和管理
+
+Java 管理扩展（Java Management Extensions，JMX）提供了一种监控和管理应用程序的标准机制。默认情况下，Spring Boot 将 management 端点暴露为 `org.springframework.boot` 域下的 JMX MBean。
+
+<a id="production-ready-custom-mbean-names"></a>
+
+### 55.1、自定义 MBean 名称
+
+MBean 的名称通常是从端点的 `id` 生成的。例如，`health` 端点公开为 `org.springframework.boot:type=Endpoint,name=Health`。
+
+如果您的应用程序包含多个 Spring `ApplicationContext`，可能会发生名称冲突。要解决此问题，可以将 `spring.jmx.unique-names` 属性设置为 `true`，以保证 MBean 名称始终唯一。
+
+您还可以自定义暴露端点的 JMX 域。以下设置展示了在 `application.properties` 中执行此操作的示例：
+
+```ini
+spring.jmx.unique-names=true
+management.endpoints.jmx.domain=com.example.myapp
+```
+
+<a id="production-ready-disable-jmx-endpoints"></a>
+
+### 55.2、禁用 JMX 端点
+
+如果您不想通过 JMX 暴露端点，可以将 `management.endpoints.jmx.exposure.exclude` 属性设置为 `*`，如下所示：
+
+```ini
+management.endpoints.jmx.exposure.exclude=*
+```
+
+<a id="production-ready-jolokia"></a>
+
+### 55.3、通过 HTTP 使用 Jolokia 访问 JMX
+
+Jolokia 是一个 JMX-HTTP 桥，它提供了一种访问 JMX bean 的新方式。要使用 Jolokia，请引入依赖：`org.jolokia:jolokia-core`。例如，使用 Maven，您将添加以下依赖：
+
+```xml
+<dependency>
+	<groupId>org.jolokia</groupId>
+	<artifactId>jolokia-core</artifactId>
+</dependency>
+```
+
+之后可以通过将 `jolokia` 或 `*` 添加到 `management.endpoints.web.exposure.include` 属性来暴露 Jolokia 端点。最后，您可以在 management HTTP 服务器上使用 `/actuator/jolokia` 访问它。
+
+<a id="production-ready-customizing-jolokia"></a>
+
+#### 55.3.1、自定义 Jolokia
+
+Jolokia 有许多设置，您可以通过设置 servlet 参数来使用传统方式进行配置。使用 Spring Boot 时，您可以使用 `application.properties` 文件配置。请在参数前加上 `management.endpoint.jolokia.config`。如下所示：
+
+```ini
+management.endpoint.jolokia.config.debug=true
+```
+
+<a id="production-ready-disabling-jolokia"></a>
+
+#### 55.3.2、禁用 Jolokia
+
+如果您使用 Jolokia 但不希望 Spring Boot 配置它，请将 `management.endpoint.jolokia.enabled` 属性设置为 `false`，如下所示：
+
+```ini
+management.endpoint.jolokia.enabled=false
+```
+
+<a id="production-ready-loggers"></a>
+
+## 56、日志记录器
+
+Spring Boot Actuator 有可在运行时查看和配置应用程序日志级别的功能。您可以查看全部或单个日志记录器的配置，该配置由显式配置的日志记录级别以及日志记录框架为其提供的有效日志记录级别组成。这些级别可以是以下之一：
+
+- `TRACE`
+- `DEBUG`
+- `INFO`
+- `WARN`
+- `ERROR`
+- `FATAL`
+- `OFF`
+- `null`
+
+`null` 表示没有显式配置。
+
+<a id="production-ready-logger-configuration"></a>
+
+### 56.1、配置一个日志记录器
+
+要配置日志记录器，请将部分实体 `POST` 到资源的 URI，如下所示：
+
+```json
+{
+	"configuredLevel": "DEBUG"
+}
+```
+
+**提示**
+
+> 要**重置**日志记录器的特定级别（并使用默认配置代替），可以将 `null` 值作为 `configuredLevel` 传递。
+
+<a id="production-ready-metrics"></a>
+
+## 57、指标
+
+Spring Boot Actuator 为 [Micrometer](https://micrometer.io/) 提供了依赖管理和自动配置，Micrometer 是一个支持众多监控系统的应用程序指标门面，包括：
+
+- [AppOptics](#production-ready-metrics-export-appoptics)
+- [Atlas](#production-ready-metrics-export-atlas)
+- [Datadog](#production-ready-metrics-export-datadog)
+- [Dynatrace](#production-ready-metrics-export-dynatrace)
+- [Elastic](#production-ready-metrics-export-elastic)
+- [Ganglia](#production-ready-metrics-export-ganglia)
+- [Graphite](#production-ready-metrics-export-graphite)
+- [Humio](#production-ready-metrics-export-humio)
+- [Influx](#production-ready-metrics-export-influx)
+- [JMX](#production-ready-metrics-export-jmx)
+- [KairosDB](#production-ready-metrics-export-kairos)
+- [New Relic](#production-ready-metrics-export-newrelic)
+- [Prometheus](#production-ready-metrics-export-prometheus)
+- [SignalFx](#production-ready-metrics-export-signalfx)
+- [Simple (in-memory)](#production-ready-metrics-export-simple)
+- [StatsD](#production-ready-metrics-export-statsd)
+- [Wavefront](#production-ready-metrics-export-wavefront)
+
+**提示**
+
+要了解有关 Micrometer 功能的更多信息，请参阅其[参考文档](https://micrometer.io/docs)，特别是[概念部分](https://micrometer.io/docs/concepts)。
+
+<a id="production-ready-metrics-getting-started"></a>
+
+### 57.1、入门
+
+Spring Boot 自动配置了一个组合的 `MeterRegistry`，并为 classpath 中每个受支持的实现向该组合注册一个注册表。在运行时，只需要 classpath 中有 `micrometer-registry-{system}` 依赖即可让 Spring Boot 配置该注册表。
+
+大部分注册表都有共同点 例如，即使 Micrometer 注册实现位于 classpath 上，您也可以禁用特定的注册表。例如，要禁用 Datadog：
+
+```ini
+management.metrics.export.datadog.enabled=false
+```
+
+Spring Boot 还会将所有自动配置的注册表添加到 `Metrics` 类的全局静态复合注册表中，除非您明确禁止：
+
+```ini
+management.metrics.use-global-registry=false
+```
+
+在注册表中注册任何指标之前，您可以注册任意数量的 `MeterRegistryCustomizer` bean 以进一步配置注册表，例如通用标签：
+
+```java
+@Bean
+MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
+	return registry -> registry.config().commonTags("region", "us-east-1");
+}
+```
+
+您可以通过指定泛型类型，自定义注册表实现：
+
+```java
+@Bean
+MeterRegistryCustomizer<GraphiteMeterRegistry> graphiteMetricsNamingConvention() {
+	return registry -> registry.config().namingConvention(MY_CUSTOM_CONVENTION);
+}
+```
+
+使用该设置，您可以在组件中注入 `MeterRegistry` 并注册指标：
+
+```java
+@Component
+public class SampleBean {
+
+	private final Counter counter;
+
+	public SampleBean(MeterRegistry registry) {
+		this.counter = registry.counter("received.messages");
+	}
+
+	public void handleMessage(String message) {
+		this.counter.increment();
+		// 处理消息实现
+	}
+
+}
+```
+
+Spring Boot 还[配置内置的测量工具](https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/htmlsingle/#production-ready-metrics-meter)（即 `MeterBinder` 实现），您可以通过配置或专用注解标记来控制。
+
+<a id="production-ready-metrics-export"></a>
+
+### 57.2、支持的监控系统
+
+<a id="production-ready-metrics-export-appoptics"></a>
+
+#### 57.2.1、AppOptics
+
+默认情况下，AppOptics 注册表会定期将指标推送到 [api.appoptics.com/v1/measurements](https://api.appoptics.com/v1/measurements)。要将指标导出到 SaaS [AppOptics](https://micrometer.io/docs/registry/appoptics)，您必须提供 API 令牌：
+
+```ini
+management.metrics.export.appoptics.api-token=YOUR_TOKEN
+```
+
+<a id="production-ready-metrics-export-atlas"></a>
+
+#### 57.2.2、Atlas
+
+默认情况下，度量标准将导出到本地的 [Atlas](https://micrometer.io/docs/registry/atlas)。可以使用以下方式指定 [Atlas 服务器](https://github.com/Netflix/atlas)的位置：
+
+```ini
+management.metrics.export.atlas.uri=https://atlas.example.com:7101/api/v1/publish
+```
+
+<a id="production-ready-metrics-export-datadog"></a>
+
+#### 57.2.3、Datadog
+
+Datadog 注册表会定期将指标推送到 [datadoghq](https://www.datadoghq.com/)。要将指标导出到 [Datadog](https://micrometer.io/docs/registry/datadog)，您必须提供 API 密钥：
+
+```ini
+management.metrics.export.datadog.api-key=YOUR_KEY
+```
+
+您还可以更改度量标准发送到 Datadog 的间隔时间：
+
+```ini
+management.metrics.export.datadog.step=30s
+```
+
+<a id="production-ready-metrics-export-dynatrace"></a>
+
+#### 57.2.4、Dynatrace
+
+Dynatrace 注册表定期将指标推送到配置的 URI。要将指标导出到 [Dynatrace](https://micrometer.io/docs/registry/dynatrace)，必须提供 API 令牌、设备 ID 和 URI：
+
+```ini
+management.metrics.export.dynatrace.api-token=YOUR_TOKEN
+management.metrics.export.dynatrace.device-id=YOUR_DEVICE_ID
+management.metrics.export.dynatrace.uri=YOUR_URI
+```
+
+您还可以更改度量标准发送到 Dynatrace 的间隔时间：
+
+```ini
+management.metrics.export.dynatrace.step=30s
+```
+
+<a id="production-ready-metrics-export-elastic"></a>
+
+#### 57.2.5、Elastic
+
+默认情况下，度量将导出到本地的 [Elastic](https://micrometer.io/docs/registry/elastic)。可以使用以下属性提供 Elastic 服务器的位置：
+
+```ini
+management.metrics.export.elastic.host=https://elastic.example.com:8086
+```
+
+<a id="production-ready-metrics-export-ganglia"></a>
+
+#### 57.2.6、Ganglia
+
+默认情况下，度量将导出到本地的 [Ganglia](https://micrometer.io/docs/registry/ganglia)。可以使用以下方式提供 [Ganglia 服务器](http://ganglia.sourceforge.net/)主机和端口：
+
+```ini
+management.metrics.export.ganglia.host=ganglia.example.com
+management.metrics.export.ganglia.port=9649
+```
+
+<a id="production-ready-metrics-export-graphite"></a>
+
+#### 57.2.7、Graphite
+
+默认情况下，度量将导出到本地的 [Graphite](https://micrometer.io/docs/registry/graphite)。可以使用以下方式提供 [Graphite 服务器](https://graphiteapp.org/)主机和端口：
+
+```ini
+management.metrics.export.graphite.host=graphite.example.com
+management.metrics.export.graphite.port=9004
+```
+
+Micrometer 提供了一个默认的 `HierarchicalNameMapper`，它管理维度计数器 id 如何[映射到平面分层名称](https://micrometer.io/docs/registry/graphite#_hierarchical_name_mapping)。
+
+**提示**
+
+> 要控制此行为，请定义 `GraphiteMeterRegistry` 并提供自己的 `HierarchicalNameMapper`。除非您自己定义，否则使用自动配置的 `GraphiteConfig` 和 `Clock` bean：
+
+```java
+@Bean
+public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
+	return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+}
+```
+
+<a id="production-ready-metrics-export-humio"></a>
+
+#### 57.2.8、Humio
+
+默认情况下，Humio 注册表会定期将指标推送到 [cloud.humio.com](https://cloud.humio.com/)。要将指标导出到 SaaS [Humio](https://micrometer.io/docs/registry/humio)，您必须提供 API 令牌：
+
+```ini
+management.metrics.export.humio.api-token=YOUR_TOKEN
+```
+
+您还应配置一个或多个标记，以标识要推送指标的数据源：
+
+```ini
+management.metrics.export.humio.tags.alpha=a
+management.metrics.export.humio.tags.bravo=b
+```
+
+<a id="production-ready-metrics-export-influx"></a>
+
+#### 57.2.9、Influx
+
+默认情况下，度量将导出到本地的 [Influx](https://micrometer.io/docs/registry/influx)。要指定 [Influx 服务器](https://www.influxdata.com/)的位置，可以使用：
+
+```ini
+management.metrics.export.influx.uri=https://influx.example.com:8086
+```
+
+<a id="production-ready-metrics-export-jmx"></a>
+
+#### 57.2.10、JMX
+
+Micrometer 提供了与 [JMX](https://micrometer.io/docs/registry/jmx) 的分层映射，主要为了方便在本地查看指标且可移植。默认情况下，度量将导出到 `metrics` JMX 域。可以使用以下方式提供要使用的域：
+
+```ini
+management.metrics.export.jmx.domain=com.example.app.metrics
+```
+
+Micrometer 提供了一个默认的 `HierarchicalNameMapper`，它管理维度计数器 id 如何[映射到平面分层名称](https://micrometer.io/docs/registry/jmx#_hierarchical_name_mapping)。
+
+**提示**
+
+> 要控制此行为，请定义 `JmxMeterRegistry` 并提供自己的 `HierarchicalNameMapper`。除非您自己定义，否则使用自动配置的 `JmxConfig` 和 `Clock` bean：
+
+```java
+@Bean
+public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
+	return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+}
+```
+
+<a id="production-ready-metrics-export-kairos"></a>
+
+#### 57.2.11、KairosDB
+
+默认情况下，度量将导出到本地的 [KairosDB](https://micrometer.io/docs/registry/kairos)。可以使用以下方式提供 [KairosDB 服务器](https://kairosdb.github.io/)的位置：
+
+```ini
+management.metrics.export.kairos.uri=https://kairosdb.example.com:8080/api/v1/datapoints
+```
+
+<a id="production-ready-metrics-export-newrelic"></a>
+
+#### 57.2.12、New Relic
+
+New Relic 注册表定期将指标推送到 [New Relic](https://micrometer.io/docs/registry/new-relic)。要将指标导出到 [New Relic](https://newrelic.com/)，您必须提供 API 密钥和帐户 ID：
+
+```ini
+management.metrics.export.newrelic.api-key=YOUR_KEY
+management.metrics.export.newrelic.account-id=YOUR_ACCOUNT_ID
+```
+
+您还可以更改将度量发送到 New Relic 的间隔时间：
+
+```ini
+management.metrics.export.newrelic.step=30s
+```
+
+<a id="production-ready-metrics-export-prometheus"></a>
+
+#### 57.2.13、Prometheus
+
+[Prometheus](https://micrometer.io/docs/registry/prometheus) 希望抓取或轮询各个应用实例以获取指标数据。Spring Boot 在 `/actuator/prometheus` 上提供 actuator 端点，以适当的格式呈现 [Prometheus scrape ](https://prometheus.io/)。
+
+**提示**
+
+> 默认情况下端点不可用，必须暴露，请参阅[暴露端点](#production-ready-endpoints-exposing-endpoints)以获取更多详细信息。
+
+以下是要添加到 `prometheus.yml` 的示例 `scrape_config`：
+
+```yaml
+scrape_configs:
+  - job_name: 'spring'
+	metrics_path: '/actuator/prometheus'
+	static_configs:
+	  - targets: ['HOST:PORT']
+```
+
+<a id="production-ready-metrics-export-signalfx"></a>
+
+#### 57.2.14、SignalFx
+
+SignalFx 注册表定期将指标推送到 [SignalFx](https://micrometer.io/docs/registry/signalfx)。要将指标导出到 [SignalFx](https://signalfx.com/)，您必须提供访问令牌：
+
+```ini
+management.metrics.export.signalfx.access-token=YOUR_ACCESS_TOKEN
+```
+
+您还可以更改将指标发送到 SignalFx 的间隔时间：
+
+```ini
+management.metrics.export.signalfx.step=30s
+```
+
+<a id="production-ready-metrics-export-simple"></a>
+
+#### 57.2.15、Simple
+
+Micrometer 附带一个简单的内存后端，如果没有配置其他注册表，它将自动用作后备。这使您可以查看[指标端点](#production-ready-metrics-endpoint)中收集的指标信息。
+
+只要您使用了任何其他可用的后端，内存后端就会自动禁用。您也可以显式禁用它：
+
+```ini
+management.metrics.export.simple.enabled=false
+```
+
+<a id="production-ready-metrics-export-statsd"></a>
+
+#### 57.2.16、StatsD
+
+StatsD 注册表将 UDP 上的指标推送到 [StatsD](https://micrometer.io/docs/registry/statsd) 代理。 默认情况下，度量将导出到本地的 StatsD 代理，可以使用以下方式提供 StatsD 代理主机和端口：
+
+```ini
+management.metrics.export.statsd.host=statsd.example.com
+management.metrics.export.statsd.port=9125
+```
+
+您还可以更改要使用的 StatsD 线路协议（默认为 Datadog）：
+
+```ini
+management.metrics.export.statsd.flavor=etsy
+```
+
+<a id="production-ready-metrics-export-wavefront"></a>
+
+#### 57.2.17、Wavefront
+
+Wavefront 注册表定期将指标推送到 [Wavefront](https://micrometer.io/docs/registry/wavefront)。如果要将指标直接导出到 [Wavefront](https://www.wavefront.com/)，则您必须提供 API 令牌：
+
+```ini
+management.metrics.export.wavefront.api-token=YOUR_API_TOKEN
+```
+
+或者，您可以在环境中使用 Wavefront sidecar 或内部代理设置，将指标数据转发到 Wavefront API 主机：
+
+```ini
+management.metrics.export.wavefront.uri=proxy://localhost:2878
+```
+
+**提示**
+
+> 如果将度量发布到 Wavefront 代理（如[文档](https://docs.wavefront.com/proxies_installing.html)中所述），则主机必须采用 `proxy://HOST:PORT` 格式。
+
+您还可以更改将指标发送到 Wavefront 的间隔时间：
+
+```ini
+management.metrics.export.wavefront.step=30s
 ```
 
 **待续……**
