@@ -1,6 +1,6 @@
 <a id="boot-features"></a>
 
-# 四、Spring Boot 功能
+# 四、Spring Boot 特性
 
 本部分将介绍 Spring Boot 相关的细节内容。在这里，您可以学习到可能需要使用和自定义的主要功能。您如果还没有做好充分准备，可能需要阅读[第二部分：入门](#getting-started)和[第三部分：使用 Spring Boot](#using-boot)，以便打下前期基础。
 

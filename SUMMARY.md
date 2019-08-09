@@ -79,7 +79,7 @@
             - [20.5.2、远程更新](pages/using-spring-boot.md#using-boot-devtools-remote-update)
     - [21、打包生产应用](pages/using-spring-boot.md#using-boot-packaging-for-production)
     - [22、下一步](pages/using-spring-boot.md#using-boot-whats-next)
-- [四、Spring Boot 功能](pages/spring-boot-features.md#boot-features)
+- [四、Spring Boot 特性](pages/spring-boot-features.md#boot-features)
     - [23、SpringApplication](pages/spring-boot-features.md#boot-features-spring-application)
         - [23.1、启动失败](pages/spring-boot-features.md#boot-features-startup-failure)
         - [23.2、自定义 banner](pages/spring-boot-features.md#boot-features-banner)
@@ -370,12 +370,32 @@
             - [57.2.15、Simple](pages/production-ready.md#production-ready-metrics-export-simple)
             - [57.2.16、StatsD](pages/production-ready.md#production-ready-metrics-export-statsd)
             - [57.2.17、Wavefront](pages/production-ready.md#production-ready-metrics-export-wavefront)
-    - 58、审计
-    - 59、HTTP 追踪
-    - 60、处理监控
-    - 61、Cloud Foundry 支持
-    - 62、下一步
-- 六、部署 Spring Boot 应用程序
+        - [57.3、支持的指标](pages/production-ready.md#production-ready-metrics-meter)
+            - [57.3.1、Spring MVC 指标](pages/production-ready.md#production-ready-metrics-spring-mvc)
+            - [57.3.2、Spring WebFlux 指标](pages/production-ready.md#production-ready-metrics-web-flux)
+            - [57.3.3、Jersey Server 指标](pages/production-ready.md#production-ready-metrics-jersey-server)
+            - [57.3.4、HTTP Client 指标](pages/production-ready.md#production-ready-metrics-http-clients)
+            - [57.3.5、Cache 指标](pages/production-ready.md#production-ready-metrics-cache)
+            - [57.3.6、数据源指标](pages/production-ready.md#production-ready-metrics-jdbc)
+            - [57.3.7、Hibernate 指标](pages/production-ready.md#production-ready-metrics-hibernate)
+            - [57.3.8、RabbitMQ 指标](pages/production-ready.md#production-ready-metrics-rabbitmq)
+        - [57.4、注册自定义指标](pages/production-ready.md#production-ready-metrics-custom)
+        - [57.5、自定义单独指标](pages/production-ready.md#production-ready-metrics-per-meter-properties)
+            - [57.5.1、自定义标签](pages/production-ready.md#production-ready-metrics-common-tags)
+            - [57.5.2、Per-meter 属性](pages/production-ready.md#_per_meter_properties)
+        - [57.6、指标端点](pages/production-ready.md#production-ready-metrics-endpoint)
+    - [58、审计](pages/production-ready.md#production-ready-auditing)
+    - [59、HTTP 追踪](pages/production-ready.md#production-ready-http-tracing)
+        - [59.1、自定义 HTTP 追踪](pages/production-ready.md#production-ready-http-tracing-custom)
+    - [60、进程监控](pages/production-ready.md#production-ready-process-monitoring)
+        - [60.1、扩展配置](pages/production-ready.md#production-ready-process-monitoring-configuration)
+        - [60.2、编程方式](pages/production-ready.md#production-ready-process-monitoring-configuration)
+    - [61、Cloud Foundry 支持](pages/production-ready.md#production-ready-cloudfoundry)
+        - [61.1、禁用 Cloud Foundry Actuator 扩展支持](pages/production-ready.md#production-ready-cloudfoundry-disable)
+        - [61.2、Cloud Foundry 自签名证书](pages/production-ready.md#production-ready-cloudfoundry-ssl)
+        - [61.3、自定义上下文路径](pages/production-ready.md#_custom_context_path)
+    - [62、下一步](pages/production-ready.md#production-ready-auditing)
+- [六、部署 Spring Boot 应用程序](pages/deployment.md)
     - 63、部署到云端
     - 64、安装 Spring Boot 应用程序
     - 65、下一步

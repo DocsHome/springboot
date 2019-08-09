@@ -20,13 +20,13 @@
 
 ---
 
-**2.1.1.RELEASE**（前半部分为 1.5.9.RELEASE 的内容，之后会更新）
+**2.1.5.RELEASE**（前半部分为 1.5.9.RELEASE 的内容，之后会更新）
 
 Copyright © 2012-2018
 
 ---
 
-在不收取副本的任何费用且每个副本都包含此版权声明的情况下，无论是印刷形式或是电子发行形式，您可以使用本文档的副本或分发给他人。
+在不对副本收取任何费用且每个副本都包含版权声明的情况下，您可以将本文档的副本分发给他人，无论是印刷形式还是电子发行形式。
 
 <a id="boot-documentation"></a>
 # I、Spring Boot 文档
@@ -38,7 +38,7 @@ Copyright © 2012-2018
 
 Spring Boot 参考指南提供了 [html](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/html)、[pdf](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/pdf/spring-boot-reference.pdf) 和 [epub](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/epub/spring-boot-reference.epub) 格式的文档。最新的副本可在[docs.spring.io/spring-boot/docs/current/reference](https://docs.spring.io/spring-boot/docs/current/reference) 获取。
 
-在不收取副本的任何费用且每个副本都包含此版权声明的情况下，无论是印刷形式还是电子发行形式，您可以使用本文档的副本或分发给他人。
+在不对副本收取任何费用且每个副本都包含版权声明的情况下，您可以将本文档的副本分发给他人，无论是印刷形式还是电子发行形式。
 
 <a id="boot-documentation-getting-help"></a>
 
