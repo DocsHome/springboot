@@ -222,7 +222,7 @@ public class MyBean {
 
 <a id="boot-features-command-line-runner"></a>
 
-### 23.8、使用 ApplicationRunner 或 ApplicationRunner
+### 23.8、使用 ApplicationRunner 或 CommandLineRunner
 
 如果您需要在 SpringApplication 启动时运行一些代码，可以实现 `ApplicationRunner` 或者 `CommandLineRunner` 接口。这两个接口的工作方式是一样的，都提供了一个单独的 `run` 方法，它将在 `SpringApplication.run(​...)` 完成之前调用。
 
