@@ -31,6 +31,8 @@ gitbook install
 
 启动本地服务器在线浏览
 
+
+
 ```bash
 gitbook serve
 ```
@@ -64,4 +66,7 @@ gitbook build
 
 ![](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
 
+
+
 本作品采用[知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议](http://creativecommons.org/licenses/by-nc-sa/4.0/)进行许可。
+## This community is amazing
